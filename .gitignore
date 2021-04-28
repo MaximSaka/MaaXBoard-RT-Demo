@@ -1,5 +1,6 @@
 Debug/
 GuiderProject/temp/
+GuiderProject/lvgl-simulator/build
 
 *.launch
 
