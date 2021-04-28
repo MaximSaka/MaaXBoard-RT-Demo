@@ -5,8 +5,9 @@
     extern "C" {
     #endif
     
-    #include "lv_font.h"
+    #include "src/lv_font/lv_font.h"
     
+    LV_FONT_DECLARE(lv_font_simsun_12)
     
     
     #ifdef __cplusplus
