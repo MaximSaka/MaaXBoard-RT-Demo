@@ -9,4 +9,5 @@
 #include "gui_guider.h"
 
 void events_init(lv_ui *ui);
+void events_init_screen(lv_ui *ui);
 #endif /* EVENT_CB_H_ */
