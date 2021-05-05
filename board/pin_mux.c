@@ -15,20 +15,25 @@ board: MIMXRT1170-EVK
 pin_labels:
 - {pin_num: R1, pin_signal: GPIO_EMC_B2_03, label: DSI_BL_PWM, identifier: DSI_BL_PWM}
 - {pin_num: K2, pin_signal: GPIO_EMC_B2_00, label: LPI2C2_SCL, identifier: LPI2C2_SCL}
+- {pin_num: N3, pin_signal: GPIO_EMC_B2_18, label: USER_GREEN, identifier: SEMC_DQS4;USER_GREEN}
 - {pin_num: K4, pin_signal: GPIO_EMC_B2_01, label: LPI2C2_SDA, identifier: LPI2C2_SDA}
 - {pin_num: N12, pin_signal: GPIO_AD_00}
 - {pin_num: R14, pin_signal: GPIO_AD_01}
 - {pin_num: A4, pin_signal: GPIO_DISP_B2_15, label: 'WDOG_B/LCM_PWR_EN/J48[32]', identifier: DSI_EN}
 - {pin_num: P13, pin_signal: GPIO_AD_05, label: DSI_TS_RST, identifier: DSI_TS_RST}
+- {pin_num: R15, pin_signal: GPIO_AD_08, label: USER_RED, identifier: USER_RED}
 - {pin_num: R16, pin_signal: GPIO_AD_09, label: DSI_RST, identifier: DSI_RST}
+- {pin_num: R17, pin_signal: GPIO_AD_10, label: USER_BLUE, identifier: USER_BLUE}
 - {pin_num: M14, pin_signal: GPIO_AD_15, label: LCD_RST_B, identifier: LCD_RST_B}
 - {pin_num: M17, pin_signal: GPIO_AD_29, label: DSI_EN, identifier: DSI_EN}
 - {pin_num: K17, pin_signal: GPIO_AD_30, label: DSI_TS_INT, identifier: DSI_TS_INT}
+- {pin_num: T8, pin_signal: WAKEUP, label: USER_S1, identifier: USER_BUTTON;USER_S1}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
 #include "fsl_common.h"
 #include "fsl_iomuxc.h"
+#include "fsl_gpio.h"
 #include "pin_mux.h"
 
 /* FUNCTION ************************************************************************************************************
@@ -50,6 +55,10 @@ BOARD_InitLpuartPins:
     open_drain: Disable, drive_strength: Normal, slew_rate: Slow}
   - {pin_num: L13, peripheral: LPUART1, signal: TXD, pin_signal: GPIO_AD_24, pull_up_down_config: Pull_Down, pull_keeper_select: Keeper, open_drain: Disable, drive_strength: Normal,
     slew_rate: Slow}
+  - {pin_num: N3, peripheral: GPIO8, signal: 'gpio_io, 28', pin_signal: GPIO_EMC_B2_18, identifier: USER_GREEN, direction: OUTPUT}
+  - {pin_num: R15, peripheral: GPIO9, signal: 'gpio_io, 07', pin_signal: GPIO_AD_08, direction: OUTPUT}
+  - {pin_num: R17, peripheral: GPIO9, signal: 'gpio_io, 09', pin_signal: GPIO_AD_10, direction: OUTPUT}
+  - {pin_num: T8, peripheral: GPIO13, signal: 'gpio_io, 00', pin_signal: WAKEUP, identifier: USER_S1, direction: INPUT, gpio_interrupt: kGPIO_IntFallingEdge}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -62,12 +71,62 @@ BOARD_InitLpuartPins:
 void BOARD_InitLpuartPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* LPCG on: LPCG is ON. */
 
+  /* GPIO configuration of USER_GREEN on GPIO_EMC_B2_18 (pin N3) */
+  gpio_pin_config_t USER_GREEN_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_EMC_B2_18 (pin N3) */
+  GPIO_PinInit(GPIO8, 28U, &USER_GREEN_config);
+
+  /* GPIO configuration of USER_RED on GPIO_AD_08 (pin R15) */
+  gpio_pin_config_t USER_RED_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_AD_08 (pin R15) */
+  GPIO_PinInit(GPIO9, 7U, &USER_RED_config);
+
+  /* GPIO configuration of USER_BLUE on GPIO_AD_10 (pin R17) */
+  gpio_pin_config_t USER_BLUE_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_AD_10 (pin R17) */
+  GPIO_PinInit(GPIO9, 9U, &USER_BLUE_config);
+
+  /* GPIO configuration of USER_S1 on WAKEUP_DIG (pin T8) */
+  gpio_pin_config_t USER_S1_config = {
+      .direction = kGPIO_DigitalInput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_IntFallingEdge
+  };
+  /* Initialize GPIO functionality on WAKEUP_DIG (pin T8) */
+  GPIO_PinInit(GPIO13, 0U, &USER_S1_config);
+  /* Enable GPIO pin interrupt on WAKEUP_DIG (pin T8) */
+  GPIO_PortEnableInterrupts(GPIO13, 1U << 0U);
+
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_08_GPIO9_IO07,           /* GPIO_AD_08 is configured as GPIO9_IO07 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_10_GPIO9_IO09,           /* GPIO_AD_10 is configured as GPIO9_IO09 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_24_LPUART1_TXD,          /* GPIO_AD_24 is configured as LPUART1_TXD */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_25_LPUART1_RXD,          /* GPIO_AD_25 is configured as LPUART1_RXD */
       1U);                                    /* Software Input On Field: Force input path of pad GPIO_AD_25 */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_EMC_B2_18_GPIO8_IO28,       /* GPIO_EMC_B2_18 is configured as GPIO8_IO28 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_WAKEUP_DIG_GPIO13_IO00,          /* WAKEUP_DIG is configured as GPIO13_IO00 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinConfig(
       IOMUXC_GPIO_AD_24_LPUART1_TXD,          /* GPIO_AD_24 PAD functional properties : */
       0x00U);                                 /* Slew Rate Field: Slow Slew Rate
