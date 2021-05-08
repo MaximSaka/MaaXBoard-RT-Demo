@@ -44,7 +44,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define configCPU_CLOCK_HZ                      (SystemCoreClock)
 #define configTICK_RATE_HZ                      ((TickType_t)1000)
 #define configMAX_PRIORITIES                    18
-#define configMINIMAL_STACK_SIZE                ((unsigned short)90)
+#define configMINIMAL_STACK_SIZE                ((unsigned short)128)
 #define configMAX_TASK_NAME_LEN                 10
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -57,7 +57,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define configUSE_QUEUE_SETS                    0
 #define configUSE_TIME_SLICING                  0
 #define configUSE_NEWLIB_REENTRANT              0
-#define configENABLE_BACKWARD_COMPATIBILITY     0
+#define configENABLE_BACKWARD_COMPATIBILITY     1
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 5
 #define configUSE_APPLICATION_TASK_TAG          0
 
@@ -69,7 +69,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* Memory allocation related definitions. */
 #define configSUPPORT_STATIC_ALLOCATION         0
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
-#define configTOTAL_HEAP_SIZE                   ((size_t)0x3000)
+#define configTOTAL_HEAP_SIZE            ((size_t)(60 * 1024))
 #define configAPPLICATION_ALLOCATED_HEAP        0
 
 /* Hook function related definitions. */
@@ -90,12 +90,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* Software timer related definitions. */
 #define configUSE_TIMERS                        1
-#define configTIMER_TASK_PRIORITY               17
-#define configTIMER_QUEUE_LENGTH                10
-#define configTIMER_TASK_STACK_DEPTH            (configMINIMAL_STACK_SIZE * 2)
+#define configTIMER_TASK_PRIORITY    4
+#define configTIMER_QUEUE_LENGTH     5
+#define configTIMER_TASK_STACK_DEPTH (configMINIMAL_STACK_SIZE)
 
 /* Define to trap errors during development. */
-#define configASSERT(x) if((x) == 0) {taskDISABLE_INTERRUPTS(); for (;;);}
+#define configASSERT(x)           \
+    if ((x) == 0)                 \
+    {                             \
+        taskDISABLE_INTERRUPTS(); \
+        for (;;)                  \
+            ;                     \
+    }
 
 /* Optional functions - most linkers will remove unused functions anyway. */
 #define INCLUDE_vTaskPrioritySet                1
