@@ -44,7 +44,7 @@
             </pin_labels>
          </pins_profile>
          <functions_list>
-            <function name="BOARD_InitLpuartPins">
+            <function name="BOARD_InitPins">
                <description>Configures pin routing and optionally pin electrical features.</description>
                <options>
                   <callFromInitBoot>true</callFromInitBoot>
@@ -52,22 +52,27 @@
                   <enableClock>true</enableClock>
                </options>
                <dependencies>
-                  <dependency resourceType="Peripheral" resourceId="LPUART1" description="Peripheral LPUART1 is not initialized" problem_level="1" source="Pins:BOARD_InitLpuartPins">
+                  <dependency resourceType="Peripheral" resourceId="LPUART1" description="Peripheral LPUART1 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitLpuartPins">
+                  <dependency resourceType="Peripheral" resourceId="USDHC1" description="Peripheral USDHC1 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="cm7">
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.iomuxc" description="Pins initialization requires the IOMUXC Driver in the project." problem_level="2" source="Pins:BOARD_InitLpuartPins">
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.iomuxc" description="Pins initialization requires the IOMUXC Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="cm7">
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="SWComponent" resourceId="platform.drivers.igpio" description="Pins initialization requires the IGPIO Driver in the project." problem_level="2" source="Pins:BOARD_InitLpuartPins">
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.igpio" description="Pins initialization requires the IGPIO Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="cm7">
                         <data>true</data>
                      </feature>
@@ -116,6 +121,47 @@
                         <pin_feature name="gpio_interrupt" value="kGPIO_IntFallingEdge"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="USDHC1" signal="usdhc_vselect" pin_num="J16" pin_signal="GPIO_AD_34"/>
+                  <pin peripheral="USDHC1" signal="usdhc_cmd" pin_num="B16" pin_signal="GPIO_SD_B1_00">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_down_pull_up_config" value="Pull_Up"/>
+                        <pin_feature name="pdrv_config" value="High_Driver"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="USDHC1" signal="usdhc_clk" pin_num="D15" pin_signal="GPIO_SD_B1_01">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_down_pull_up_config" value="No_Pull"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="USDHC1" signal="usdhc_data, 0" pin_num="C15" pin_signal="GPIO_SD_B1_02">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pdrv_config" value="High_Driver"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="USDHC1" signal="usdhc_data, 1" pin_num="B17" pin_signal="GPIO_SD_B1_03">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pdrv_config" value="High_Driver"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="USDHC1" signal="usdhc_data, 2" pin_num="B15" pin_signal="GPIO_SD_B1_04">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pdrv_config" value="High_Driver"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="USDHC1" signal="usdhc_data, 3" pin_num="A16" pin_signal="GPIO_SD_B1_05">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_down_pull_up_config" value="Pull_Up"/>
+                        <pin_feature name="pdrv_config" value="High_Driver"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIO10" signal="gpio_io, 02" pin_num="G17" pin_signal="GPIO_AD_35"/>
+                  <pin peripheral="CM7_GPIO3" signal="gpio_mux_io_cm7, 31" pin_num="K16" pin_signal="GPIO_AD_32"/>
                </pins>
             </function>
             <function name="BOARD_InitMipiPanelPins">
