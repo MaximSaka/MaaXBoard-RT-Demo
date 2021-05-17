@@ -7,8 +7,11 @@
     
     #include "src/lv_font/lv_font.h"
     
-    LV_FONT_DECLARE(lv_font_simsun_20)
+    LV_FONT_DECLARE(lv_font_simsun_28)
+    LV_FONT_DECLARE(lv_font_simsun_36)
+    LV_FONT_DECLARE(lv_font_simsun_18)
     LV_FONT_DECLARE(lv_font_simsun_12)
+    LV_FONT_DECLARE(lv_font_simsun_20)
     
     
     #ifdef __cplusplus
