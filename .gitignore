@@ -5,4 +5,5 @@ GuiderProject/lvgl-simulator/build
 *.launch
 
 language.settings.xml
-.vscode/settings.json
+.vscode/
+.settings/
