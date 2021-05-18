@@ -82,6 +82,43 @@
     GPIO_PinWrite(BOARD_USER_LED_GPIO, BOARD_USER_LED_GPIO_PIN, \
                   0x1 ^ GPIO_PinRead(BOARD_USER_LED_GPIO, BOARD_USER_LED_GPIO_PIN)) /*!< Toggle target USER_LED */
 
+/*! @brief USER_RED RGB LED on MaaXBoard RT is on GPIO9_IO07 */
+#ifndef BOARD_USER_LED_RED_GPIO
+#define BOARD_USER_LED_RED_GPIO GPIO9        //MaaXBoard Rev.2
+#endif
+#ifndef BOARD_USER_LED_RED_GPIO_PIN
+#define BOARD_USER_LED_RED_GPIO_PIN (7U)     //MaaXBoard Rev.2
+#endif
+
+#define USER_LED_RED_INIT(output)                                            \
+    GPIO_PinWrite(BOARD_USER_LED_RED_GPIO, BOARD_USER_LED_RED_GPIO_PIN, output); \
+    BOARD_USER_LED_RED_GPIO->GDIR |= (1U << BOARD_USER_LED_RED_GPIO_PIN) /*!< Enable target USER_LED */
+#define USER_LED_RED_OFF() \
+    GPIO_PortClear(BOARD_USER_LED_RED_GPIO, 1U << BOARD_USER_LED_RED_GPIO_PIN)                 /*!< Turn off target USER_LED */
+#define USER_LED_RED_ON() GPIO_PortSet(BOARD_USER_LED_RED_GPIO, 1U << BOARD_USER_LED_RED_GPIO_PIN) /*!<Turn on target USER_LED*/
+#define USER_LED_RED_TOGGLE()                                       \
+    GPIO_PinWrite(BOARD_USER_LED_RED_GPIO, BOARD_USER_LED_RED_GPIO_PIN, \
+                  0x1 ^ GPIO_PinRead(BOARD_USER_LED_RED_GPIO, BOARD_USER_LED_RED_GPIO_PIN))    /*!< Toggle target USER_LED */
+
+/*! @brief USER_BLUE RGB LED on MaaXBoard RT is on GPIO9_IO09 */
+#ifndef BOARD_USER_LED_BLUE_GPIO
+#define BOARD_USER_LED_BLUE_GPIO GPIO9        //MaaXBoard Rev.2
+#endif
+#ifndef BOARD_USER_LED_BLUE_GPIO_PIN
+#define BOARD_USER_LED_BLUE_GPIO_PIN (9U)     //MaaXBoard Rev.2
+#endif
+
+#define USER_LED_BLUE_INIT(output)                                            \
+    GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, output); \
+    BOARD_USER_LED_BLUE_GPIO->GDIR |= (1U << BOARD_USER_LED_BLUE_GPIO_PIN) /*!< Enable target USER_LED */
+#define USER_LED_BLUE_OFF() \
+    GPIO_PortClear(BOARD_USER_LED_BLUE_GPIO, 1U << BOARD_USER_LED_BLUE_GPIO_PIN)                 /*!< Turn off target USER_LED */
+#define USER_LED_BLUE_ON() GPIO_PortSet(BOARD_USER_LED_BLUE_GPIO, 1U << BOARD_USER_LED_BLUE_GPIO_PIN) /*!<Turn on target USER_LED*/
+#define USER_LED_BLUE_TOGGLE()                                       \
+    GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, \
+                  0x1 ^ GPIO_PinRead(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN))    /*!< Toggle target USER_LED */
+
+
 /*! @brief USER Button Switch on MaaXBoard RT Rev.1 is on GPIO8_IO22  */
 /*! @brief USER Button Switch on MaaXBoard RT Rev.2 is on GPIO13_IO00  */
 /*! @brief Define the port interrupt number for the board switch */
