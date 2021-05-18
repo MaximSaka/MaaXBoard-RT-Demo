@@ -11,4 +11,7 @@
 void events_init(lv_ui *ui);
 void events_init_welcome_screen(lv_ui *ui);
 void events_init_network_screen(lv_ui *ui);
+void events_init_usb_screen(lv_ui *ui);
+void events_init_video_screen(lv_ui *ui);
+void events_init_system_screen(lv_ui *ui);
 #endif /* EVENT_CB_H_ */

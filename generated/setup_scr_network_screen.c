@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "gui_guider.h"
 #include "events_init.h"
+#include "custom.h"
 
 
 void setup_scr_network_screen(lv_ui *ui){
@@ -172,7 +173,6 @@ void setup_scr_network_screen(lv_ui *ui){
 	//Write codes network_screen_ssidlist
 	ui->network_screen_ssidlist = lv_list_create(ui->network_screen, NULL);
 	lv_list_set_edge_flash(ui->network_screen_ssidlist, true);
-	lv_list_set_anim_time(ui->network_screen_ssidlist, 255);
 
 	//Write style LV_LIST_PART_BG for network_screen_ssidlist
 	static lv_style_t style_network_screen_ssidlist_bg;
@@ -182,6 +182,9 @@ void setup_scr_network_screen(lv_ui *ui){
 	lv_style_set_radius(&style_network_screen_ssidlist_bg, LV_STATE_DEFAULT, 3);
 	lv_style_set_border_color(&style_network_screen_ssidlist_bg, LV_STATE_DEFAULT, lv_color_make(0xe1, 0xe6, 0xee));
 	lv_style_set_border_width(&style_network_screen_ssidlist_bg, LV_STATE_DEFAULT, 1);
+	lv_style_set_pad_left(&style_network_screen_ssidlist_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_right(&style_network_screen_ssidlist_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_top(&style_network_screen_ssidlist_bg, LV_STATE_DEFAULT, 5);
 	lv_obj_add_style(ui->network_screen_ssidlist, LV_LIST_PART_BG, &style_network_screen_ssidlist_bg);
 
 	//Write style LV_LIST_PART_SCROLLABLE for network_screen_ssidlist
@@ -196,24 +199,24 @@ void setup_scr_network_screen(lv_ui *ui){
 	lv_style_set_bg_opa(&style_network_screen_ssidlist_scrollable, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->network_screen_ssidlist, LV_LIST_PART_SCROLLABLE, &style_network_screen_ssidlist_scrollable);
 
-	// //Write style LV_BTN_PART_MAIN for network_screen_ssidlist
-	// static lv_style_t style_network_screen_ssidlist_main_child;
-	// lv_style_init(&style_network_screen_ssidlist_main_child);
+	//Write style LV_BTN_PART_MAIN for network_screen_ssidlist
+	static lv_style_t style_network_screen_ssidlist_main_child;
+	lv_style_init(&style_network_screen_ssidlist_main_child);
 
-	// //Write style state: LV_STATE_DEFAULT for style_network_screen_ssidlist_main_child
-	// lv_style_set_radius(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, 3);
-	// lv_style_set_bg_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	// lv_style_set_bg_grad_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	// lv_style_set_bg_grad_dir(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
-	// lv_style_set_bg_opa(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, 255);
-	// lv_style_set_text_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	//Write style state: LV_STATE_DEFAULT for style_network_screen_ssidlist_main_child
+	lv_style_set_radius(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, 3);
+	lv_style_set_bg_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
 	lv_obj_set_pos(ui->network_screen_ssidlist, 110, 420);
 	lv_obj_set_size(ui->network_screen_ssidlist, 500, 500);
-	// lv_obj_t *network_screen_ssidlist_btn;
-	// network_screen_ssidlist_btn = lv_list_add_btn(ui->network_screen_ssidlist, NULL, "item1");
-	// lv_obj_add_style(network_screen_ssidlist_btn, LV_BTN_PART_MAIN, &style_network_screen_ssidlist_main_child);
-	// network_screen_ssidlist_btn = lv_list_add_btn(ui->network_screen_ssidlist, NULL, "item2");
-	// lv_obj_add_style(network_screen_ssidlist_btn, LV_BTN_PART_MAIN, &style_network_screen_ssidlist_main_child);
+	lv_obj_t *network_screen_ssidlist_btn;
+	network_screen_ssidlist_btn = lv_list_add_btn(ui->network_screen_ssidlist, NULL, "item1");
+	lv_obj_add_style(network_screen_ssidlist_btn, LV_BTN_PART_MAIN, &style_network_screen_ssidlist_main_child);
+	network_screen_ssidlist_btn = lv_list_add_btn(ui->network_screen_ssidlist, NULL, "item2");
+	lv_obj_add_style(network_screen_ssidlist_btn, LV_BTN_PART_MAIN, &style_network_screen_ssidlist_main_child);
 
 	//Init events for screen
 	events_init_network_screen(ui);
