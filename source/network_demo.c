@@ -84,17 +84,11 @@ static void iperf_test_abort(void *arg);
 static int network_added     = 0;
 static int uap_network_added = 0;
 
+static bool s_wifi_ready     = false;
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
-
-/*!
- * @brief Opens the help screen
- */
-static void printSeparator(void)
-{
-    PRINTF("========================================\r\n");
-}
 
 int __scan_cb(unsigned int count)
 {
@@ -173,6 +167,145 @@ void ssidScan(void)
         PRINTF("Error: scan request failed\r\n");
     else
         PRINTF("Scan scheduled...\r\n");
+}
+
+static const char *print_role(enum wlan_bss_role role)
+{
+    switch (role)
+    {
+        case WLAN_BSS_ROLE_STA:
+            return "Infra";
+        case WLAN_BSS_ROLE_UAP:
+            return "uAP";
+        case WLAN_BSS_ROLE_ANY:
+            return "any";
+    }
+
+    return "unknown";
+}
+
+static void print_address(struct wlan_ip_config *addr, enum wlan_bss_role role)
+{
+    struct in_addr ip, gw, nm, dns1, dns2;
+    char addr_type[10];
+
+    ip.s_addr   = addr->ipv4.address;
+    gw.s_addr   = addr->ipv4.gw;
+    nm.s_addr   = addr->ipv4.netmask;
+    dns1.s_addr = addr->ipv4.dns1;
+    dns2.s_addr = addr->ipv4.dns2;
+    if (addr->ipv4.addr_type == ADDR_TYPE_STATIC)
+        strncpy(addr_type, "STATIC", sizeof(addr_type));
+    else if (addr->ipv4.addr_type == ADDR_TYPE_STATIC)
+        strncpy(addr_type, "AUTO IP", sizeof(addr_type));
+    else
+        strncpy(addr_type, "DHCP", sizeof(addr_type));
+
+    PRINTF("\r\n\tIPv4 Address\r\n");
+    PRINTF("\taddress: %s", addr_type);
+    PRINTF("\r\n\t\tIP:\t\t%s", inet_ntoa(ip));
+    PRINTF("\r\n\t\tgateway:\t%s", inet_ntoa(gw));
+    PRINTF("\r\n\t\tnetmask:\t%s", inet_ntoa(nm));
+    PRINTF("\r\n\t\tdns1:\t\t%s", inet_ntoa(dns1));
+    PRINTF("\r\n\t\tdns2:\t\t%s", inet_ntoa(dns2));
+    PRINTF("\r\n");
+}
+
+static void print_network(struct wlan_network *network)
+{
+    PRINTF("\"%s\"\r\n\tSSID: %s\r\n\tBSSID: ", network->name, network->ssid[0] ? network->ssid : "(hidden)");
+
+    print_mac(network->bssid);
+
+    if (network->channel)
+        PRINTF("\r\n\tchannel: %d", network->channel);
+    else
+        PRINTF("\r\n\tchannel: %s", "(Auto)");
+
+    PRINTF("\r\n\trole: %s\r\n", print_role(network->role));
+
+    char *sec_tag = "\tsecurity";
+    if (!network->security_specific)
+    {
+        sec_tag = "\tsecurity [Wildcard]";
+    }
+    switch (network->security.type)
+    {
+        case WLAN_SECURITY_NONE:
+            PRINTF("%s: none\r\n", sec_tag);
+            break;
+        case WLAN_SECURITY_WEP_OPEN:
+            PRINTF("%s: WEP (open)\r\n", sec_tag);
+            break;
+        case WLAN_SECURITY_WEP_SHARED:
+            PRINTF("%s: WEP (shared)\r\n", sec_tag);
+            break;
+        case WLAN_SECURITY_WPA:
+            PRINTF("%s: WPA\r\n", sec_tag);
+            break;
+        case WLAN_SECURITY_WPA2:
+            PRINTF("%s: WPA2\r\n", sec_tag);
+            break;
+        case WLAN_SECURITY_WPA_WPA2_MIXED:
+            PRINTF("%s: WPA/WPA2 Mixed\r\n", sec_tag);
+            break;
+        case WLAN_SECURITY_WPA3_SAE:
+            PRINTF("%s: WPA3 SAE\r\n", sec_tag);
+            break;
+        default:
+            break;
+    }
+
+    print_address(&network->ip, network->role);
+}
+
+void printWlanInfo(void)
+{
+    enum wlan_connection_state state;
+    struct wlan_network psta_network;
+    struct wlan_network puap_network;
+    int sta_found = 0;
+
+    if (wlan_get_connection_state(&state))
+    {
+        PRINTF(
+            "Error: unable to get STA connection"
+            " state\r\n");
+    }
+    else
+    {
+        switch (state)
+        {
+            case WLAN_CONNECTED:
+                if (!wlan_get_current_network(&psta_network))
+                {
+                    PRINTF("Station connected to:\r\n");
+                    print_network(&psta_network);
+                    sta_found = 1;
+                }
+                else
+                    PRINTF("Station not connected\r\n");
+                break;
+            default:
+                PRINTF("Station not connected\r\n");
+                break;
+        }
+    }
+
+    if (wlan_get_current_uap_network(&puap_network))
+        PRINTF("uAP not started\r\n");
+    else
+    {
+        /* Since uAP automatically changes the channel to the one that
+         * STA is on */
+        if (sta_found == 1)
+            puap_network.channel = psta_network.channel;
+
+        if (puap_network.role == WLAN_BSS_ROLE_UAP)
+            PRINTF("uAP started as:\r\n");
+
+        print_network(&puap_network);
+    }
 }
 
 /* Callback Function passed to WLAN Connection Manager. The callback function
@@ -280,6 +413,12 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
             {
                 PRINTF("UDP Poll Timer could not be started!\r\n");
             }
+
+            if (network_added && uap_network_added)
+            {
+                s_wifi_ready = true;
+            }
+
             break;
         case WLAN_REASON_INITIALIZATION_FAILED:
             PRINTF("app_cb: WLAN: initialization failed\r\n");
@@ -382,7 +521,12 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
     return 0;
 }
 
-void network_task(void *param)
+bool isWifiReady(void)
+{
+    return s_wifi_ready;
+}
+
+void wifi_task(void *param)
 {
     int32_t result = 0;
     (void)result;

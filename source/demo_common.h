@@ -13,10 +13,12 @@
  * Functions
  ******************************************************************************/
 
+void printSeparator(void);
 void addItemToSSIDList(const char * text);
 bool setInputSignal(bool state);
 
 void lvgl_task(void *param);
+void console_task(void *param);
 void vApplicationTickHook_lvgl(void);
 
 #endif //_DEMO_COMMON_H_

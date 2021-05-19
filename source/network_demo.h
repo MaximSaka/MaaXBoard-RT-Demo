@@ -9,7 +9,10 @@
  ******************************************************************************/
 
 void ssidScan(void);
+void printWlanInfo(void);
 
-void network_task(void *param);
+bool isWifiReady(void);
+
+void wifi_task(void *param);
 
 #endif //_NETWORK_DEMO_H_

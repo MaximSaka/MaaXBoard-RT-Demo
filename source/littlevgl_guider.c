@@ -15,14 +15,15 @@
 portSTACK_TYPE *lvgl_task_stack = NULL;
 TaskHandle_t lvgl_task_task_handler;
 
-portSTACK_TYPE *network_task_stack = NULL;
-TaskHandle_t network_task_task_handler;
+portSTACK_TYPE *wifi_task_stack = NULL;
+TaskHandle_t wifi_task_task_handler;
+
+portSTACK_TYPE *console_task_stack = NULL;
+TaskHandle_t console_task_task_handler;
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
-
-void vApplicationTickHook_lvgl(void);
 
 /*!
  * @brief S1 button switch interrupt service ISR
@@ -67,27 +68,38 @@ int main(void)
 
     os_setup_tick_function(vApplicationTickHook_lvgl);
 
-    // Init gui task
+   // Create lvgl task
+
+   stat = xTaskCreate(
+       lvgl_task,
+       "lvgl",
+       configMINIMAL_STACK_SIZE + 800,
+       lvgl_task_stack,
+       tskIDLE_PRIORITY + 3,
+       &lvgl_task_task_handler);
+   assert(pdPASS == stat);
+
+    // Create wifi task
 
     stat = xTaskCreate(
-        lvgl_task, 
-        "lvgl", 
+        wifi_task, 
+        "wifi", 
         configMINIMAL_STACK_SIZE + 800, 
-        lvgl_task_stack, 
-        tskIDLE_PRIORITY + 2, 
-        &lvgl_task_task_handler);
+        wifi_task_stack, 
+        tskIDLE_PRIORITY + 4,
+        &wifi_task_task_handler);
     assert(pdPASS == stat);
 
-    // Init network task
+   // Create console task
 
-    stat = xTaskCreate(
-        network_task, 
-        "network", 
-        configMINIMAL_STACK_SIZE + 800, 
-        network_task_stack, 
-        tskIDLE_PRIORITY + 2, 
-        &network_task_task_handler);
-    assert(pdPASS == stat);
+   stat = xTaskCreate(
+       console_task,
+       "console",
+       configMINIMAL_STACK_SIZE + 800,
+       console_task_stack,
+       tskIDLE_PRIORITY + 2,
+       &console_task_task_handler);
+   assert(pdPASS == stat);
 
     // Init scheduler
 
