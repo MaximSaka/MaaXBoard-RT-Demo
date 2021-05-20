@@ -21,4 +21,12 @@ void lvgl_task(void *param);
 void console_task(void *param);
 void vApplicationTickHook_lvgl(void);
 
+void set_red_led(bool state);
+void set_green_led(bool state);
+void set_blue_led(bool state);
+
+bool get_red_led();
+bool get_green_led();
+bool get_blue_led();
+
 #endif //_DEMO_COMMON_H_

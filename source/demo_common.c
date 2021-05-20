@@ -27,6 +27,10 @@ static volatile bool s_input_signal = false;         // S1 button switch page si
 static volatile bool s_lvgl_initialized = false;
 static volatile activePage s_active_page = PAGE_WELCOME;
 
+static volatile bool s_red_led_state = false;
+static volatile bool s_green_led_state = false;
+static volatile bool s_blue_led_state = false;
+
 lv_ui guider_ui;
 
 static bool s_lgvl_ready = false;
@@ -271,6 +275,10 @@ void lvgl_task(void *param)
     s_lvgl_initialized = true;
     s_current_action = 1;
 
+	set_red_led(false);
+	set_green_led(false);
+	set_blue_led(false);
+
     setup_ui(&guider_ui);
     events_init(&guider_ui);
     
@@ -399,4 +407,34 @@ void vApplicationTickHook_lvgl(void)
     {
         lv_tick_inc(1);
     }
+}
+
+void set_red_led(bool state)
+{
+	s_red_led_state = state;
+}
+
+void set_green_led(bool state)
+{
+	s_green_led_state = state;
+}
+
+void set_blue_led(bool state)
+{
+	s_blue_led_state = state;
+}
+
+bool get_red_led()
+{
+	return s_red_led_state;
+}
+
+bool get_green_led()
+{
+	return s_green_led_state;
+}
+
+bool get_blue_led()
+{
+	return s_blue_led_state;
 }
