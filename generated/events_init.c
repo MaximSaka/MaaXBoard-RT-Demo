@@ -18,8 +18,7 @@ static void screen1_LEDs_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen0_MENU(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openMenuScreen();
 	}
 		break;
 	default:
@@ -33,8 +32,7 @@ static void screen1_LEDs_right_btnevent_handler(lv_obj_t * obj, lv_event_t event
 	{
 	case LV_EVENT_RELEASED:
 	{
-		setup_scr_screen2_WIFI(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen2_WIFI, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openNetworkScreen();
 	}
 		break;
 	default:
@@ -114,8 +112,7 @@ static void screen0_MENU_btn_1event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen1_LEDs(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen1_LEDs, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openLEDScreen();
 	}
 		break;
 	default:
@@ -129,8 +126,7 @@ static void screen0_MENU_btn_2event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen2_WIFI(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen2_WIFI, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openNetworkScreen();
 	}
 		break;
 	default:
@@ -214,8 +210,7 @@ static void screen2_WIFI_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen0_MENU(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openMenuScreen();
 	}
 		break;
 	default:
@@ -250,8 +245,7 @@ static void screen3_USB_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen0_MENU(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openMenuScreen();
 	}
 		break;
 	default:
@@ -286,8 +280,7 @@ static void screen4_AV_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen0_MENU(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openMenuScreen();
 	}
 		break;
 	default:
@@ -322,8 +315,7 @@ static void screen5_SYSTEM_left_btnevent_handler(lv_obj_t * obj, lv_event_t even
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen0_MENU(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openMenuScreen();
 	}
 		break;
 	default:
@@ -337,8 +329,7 @@ static void screen5_SYSTEM_right_btnevent_handler(lv_obj_t * obj, lv_event_t eve
 	{
 	case LV_EVENT_RELEASED:
 	{
-		setup_scr_screen1_LEDs(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen1_LEDs, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openLEDScreen();
 	}
 		break;
 	default:
@@ -358,8 +349,7 @@ static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen0_MENU(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openMenuScreen();
 	}
 		break;
 	default:

@@ -13,8 +13,8 @@
 
 typedef enum _activePage
 {
-    PAGE_HELP       = 0,
-    PAGE_WELCOME    = 1,
+    PAGE_MENU       = 0,
+    PAGE_LED    = 1,
     PAGE_NETWORK    = 2,
 } activePage;
 
@@ -25,7 +25,7 @@ typedef enum _activePage
 static volatile uint8_t s_current_action = 1;        // action index
 static volatile bool s_input_signal = false;         // S1 button switch page signal
 static volatile bool s_lvgl_initialized = false;
-static volatile activePage s_active_page = PAGE_WELCOME;
+static volatile activePage s_active_page = PAGE_LED;
 
 static volatile bool s_red_led_state = false;
 static volatile bool s_green_led_state = false;
@@ -129,22 +129,22 @@ void addItemToSSIDList(const char * text)
         return;
     }
 
-	//Write style LV_BTN_PART_MAIN for network_screen_ssidlist
-	static lv_style_t style_network_screen_ssidlist_main_child;
-	lv_style_init(&style_network_screen_ssidlist_main_child);
+	//Write style LV_BTN_PART_MAIN for screen2_WIFI_ssid_list
+	static lv_style_t style_screen2_WIFI_ssid_list_main_child;
+	lv_style_init(&style_screen2_WIFI_ssid_list_main_child);
 
-	//Write style state: LV_STATE_DEFAULT for style_network_screen_ssidlist_main_child
-	lv_style_set_radius(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, 3);
-	lv_style_set_bg_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_dir(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
-	lv_style_set_bg_opa(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, 255);
-	lv_style_set_text_color(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
-	lv_style_set_text_font(&style_network_screen_ssidlist_main_child, LV_STATE_DEFAULT, &lv_font_simsun_28);
+	//Write style state: LV_STATE_DEFAULT for style_screen2_WIFI_ssid_list_main_child
+	lv_style_set_radius(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, 3);
+	lv_style_set_bg_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_font(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, &lv_font_simsun_28);
 
-	lv_obj_t *network_screen_ssidlist_btn;
-	network_screen_ssidlist_btn = lv_list_add_btn(guider_ui.network_screen_ssidlist, NULL, text);
-	lv_obj_add_style(network_screen_ssidlist_btn, LV_BTN_PART_MAIN, &style_network_screen_ssidlist_main_child);
+	lv_obj_t *screen2_WIFI_ssid_list_btn;
+	screen2_WIFI_ssid_list_btn = lv_list_add_btn(guider_ui.screen2_WIFI_ssid_list, NULL, text);
+	lv_obj_add_style(screen2_WIFI_ssid_list_btn, LV_BTN_PART_MAIN, &style_screen2_WIFI_ssid_list_main_child);
 }
 
 /*!
@@ -152,39 +152,36 @@ void addItemToSSIDList(const char * text)
 */
 void openNetworkScreen()
 {
-    lv_obj_clean(lv_scr_act());
-    setup_scr_network_screen(&guider_ui);
-    lv_scr_load(guider_ui.network_screen);
+    setup_scr_screen2_WIFI(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen2_WIFI, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
     s_active_page = PAGE_NETWORK;
 
-    lv_list_clean(guider_ui.network_screen_ssidlist);
+    lv_list_clean(guider_ui.screen2_WIFI_ssid_list);
 
     ssidScan();
 }
 
 /*!
-* @brief Opens the help screen
+* @brief Opens the menu screen
 */
-void openHelpScreen()
+void openMenuScreen()
 {
-    lv_obj_clean(lv_scr_act());
-    setup_scr_help_screen(&guider_ui);
-    lv_scr_load(guider_ui.help_screen);
+    setup_scr_screen0_MENU(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    s_active_page = PAGE_HELP;
+    s_active_page = PAGE_MENU;
 }
 
 /*!
-* @brief Opens the welcome screen
+* @brief Opens the LED screen
 */
-void openWelcomeScreen()
+void openLEDScreen()
 {
-    lv_obj_clean(lv_scr_act());
-    setup_scr_welcome_screen(&guider_ui);
-    lv_scr_load(guider_ui.welcome_screen);
+    setup_scr_screen1_LEDs(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen1_LEDs, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    s_active_page = PAGE_WELCOME;
+    s_active_page = PAGE_LED;
 }
 
 /*!
@@ -194,13 +191,13 @@ void toggleRedButton(bool state)
 {
     if (state)
     {
-        lv_obj_set_state(guider_ui.welcome_screen_redbtn0, LV_STATE_CHECKED|LV_STATE_PRESSED);
-        lv_event_send(guider_ui.welcome_screen_redbtn0, LV_EVENT_PRESSED, NULL);
+        lv_obj_set_state(guider_ui.screen1_LEDs_redbtn0, LV_STATE_CHECKED|LV_STATE_PRESSED);
+        lv_event_send(guider_ui.screen1_LEDs_redbtn0, LV_EVENT_PRESSED, NULL);
     }
     else
     {
-        lv_obj_set_state(guider_ui.welcome_screen_redbtn0, LV_STATE_DEFAULT);
-        lv_event_send(guider_ui.welcome_screen_redbtn0, LV_EVENT_RELEASED, NULL);
+        lv_obj_set_state(guider_ui.screen1_LEDs_redbtn0, LV_STATE_DEFAULT);
+        lv_event_send(guider_ui.screen1_LEDs_redbtn0, LV_EVENT_RELEASED, NULL);
     }
 }
 
@@ -211,13 +208,13 @@ void toggleGreenButton(bool state)
 {
     if (state)
     {
-        lv_obj_set_state(guider_ui.welcome_screen_greenbtn0, LV_STATE_CHECKED|LV_STATE_PRESSED);
-        lv_event_send(guider_ui.welcome_screen_greenbtn0, LV_EVENT_PRESSED, NULL);
+        lv_obj_set_state(guider_ui.screen1_LEDs_greenbtn0, LV_STATE_CHECKED|LV_STATE_PRESSED);
+        lv_event_send(guider_ui.screen1_LEDs_greenbtn0, LV_EVENT_PRESSED, NULL);
     }
     else
     {
-        lv_obj_set_state(guider_ui.welcome_screen_greenbtn0, LV_STATE_DEFAULT);
-        lv_event_send(guider_ui.welcome_screen_greenbtn0, LV_EVENT_RELEASED, NULL);
+        lv_obj_set_state(guider_ui.screen1_LEDs_greenbtn0, LV_STATE_DEFAULT);
+        lv_event_send(guider_ui.screen1_LEDs_greenbtn0, LV_EVENT_RELEASED, NULL);
     }
 }
 
@@ -228,32 +225,14 @@ void toggleBlueButton(bool state)
 {
     if (state)
     {
-        lv_obj_set_state(guider_ui.welcome_screen_bluebtn0, LV_STATE_CHECKED|LV_STATE_PRESSED);
-        lv_event_send(guider_ui.welcome_screen_bluebtn0, LV_EVENT_PRESSED, NULL);
+        lv_obj_set_state(guider_ui.screen1_LEDs_bluebtn0, LV_STATE_CHECKED|LV_STATE_PRESSED);
+        lv_event_send(guider_ui.screen1_LEDs_bluebtn0, LV_EVENT_PRESSED, NULL);
     }
     else
     {
-        lv_obj_set_state(guider_ui.welcome_screen_bluebtn0, LV_STATE_DEFAULT);
-        lv_event_send(guider_ui.welcome_screen_bluebtn0, LV_EVENT_RELEASED, NULL);
+        lv_obj_set_state(guider_ui.screen1_LEDs_bluebtn0, LV_STATE_DEFAULT);
+        lv_event_send(guider_ui.screen1_LEDs_bluebtn0, LV_EVENT_RELEASED, NULL);
     }
-}
-
-/*!
- * @brief Toggles the user button image
- */
-void toggleUserButton(bool state)
-{
-    if (state)
-    {
-		lv_label_set_text(guider_ui.welcome_screen_userlabel0, "User button ON!");
-    }
-    else
-    {
-		lv_label_set_text(guider_ui.welcome_screen_userlabel0, "User button OFF");
-    }
-    
-    lv_obj_set_hidden(guider_ui.welcome_screen_usruntglimg0, state);
-    lv_obj_set_hidden(guider_ui.welcome_screen_usrtglimg0, !state);
 }
 
 /*******************************************************************************
@@ -281,9 +260,6 @@ void lvgl_task(void *param)
 
     setup_ui(&guider_ui);
     events_init(&guider_ui);
-    
-    // set the user button initial state
-    toggleUserButton(false);
 
     s_lgvl_ready = true;
 
@@ -295,50 +271,40 @@ void lvgl_task(void *param)
             {
                 // case 1:
                 //     toggleRedButton(true);
-                //     toggleUserButton(true);
 
                 //     s_current_action++;
                 //     break;
 
                 // case 2:
                 //     toggleGreenButton(true);
-                //     toggleUserButton(false);
 
                 //     s_current_action++;
                 //     break;
 
                 // case 3:
                 //     toggleBlueButton(true);
-                //     toggleUserButton(true);
 
                 //     s_current_action++;
                 //     break;
 
                 // case 4:
                 //     toggleRedButton(false);
-                //     toggleUserButton(false);
 
                 //     s_current_action++;
                 //     break;
 
                 // case 5:
                 //     toggleGreenButton(false);
-                //     toggleUserButton(true);
 
                 //     s_current_action++;
                 //     break;
 
                 // case 6:
                 //     toggleBlueButton(false);
-                //     toggleUserButton(false);
 
                 //     s_current_action++;
                 //     break;
-
-                // case 7:
-
-                //     s_current_action = 1;
-                //     break;
+                
                 case 1:
                     openNetworkScreen();
 
@@ -346,13 +312,13 @@ void lvgl_task(void *param)
                     break;
 
                 case 2:
-                    openHelpScreen();
+                    openMenuScreen();
 
                     s_current_action++;
                     break;
 
                 case 3:
-                    openWelcomeScreen();
+                    openLEDScreen();
 
                     s_current_action = 1;
                     break;
