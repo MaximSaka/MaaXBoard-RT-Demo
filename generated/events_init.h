@@ -9,9 +9,11 @@
 #include "gui_guider.h"
 
 void events_init(lv_ui *ui);
-void events_init_welcome_screen(lv_ui *ui);
-void events_init_network_screen(lv_ui *ui);
-void events_init_usb_screen(lv_ui *ui);
-void events_init_video_screen(lv_ui *ui);
-void events_init_system_screen(lv_ui *ui);
+void events_init_screen1_LEDs(lv_ui *ui);
+void events_init_screen0_MENU(lv_ui *ui);
+void events_init_screen2_WIFI(lv_ui *ui);
+void events_init_screen3_USB(lv_ui *ui);
+void events_init_screen4_AV(lv_ui *ui);
+void events_init_screen5_SYSTEM(lv_ui *ui);
+void events_init_screen6_HELP(lv_ui *ui);
 #endif /* EVENT_CB_H_ */

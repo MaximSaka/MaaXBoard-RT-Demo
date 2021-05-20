@@ -1,0 +1,164 @@
+/*
+ * Copyright 2021 NXP
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "lvgl/lvgl.h"
+#include <stdio.h>
+#include "gui_guider.h"
+#include "events_init.h"
+#include "custom.h"
+
+
+void setup_scr_screen5_SYSTEM(lv_ui *ui){
+
+	//Write codes screen5_SYSTEM
+	ui->screen5_SYSTEM = lv_obj_create(NULL, NULL);
+
+	//Write codes screen5_SYSTEM_canvas_white
+	ui->screen5_SYSTEM_canvas_white = lv_canvas_create(ui->screen5_SYSTEM, NULL);
+
+	//Write style LV_CANVAS_PART_MAIN for screen5_SYSTEM_canvas_white
+	static lv_style_t style_screen5_SYSTEM_canvas_white_main;
+	lv_style_init(&style_screen5_SYSTEM_canvas_white_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_canvas_white_main
+	lv_style_set_image_recolor(&style_screen5_SYSTEM_canvas_white_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen5_SYSTEM_canvas_white_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen5_SYSTEM_canvas_white, LV_CANVAS_PART_MAIN, &style_screen5_SYSTEM_canvas_white_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_canvas_white, 0, 0);
+	lv_obj_set_size(ui->screen5_SYSTEM_canvas_white, 720, 1280);
+	lv_color_t *buf_screen5_SYSTEM_canvas_white = (lv_color_t*)lv_mem_alloc(720*1280*4);
+	lv_canvas_set_buffer(ui->screen5_SYSTEM_canvas_white, buf_screen5_SYSTEM_canvas_white, 720, 1280, LV_IMG_CF_TRUE_COLOR);
+
+	//Write codes screen5_SYSTEM_left_btn
+	ui->screen5_SYSTEM_left_btn = lv_imgbtn_create(ui->screen5_SYSTEM, NULL);
+
+	//Write style LV_IMGBTN_PART_MAIN for screen5_SYSTEM_left_btn
+	static lv_style_t style_screen5_SYSTEM_left_btn_main;
+	lv_style_init(&style_screen5_SYSTEM_left_btn_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_left_btn_main
+	lv_style_set_text_color(&style_screen5_SYSTEM_left_btn_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_image_recolor(&style_screen5_SYSTEM_left_btn_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen5_SYSTEM_left_btn_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen5_SYSTEM_left_btn_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen5_SYSTEM_left_btn, LV_IMGBTN_PART_MAIN, &style_screen5_SYSTEM_left_btn_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_left_btn, 10, 10);
+	lv_obj_set_size(ui->screen5_SYSTEM_left_btn, 150, 150);
+	lv_imgbtn_set_src(ui->screen5_SYSTEM_left_btn,LV_BTN_STATE_RELEASED,&_left_arrow_alpha_150x150);
+	lv_imgbtn_set_src(ui->screen5_SYSTEM_left_btn,LV_BTN_STATE_PRESSED,&_left_arrow_dark_alpha_150x150);
+
+	//Write codes screen5_SYSTEM_left_label
+	ui->screen5_SYSTEM_left_label = lv_label_create(ui->screen5_SYSTEM, NULL);
+	lv_label_set_text(ui->screen5_SYSTEM_left_label, "MENU");
+	lv_label_set_long_mode(ui->screen5_SYSTEM_left_label, LV_LABEL_LONG_BREAK);
+	lv_label_set_align(ui->screen5_SYSTEM_left_label, LV_LABEL_ALIGN_CENTER);
+
+	//Write style LV_LABEL_PART_MAIN for screen5_SYSTEM_left_label
+	static lv_style_t style_screen5_SYSTEM_left_label_main;
+	lv_style_init(&style_screen5_SYSTEM_left_label_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_left_label_main
+	lv_style_set_radius(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_bg_color(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, &lv_font_simsun_48);
+	lv_style_set_text_letter_space(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 2);
+	lv_style_set_pad_left(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_right(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_top(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_bottom(&style_screen5_SYSTEM_left_label_main, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen5_SYSTEM_left_label, LV_LABEL_PART_MAIN, &style_screen5_SYSTEM_left_label_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_left_label, 0, 160);
+	lv_obj_set_size(ui->screen5_SYSTEM_left_label, 180, 0);
+
+	//Write codes screen5_SYSTEM_avlogoimg0
+	ui->screen5_SYSTEM_avlogoimg0 = lv_img_create(ui->screen5_SYSTEM, NULL);
+
+	//Write style LV_IMG_PART_MAIN for screen5_SYSTEM_avlogoimg0
+	static lv_style_t style_screen5_SYSTEM_avlogoimg0_main;
+	lv_style_init(&style_screen5_SYSTEM_avlogoimg0_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_avlogoimg0_main
+	lv_style_set_image_recolor(&style_screen5_SYSTEM_avlogoimg0_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen5_SYSTEM_avlogoimg0_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen5_SYSTEM_avlogoimg0_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen5_SYSTEM_avlogoimg0, LV_IMG_PART_MAIN, &style_screen5_SYSTEM_avlogoimg0_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_avlogoimg0, 272, 20);
+	lv_obj_set_size(ui->screen5_SYSTEM_avlogoimg0, 176, 176);
+	lv_obj_set_click(ui->screen5_SYSTEM_avlogoimg0, true);
+	lv_img_set_src(ui->screen5_SYSTEM_avlogoimg0,&_AvnetIcon310x310_alpha_176x176);
+	lv_img_set_pivot(ui->screen5_SYSTEM_avlogoimg0, 0,0);
+	lv_img_set_angle(ui->screen5_SYSTEM_avlogoimg0, 0);
+
+	//Write codes screen5_SYSTEM_right_btn
+	ui->screen5_SYSTEM_right_btn = lv_imgbtn_create(ui->screen5_SYSTEM, NULL);
+
+	//Write style LV_IMGBTN_PART_MAIN for screen5_SYSTEM_right_btn
+	static lv_style_t style_screen5_SYSTEM_right_btn_main;
+	lv_style_init(&style_screen5_SYSTEM_right_btn_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_right_btn_main
+	lv_style_set_text_color(&style_screen5_SYSTEM_right_btn_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_image_recolor(&style_screen5_SYSTEM_right_btn_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen5_SYSTEM_right_btn_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen5_SYSTEM_right_btn_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen5_SYSTEM_right_btn, LV_IMGBTN_PART_MAIN, &style_screen5_SYSTEM_right_btn_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_right_btn, 560, 10);
+	lv_obj_set_size(ui->screen5_SYSTEM_right_btn, 150, 150);
+	lv_imgbtn_set_src(ui->screen5_SYSTEM_right_btn,LV_BTN_STATE_RELEASED,&_right_arrow_alpha_150x150);
+	lv_imgbtn_set_src(ui->screen5_SYSTEM_right_btn,LV_BTN_STATE_PRESSED,&_right_arrow_dark_alpha_150x150);
+
+	//Write codes screen5_SYSTEM_right_label
+	ui->screen5_SYSTEM_right_label = lv_label_create(ui->screen5_SYSTEM, NULL);
+	lv_label_set_text(ui->screen5_SYSTEM_right_label, "LEDS");
+	lv_label_set_long_mode(ui->screen5_SYSTEM_right_label, LV_LABEL_LONG_BREAK);
+	lv_label_set_align(ui->screen5_SYSTEM_right_label, LV_LABEL_ALIGN_CENTER);
+
+	//Write style LV_LABEL_PART_MAIN for screen5_SYSTEM_right_label
+	static lv_style_t style_screen5_SYSTEM_right_label_main;
+	lv_style_init(&style_screen5_SYSTEM_right_label_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_right_label_main
+	lv_style_set_radius(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_bg_color(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, &lv_font_simsun_48);
+	lv_style_set_text_letter_space(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 2);
+	lv_style_set_pad_left(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_right(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_top(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_bottom(&style_screen5_SYSTEM_right_label_main, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen5_SYSTEM_right_label, LV_LABEL_PART_MAIN, &style_screen5_SYSTEM_right_label_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_right_label, 540, 160);
+	lv_obj_set_size(ui->screen5_SYSTEM_right_label, 180, 0);
+
+	//Write codes screen5_SYSTEM_img_5oodt29s
+	ui->screen5_SYSTEM_img_5oodt29s = lv_img_create(ui->screen5_SYSTEM, NULL);
+
+	//Write style LV_IMG_PART_MAIN for screen5_SYSTEM_img_5oodt29s
+	static lv_style_t style_screen5_SYSTEM_img_5oodt29s_main;
+	lv_style_init(&style_screen5_SYSTEM_img_5oodt29s_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_img_5oodt29s_main
+	lv_style_set_image_recolor(&style_screen5_SYSTEM_img_5oodt29s_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen5_SYSTEM_img_5oodt29s_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen5_SYSTEM_img_5oodt29s_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen5_SYSTEM_img_5oodt29s, LV_IMG_PART_MAIN, &style_screen5_SYSTEM_img_5oodt29s_main);
+	lv_obj_set_pos(ui->screen5_SYSTEM_img_5oodt29s, 102, 480);
+	lv_obj_set_size(ui->screen5_SYSTEM_img_5oodt29s, 512, 512);
+	lv_obj_set_click(ui->screen5_SYSTEM_img_5oodt29s, true);
+	lv_img_set_src(ui->screen5_SYSTEM_img_5oodt29s,&_lock_alpha_512x512);
+	lv_img_set_pivot(ui->screen5_SYSTEM_img_5oodt29s, 0,0);
+	lv_img_set_angle(ui->screen5_SYSTEM_img_5oodt29s, 0);
+
+	//Init events for screen
+	events_init_screen5_SYSTEM(ui);
+}
