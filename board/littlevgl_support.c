@@ -17,7 +17,9 @@
 #include "fsl_cache.h"
 #include "fsl_debug_console.h"
 
-#include "fsl_gt911.h"
+//pf #include "fsl_gt911.h"
+#include "fsl_ft5406_rt.h"
+#include "avt-ili9881c.h"
 
 #if LV_USE_GPU && LV_USE_GPU_NXP_PXP
 #include "src/lv_gpu/lv_gpu_nxp_pxp.h"
@@ -65,7 +67,7 @@ static void DEMO_BufferSwitchOffCallback(void *param, void *switchOffBuffer);
 
 static void BOARD_PullMIPIPanelTouchResetPin(bool pullUp);
 
-static void BOARD_ConfigMIPIPanelTouchIntPin(gt911_int_pin_mode_t mode);
+//pf static void BOARD_ConfigMIPIPanelTouchIntPin(gt911_int_pin_mode_t mode);
 
 /*******************************************************************************
  * Variables
@@ -78,7 +80,8 @@ static SemaphoreHandle_t s_transferDone;
 static volatile bool s_transferDone;
 #endif
 
-static gt911_handle_t s_touchHandle;
+/* static gt911_handle_t s_touchHandle;
+
 static const gt911_config_t s_touchConfig = {
     .I2C_SendFunc     = BOARD_MIPIPanelTouch_I2C_Send,
     .I2C_ReceiveFunc  = BOARD_MIPIPanelTouch_I2C_Receive,
@@ -89,8 +92,13 @@ static const gt911_config_t s_touchConfig = {
     .i2cAddrMode      = kGT911_I2cAddrMode0,
     .intTrigMode      = kGT911_IntRisingEdge,
 };
-static int s_touchResolutionX;
-static int s_touchResolutionY;
+*/
+
+/* Touch driver handle */   //pf
+static ft5406_rt_handle_t touchHandle;
+
+static int s_touchResolutionX = 720;  //pf
+static int s_touchResolutionY = 1280;
 
 /*******************************************************************************
  * Code
@@ -265,6 +273,7 @@ static void BOARD_PullMIPIPanelTouchResetPin(bool pullUp)
     }
 }
 
+/*
 static void BOARD_ConfigMIPIPanelTouchIntPin(gt911_int_pin_mode_t mode)
 {
     if (mode == kGT911_IntPinInput)
@@ -285,6 +294,7 @@ static void BOARD_ConfigMIPIPanelTouchIntPin(gt911_int_pin_mode_t mode)
         BOARD_MIPI_PANEL_TOUCH_INT_GPIO->GDIR |= (1UL << BOARD_MIPI_PANEL_TOUCH_INT_PIN);
     }
 }
+*/
 
 /*Initialize your touchpad*/
 static void DEMO_InitTouch(void)
@@ -293,10 +303,16 @@ static void DEMO_InitTouch(void)
 
     const gpio_pin_config_t resetPinConfig = {
         .direction = kGPIO_DigitalOutput, .outputLogic = 0, .interruptMode = kGPIO_NoIntmode};
-    GPIO_PinInit(BOARD_MIPI_PANEL_TOUCH_INT_GPIO, BOARD_MIPI_PANEL_TOUCH_INT_PIN, &resetPinConfig);
     GPIO_PinInit(BOARD_MIPI_PANEL_TOUCH_RST_GPIO, BOARD_MIPI_PANEL_TOUCH_RST_PIN, &resetPinConfig);
 
-    status = GT911_Init(&s_touchHandle, &s_touchConfig);
+    const gpio_pin_config_t intPinConfig = {
+        .direction = kGPIO_DigitalInput, .outputLogic = 0, .interruptMode = kGPIO_NoIntmode};
+    GPIO_PinInit(BOARD_MIPI_PANEL_TOUCH_INT_GPIO, BOARD_MIPI_PANEL_TOUCH_INT_PIN, &intPinConfig);
+
+    //pf status = GT911_Init(&s_touchHandle, &s_touchConfig);
+
+
+    status = FT5406_RT_Init(&touchHandle, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR);  //pf OK!
 
     if (kStatus_Success != status)
     {
@@ -304,16 +320,18 @@ static void DEMO_InitTouch(void)
         assert(false);
     }
 
-    GT911_GetResolution(&s_touchHandle, &s_touchResolutionX, &s_touchResolutionY);
+    //pf  GT911_GetResolution(&s_touchHandle, &s_touchResolutionX, &s_touchResolutionY);
 }
 
 /* Will be called by the library to read the touchpad */
 static bool DEMO_ReadTouch(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
+	static touch_event_t touch_event;
     static int touch_x = 0;
     static int touch_y = 0;
 
-    if (kStatus_Success == GT911_GetSingleTouch(&s_touchHandle, &touch_x, &touch_y))
+ //pf   if (kStatus_Success == GT911_GetSingleTouch(&s_touchHandle, &touch_x, &touch_y))
+        if (kStatus_Success == FT5406_RT_GetSingleTouch(&touchHandle, &touch_event, &touch_x, &touch_y))  //pf OK!
     {
         data->state = LV_INDEV_STATE_PR;
     }
@@ -329,3 +347,51 @@ static bool DEMO_ReadTouch(lv_indev_drv_t *drv, lv_indev_data_t *data)
     /*Return `false` because we are not buffering and no more data to read*/
     return false;
 }
+
+
+/*
+int BOARD_Touch_Poll(void)
+{
+    touch_event_t touch_event;
+    int touch_x;
+    int touch_y;
+    GUI_PID_STATE pid_state;
+
+    if (kStatus_Success != FT5406_RT_GetSingleTouch(&touchHandle, &touch_event, &touch_x, &touch_y))
+    {
+        return 0;
+    }
+    else if (touch_event != kTouch_Reserved)
+    {
+        pid_state.x = touch_y;
+        pid_state.y = touch_x;
+        pid_state.Pressed = ((touch_event == kTouch_Down) || (touch_event == kTouch_Contact));
+        pid_state.Layer = 0;
+        GUI_TOUCH_StoreStateEx(&pid_state);
+        return 1;
+    }
+    return 0;
+}
+*/
+
+static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+{
+    touch_event_t touch_event;
+    static int touch_x = 0;
+    static int touch_y = 0;
+
+    if (kStatus_Success == FT5406_RT_GetSingleTouch(&touchHandle, &touch_event, &touch_x, &touch_y))
+    {
+        data->state = LV_INDEV_STATE_PR;
+    } else {
+        data->state = LV_INDEV_STATE_REL;
+    }
+
+    /*Set the last pressed coordinates*/
+    data->point.x = touch_y;
+    data->point.y = touch_x;
+
+    /*Return `false` because we are not buffering and no more data to read*/
+    return false;
+}
+

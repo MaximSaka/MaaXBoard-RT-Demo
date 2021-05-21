@@ -63,7 +63,7 @@
 #define MU_IRQ_PRIORITY (2)
 
 /*! @brief USER (GREEN) RGB LED on MaaXBoard RT Rev.1 and Rev.2 is on GPIO8_IO28 */
-#define LOGIC_LED_ON  (0U)board
+#define LOGIC_LED_ON  (0U)
 #define LOGIC_LED_OFF (1U)
 #ifndef BOARD_USER_LED_GPIO
 #define BOARD_USER_LED_GPIO GPIO8        //MaaXBoard Rev.1 and Rev.2
@@ -213,14 +213,11 @@
 #define BOARD_CAMERA_I2C_CLOCK_SOURCE  (1U)  /* OSC24M. */
 #define BOARD_CAMERA_I2C_CLOCK_DIVIDER (12U) /* Divider = 12, LPI2C clock frequency 2M. */
 
-/*! @brief MIPI panel pins (MaaXBoard-RT) */
-#define BOARD_MIPI_PANEL_RST_GPIO   GPIO9      //MaaXBoard DSI_LCD_RST on GPIO9.14
-#define BOARD_MIPI_PANEL_RST_PIN    14
-#define BOARD_MIPI_PANEL_POWER_GPIO GPIO9      //MaaXBoard DSI_EN on GPIO9.28
-#define BOARD_MIPI_PANEL_POWER_PIN  28
-/* Back light pin. */
-#define BOARD_MIPI_PANEL_BL_GPIO GPIO8         //MaaXBoard DSI_BL_PWM on GPIO8.13
-#define BOARD_MIPI_PANEL_BL_PIN  13
+/*! @brief The camera pins. */
+#define BOARD_CAMERA_PWDN_GPIO GPIO2            //MaaXBoard v2 uses GPIO2.08
+#define BOARD_CAMERA_PWDN_PIN  8U
+#define BOARD_CAMERA_RST_GPIO  GPIO9            //MaaXBoard v2 uses GPIO9.08
+#define BOARD_CAMERA_RST_PIN   8U
 
 // ====================================================
 // MaaXBoard RT MIPI-DSI Pinout
@@ -237,26 +234,42 @@
 //  pin M17 : GPIO9.28 : GPIO_AD_29     : DSI_EN      : (WDOG_B)     = active HIGH
 //  pin K17 : GPIO9.29 : GPIO_AD_30     : DSI_TS_INT  : (SIM1_TRXD)  = active LOW
 //  pin P13 : GPIO9.04 : GPIO_AD_05     : DSI_TS_RST  : (SIM1_CLK)   = active LOW
-//  pin M14 : GPIO9.14 : GPIO_AD_15     : DSI_LCD_RST : (SIM1_RST)   = active LOW (unused, is on 20pin header)
+//  pin M2  : GPIO8.22 : GPIO_EMC_B2_12 : DSI_LCD_RST : (SIM1_RST)   = active LOW (unused, is on 20pin header)
 //  pin R1  : GPIO8.13 : GPIO_EMC_B2_03 : DSI_BL_PWM  : (LPSPI1_SDO) = active HIGH
 // ====================================================
+// RT1176 Processor to MIPI-CSI Camera Interface
+// ====================================================
+//  pin B11 : MIPI_CSI  : MIPI_CSI_DP0   : CSI_DP0    :
+//  pin A11 : MIPI_CSI  : MIPI_CSI_DN0   : CSI_DN0    :
+//  pin B13 : MIPI_CSI  : MIPI_CSI_DP1   : CSI_DP1    :
+//  pin A13 : MIPI_CSI  : MIPI_CSI_DN1   : CSI_DN1    :
+//  pin B12 : MIPI_CSI  : MIPI_CSI_CKP   : CSI_CKP    :
+//  pin A12 : MIPI_CSI  : MIPI_CSI_CKN   : CSI_CKN    :
+//  pin K4  : I2C5_SDA  : GPIO_EMC_B2_01 : I2C2_SDA   : (CSI_I2C2_SDA)
+//  pin K2  : I2C5_SCL  : GPIO_EMC_B2_00 : I2C2_SCL   : (CSI_I2C2_SCL)
+//  pin K1  : GPIO2.08  : GPIO_EMC_B1_40 : CAM_PWDN   : (CSI_PWDN)
+//  pin R16 : GPIO9.08  : GPIO_LPSR_15   : CAM_RST    : (CSI_RSTB) (Note! Unused, routed to pin? of 18 pin header. Do not connect to pin U7 !!!)
+// ====================================================
 
+/*! @brief MIPI panel pins (MaaXBoard-RT) */
+#define BOARD_MIPI_PANEL_RST_GPIO   GPIO9      //MaaXBoard DSI_LCD_RST on GPIO8.22 - Changed to GPIO9.04
+#define BOARD_MIPI_PANEL_RST_PIN    4
+#define BOARD_MIPI_PANEL_POWER_GPIO GPIO9      //MaaXBoard DSI_EN on GPIO9.28
+#define BOARD_MIPI_PANEL_POWER_PIN  28
+/* Back light pin. */
+#define BOARD_MIPI_PANEL_BL_GPIO GPIO8         //MaaXBoard DSI_BL_PWM on GPIO8.13
+#define BOARD_MIPI_PANEL_BL_PIN  13
 /* Touch Screen (MaaXBoard-RT) */
 #define BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR      LPI2C2
 #define BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT    kCLOCK_Root_Lpi2c2
 #define BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_SOURCE  (1U)  /* OSC24M. */
 #define BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_DIVIDER (12U) /* Divider = 12, LPI2C clock frequency 2M. */
 #define BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_FREQ    CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT)
-#define BOARD_MIPI_PANEL_TOUCH_RST_GPIO          GPIO9  //MaaXBoard DSI_TS_RST on GPIO9.04
-#define BOARD_MIPI_PANEL_TOUCH_RST_PIN           4
+#define BOARD_MIPI_PANEL_TOUCH_RST_GPIO          GPIO8  //MaaXBoard DSI_TS_RST on GPIO9.04
+#define BOARD_MIPI_PANEL_TOUCH_RST_PIN           22
 #define BOARD_MIPI_PANEL_TOUCH_INT_GPIO          GPIO9  //MaaXBoard DSI_TS_INT on GPIO9.29
 #define BOARD_MIPI_PANEL_TOUCH_INT_PIN           29
 
-/*! @brief The camera pins. */
-#define BOARD_CAMERA_PWDN_GPIO GPIO9
-#define BOARD_CAMERA_PWDN_PIN  25
-#define BOARD_CAMERA_RST_GPIO  GPIO11
-#define BOARD_CAMERA_RST_PIN   15
 
 /* SD card detection method when using wifi module. */
 #define BOARD_WIFI_SD_DETECT_TYPE kSDMMCHOST_DetectCardByHostDATA3
