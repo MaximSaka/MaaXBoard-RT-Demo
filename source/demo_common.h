@@ -32,5 +32,9 @@ bool get_blue_led();
 void openNetworkScreen();
 void openMenuScreen();
 void openLEDScreen();
+void openUSBScreen();
+void openAVScreen();
+void openSystemScreen();
+void openHelpScreen();
 
 #endif //_DEMO_COMMON_H_

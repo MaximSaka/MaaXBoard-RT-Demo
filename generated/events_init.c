@@ -140,8 +140,7 @@ static void screen0_MENU_btn_3event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen3_USB(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen3_USB, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openUSBScreen();
 	}
 		break;
 	default:
@@ -155,8 +154,7 @@ static void screen0_MENU_btn_4event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen4_AV(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen4_AV, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openAVScreen();
 	}
 		break;
 	default:
@@ -170,8 +168,7 @@ static void screen0_MENU_btn_5event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen5_SYSTEM(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen5_SYSTEM, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openSystemScreen();
 	}
 		break;
 	default:
@@ -185,8 +182,7 @@ static void screen0_MENU_btn_6event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		setup_scr_screen6_HELP(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen6_HELP, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openHelpScreen();
 	}
 		break;
 	default:
@@ -224,8 +220,7 @@ static void screen2_WIFI_right_btnevent_handler(lv_obj_t * obj, lv_event_t event
 	{
 	case LV_EVENT_RELEASED:
 	{
-		setup_scr_screen3_USB(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen3_USB, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openUSBScreen();
 	}
 		break;
 	default:
@@ -259,8 +254,7 @@ static void screen3_USB_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		setup_scr_screen4_AV(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen4_AV, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openAVScreen();
 	}
 		break;
 	default:
@@ -294,8 +288,7 @@ static void screen4_AV_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		setup_scr_screen5_SYSTEM(&guider_ui);
-		lv_scr_load_anim(guider_ui.screen5_SYSTEM, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+		openSystemScreen();
 	}
 		break;
 	default:

@@ -14,8 +14,12 @@
 typedef enum _activePage
 {
     PAGE_MENU       = 0,
-    PAGE_LED    = 1,
+    PAGE_LED        = 1,
     PAGE_NETWORK    = 2,
+    PAGE_USB        = 3,
+    PAGE_AV      = 4,
+    PAGE_SYSTEM     = 5,
+    PAGE_HELP       = 6,
 } activePage;
 
 /*******************************************************************************
@@ -185,6 +189,50 @@ void openLEDScreen()
 }
 
 /*!
+* @brief Opens the USB screen
+*/
+void openUSBScreen()
+{
+    setup_scr_screen3_USB(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen3_USB, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+
+    s_active_page = PAGE_USB;
+}
+
+/*!
+* @brief Opens the A/V screen
+*/
+void openAVScreen()
+{
+    setup_scr_screen4_AV(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen4_AV, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+
+    s_active_page = PAGE_AV;
+}
+
+/*!
+* @brief Opens the System screen
+*/
+void openSystemScreen()
+{
+    setup_scr_screen5_SYSTEM(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen5_SYSTEM, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+
+    s_active_page = PAGE_SYSTEM;
+}
+
+/*!
+* @brief Opens the Help screen
+*/
+void openHelpScreen()
+{
+    setup_scr_screen6_HELP(&guider_ui);
+    lv_scr_load_anim(guider_ui.screen6_HELP, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+
+    s_active_page = PAGE_HELP;
+}
+
+/*!
  * @brief Toggles the red button
  */
 void toggleRedButton(bool state)
@@ -310,14 +358,38 @@ void lvgl_task(void *param)
 
                     s_current_action++;
                     break;
-
+                
                 case 2:
+                    openUSBScreen();
+
+                    s_current_action++;
+                    break;
+                
+                case 3:
+                    openAVScreen();
+
+                    s_current_action++;
+                    break;
+                
+                case 4:
+                    openSystemScreen();
+
+                    s_current_action++;
+                    break;
+                
+                case 5:
+                    openHelpScreen();
+
+                    s_current_action++;
+                    break;
+
+                case 6:
                     openMenuScreen();
 
                     s_current_action++;
                     break;
 
-                case 3:
+                case 7:
                     openLEDScreen();
 
                     s_current_action = 1;
@@ -327,9 +399,18 @@ void lvgl_task(void *param)
             s_input_signal = false;
         }
 
-        GPIO_PinWrite(BOARD_USER_LED_GPIO,      BOARD_USER_LED_GPIO_PIN,      get_green_led() ? 1U : 0U);
-        GPIO_PinWrite(BOARD_USER_LED_RED_GPIO,  BOARD_USER_LED_RED_GPIO_PIN,  get_red_led()   ? 1U : 0U);
-        GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, get_blue_led()  ? 1U : 0U);
+        if (s_active_page == PAGE_LED)
+        {
+            GPIO_PinWrite(BOARD_USER_LED_GPIO,      BOARD_USER_LED_GPIO_PIN,      get_green_led() ? 1U : 0U);
+            GPIO_PinWrite(BOARD_USER_LED_RED_GPIO,  BOARD_USER_LED_RED_GPIO_PIN,  get_red_led()   ? 1U : 0U);
+            GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, get_blue_led()  ? 1U : 0U);
+        }
+        else
+        {
+            GPIO_PinWrite(BOARD_USER_LED_GPIO,      BOARD_USER_LED_GPIO_PIN,      0U);
+            GPIO_PinWrite(BOARD_USER_LED_RED_GPIO,  BOARD_USER_LED_RED_GPIO_PIN,  0U);
+            GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, 0U);
+        }
 
         lv_task_handler();
         vTaskDelay(5);
