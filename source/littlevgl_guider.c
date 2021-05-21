@@ -58,7 +58,7 @@ int main(void)
 
     BOARD_InitPins();
     BOARD_InitMipiPanelPins();
-//pf     BOARD_MIPIPanelTouch_I2C_Init();    //disable until new touch driver is added
+    BOARD_MIPIPanelTouch_I2C_Init();
     BOARD_InitDebugConsole();
 
 	/* Init input switch GPIO. */

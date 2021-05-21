@@ -297,7 +297,7 @@ void lvgl_task(void *param)
     lv_port_pre_init();
     lv_init();
     lv_port_disp_init();
-//pf lv_port_indev_init();    //disable until new touch driver is added
+    lv_port_indev_init();
 
     s_lvgl_initialized = true;
     s_current_action = 1;
@@ -317,42 +317,6 @@ void lvgl_task(void *param)
         {
             switch (s_current_action)
             {
-                // case 1:
-                //     toggleRedButton(true);
-
-                //     s_current_action++;
-                //     break;
-
-                // case 2:
-                //     toggleGreenButton(true);
-
-                //     s_current_action++;
-                //     break;
-
-                // case 3:
-                //     toggleBlueButton(true);
-
-                //     s_current_action++;
-                //     break;
-
-                // case 4:
-                //     toggleRedButton(false);
-
-                //     s_current_action++;
-                //     break;
-
-                // case 5:
-                //     toggleGreenButton(false);
-
-                //     s_current_action++;
-                //     break;
-
-                // case 6:
-                //     toggleBlueButton(false);
-
-                //     s_current_action++;
-                //     break;
-                
                 case 1:
                     openNetworkScreen();
 
