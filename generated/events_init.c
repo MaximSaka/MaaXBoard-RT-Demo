@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "lvgl/lvgl.h"
 #include "demo_common.h"
+#include "lvgl_demo.h"
 
 void events_init(lv_ui *ui)
 {

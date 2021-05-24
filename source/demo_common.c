@@ -146,16 +146,22 @@ void console_task(void *param)
 void set_red_led(bool state)
 {
 	s_red_led_state = state;
+
+    GPIO_PinWrite(BOARD_USER_LED_RED_GPIO, BOARD_USER_LED_RED_GPIO_PIN, state ? 1U : 0U);
 }
 
 void set_green_led(bool state)
 {
 	s_green_led_state = state;
+
+    GPIO_PinWrite(BOARD_USER_LED_GPIO, BOARD_USER_LED_GPIO_PIN, state ? 1U : 0U);
 }
 
 void set_blue_led(bool state)
 {
 	s_blue_led_state = state;
+
+    GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, state ? 1U : 0U);
 }
 
 bool get_red_led()
@@ -171,4 +177,14 @@ bool get_green_led()
 bool get_blue_led()
 {
 	return s_blue_led_state;
+}
+
+/*!
+* @brief Init color LEDs
+*/
+void initLEDs()
+{
+	set_red_led(false);
+	set_green_led(false);
+	set_blue_led(false);
 }

@@ -28,4 +28,6 @@ bool get_red_led();
 bool get_green_led();
 bool get_blue_led();
 
+void initLEDs();
+
 #endif //_DEMO_COMMON_H_

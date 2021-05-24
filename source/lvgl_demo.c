@@ -75,6 +75,8 @@ void openNetworkScreen()
     setup_scr_screen2_WIFI(&guider_ui);
     lv_scr_load_anim(guider_ui.screen2_WIFI, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
+    initLEDs();
+
     s_active_page = PAGE_NETWORK;
 
     lv_list_clean(guider_ui.screen2_WIFI_ssid_list);
@@ -90,6 +92,8 @@ void openMenuScreen()
     setup_scr_screen0_MENU(&guider_ui);
     lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
+    initLEDs();
+
     s_active_page = PAGE_MENU;
 }
 
@@ -101,7 +105,10 @@ void openLEDScreen()
     setup_scr_screen1_LEDs(&guider_ui);
     lv_scr_load_anim(guider_ui.screen1_LEDs, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
+    initLEDs();
+
     s_active_page = PAGE_LED;
+
 }
 
 /*!
@@ -111,6 +118,8 @@ void openUSBScreen()
 {
     setup_scr_screen3_USB(&guider_ui);
     lv_scr_load_anim(guider_ui.screen3_USB, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+
+    initLEDs();
 
     s_active_page = PAGE_USB;
 }
@@ -123,6 +132,8 @@ void openAVScreen()
     setup_scr_screen4_AV(&guider_ui);
     lv_scr_load_anim(guider_ui.screen4_AV, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
+    initLEDs();
+
     s_active_page = PAGE_AV;
 }
 
@@ -134,6 +145,8 @@ void openSystemScreen()
     setup_scr_screen5_SYSTEM(&guider_ui);
     lv_scr_load_anim(guider_ui.screen5_SYSTEM, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
+    initLEDs();
+
     s_active_page = PAGE_SYSTEM;
 }
 
@@ -144,6 +157,8 @@ void openHelpScreen()
 {
     setup_scr_screen6_HELP(&guider_ui);
     lv_scr_load_anim(guider_ui.screen6_HELP, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
+
+    initLEDs();
 
     s_active_page = PAGE_HELP;
 }
@@ -226,19 +241,6 @@ void lvgl_task(void *param)
             }
 
             setInputSignal(false);
-        }
-
-        if (s_active_page == PAGE_LED)
-        {
-            GPIO_PinWrite(BOARD_USER_LED_GPIO,      BOARD_USER_LED_GPIO_PIN,      get_green_led() ? 1U : 0U);
-            GPIO_PinWrite(BOARD_USER_LED_RED_GPIO,  BOARD_USER_LED_RED_GPIO_PIN,  get_red_led()   ? 1U : 0U);
-            GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, get_blue_led()  ? 1U : 0U);
-        }
-        else
-        {
-            GPIO_PinWrite(BOARD_USER_LED_GPIO,      BOARD_USER_LED_GPIO_PIN,      0U);
-            GPIO_PinWrite(BOARD_USER_LED_RED_GPIO,  BOARD_USER_LED_RED_GPIO_PIN,  0U);
-            GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, 0U);
         }
 
         lv_task_handler();
