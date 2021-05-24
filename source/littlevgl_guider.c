@@ -6,6 +6,7 @@
  */
 
 #include "demo_common.h"
+#include "lvgl_demo.h"
 #include "network_demo.h"
 
 /*******************************************************************************

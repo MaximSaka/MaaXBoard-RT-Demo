@@ -14,12 +14,11 @@
  ******************************************************************************/
 
 void printSeparator(void);
-void addItemToSSIDList(const char * text);
-bool setInputSignal(bool state);
 
-void lvgl_task(void *param);
+void setInputSignal(bool state);
+bool getInputSignal();
+
 void console_task(void *param);
-void vApplicationTickHook_lvgl(void);
 
 void set_red_led(bool state);
 void set_green_led(bool state);
@@ -28,13 +27,5 @@ void set_blue_led(bool state);
 bool get_red_led();
 bool get_green_led();
 bool get_blue_led();
-
-void openNetworkScreen();
-void openMenuScreen();
-void openLEDScreen();
-void openUSBScreen();
-void openAVScreen();
-void openSystemScreen();
-void openHelpScreen();
 
 #endif //_DEMO_COMMON_H_

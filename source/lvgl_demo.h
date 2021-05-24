@@ -1,0 +1,24 @@
+
+#ifndef _LVGL_DEMO_H_
+#define _LVGL_DEMO_H_
+
+/*******************************************************************************
+ * Functions
+ ******************************************************************************/
+
+void addItemToSSIDList(const char * text);
+
+bool isLvglReady(void);
+
+void lvgl_task(void *param);
+void vApplicationTickHook_lvgl(void);
+
+void openNetworkScreen();
+void openMenuScreen();
+void openLEDScreen();
+void openUSBScreen();
+void openAVScreen();
+void openSystemScreen();
+void openHelpScreen();
+
+#endif //_LVGL_DEMO_H_
