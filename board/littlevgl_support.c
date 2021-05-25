@@ -331,13 +331,26 @@ static bool DEMO_ReadTouch(lv_indev_drv_t *drv, lv_indev_data_t *data)
     static int touch_y = 0;
 
  //pf   if (kStatus_Success == GT911_GetSingleTouch(&s_touchHandle, &touch_x, &touch_y))
-        if (kStatus_Success == FT5406_RT_GetSingleTouch(&touchHandle, &touch_event, &touch_x, &touch_y))  //pf OK!
+    if (kStatus_Success == FT5406_RT_GetSingleTouch(&touchHandle, &touch_event, &touch_x, &touch_y))  //pf OK!
     {
-        data->state = LV_INDEV_STATE_PR;
+        if ((touch_event == kTouch_Down) || (touch_event == kTouch_Contact))
+        {
+            data->state = LV_INDEV_STATE_PR;
+
+            // PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_PR x:%d y:%d\r\n", touch_x, touch_y);
+        }
+        else
+        {
+            data->state = LV_INDEV_STATE_REL;
+            
+            // PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_REL x:%d y:%d\r\n", touch_x, touch_y);
+        }
     }
     else
     {
         data->state = LV_INDEV_STATE_REL;
+        
+        // PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_REL x:%d y:%d\r\n", touch_x, touch_y);
     }
 
     /*Set the last pressed coordinates*/
@@ -382,9 +395,19 @@ static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 
     if (kStatus_Success == FT5406_RT_GetSingleTouch(&touchHandle, &touch_event, &touch_x, &touch_y))
     {
-        data->state = LV_INDEV_STATE_PR;
+        if ((touch_event == kTouch_Down) || (touch_event == kTouch_Contact))
+        {
+            data->state = LV_INDEV_STATE_PR;
+            // PRINTF("DEBUG touchpad_read: LV_INDEV_STATE_PR\r\n");
+        }
+        else
+        {
+            data->state = LV_INDEV_STATE_REL;
+            // PRINTF("DEBUG touchpad_read: LV_INDEV_STATE_REL\r\n");
+        }
     } else {
         data->state = LV_INDEV_STATE_REL;
+        // PRINTF("DEBUG touchpad_read: LV_INDEV_STATE_REL\r\n");
     }
 
     /*Set the last pressed coordinates*/

@@ -17,7 +17,7 @@ static void screen1_LEDs_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openMenuScreen();
 	}
@@ -47,12 +47,18 @@ static void screen1_LEDs_redbtn0event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		set_red_led(true);
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			set_red_led(true);
+		}
 	}
 		break;
 	case LV_EVENT_RELEASED:
 	{
-		set_red_led(false);
+		if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		{
+			set_red_led(false);
+		}
 	}
 		break;
 	default:
@@ -66,12 +72,18 @@ static void screen1_LEDs_greenbtn0event_handler(lv_obj_t * obj, lv_event_t event
 	{
 	case LV_EVENT_PRESSED:
 	{
-		set_green_led(true);
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			set_green_led(true);
+		}
 	}
 		break;
 	case LV_EVENT_RELEASED:
 	{
-		set_green_led(false);
+		if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		{
+			set_green_led(false);
+		}
 	}
 		break;
 	default:
@@ -85,12 +97,18 @@ static void screen1_LEDs_bluebtn0event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_PRESSED:
 	{
-		set_blue_led(true);
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			set_blue_led(true);
+		}
 	}
 		break;
 	case LV_EVENT_RELEASED:
 	{
-		set_blue_led(false);
+		if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		{
+			set_blue_led(false);
+		}
 	}
 		break;
 	default:
@@ -111,7 +129,7 @@ static void screen0_MENU_btn_1event_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openLEDScreen();
 	}
@@ -125,7 +143,7 @@ static void screen0_MENU_btn_2event_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openNetworkScreen();
 	}
@@ -139,7 +157,7 @@ static void screen0_MENU_btn_3event_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openUSBScreen();
 	}
@@ -153,7 +171,7 @@ static void screen0_MENU_btn_4event_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openAVScreen();
 	}
@@ -167,7 +185,7 @@ static void screen0_MENU_btn_5event_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openSystemScreen();
 	}
@@ -181,7 +199,7 @@ static void screen0_MENU_btn_6event_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openHelpScreen();
 	}
@@ -205,7 +223,7 @@ static void screen2_WIFI_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openMenuScreen();
 	}
@@ -239,7 +257,7 @@ static void screen3_USB_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openMenuScreen();
 	}
@@ -273,7 +291,7 @@ static void screen4_AV_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openMenuScreen();
 	}
@@ -307,7 +325,7 @@ static void screen5_SYSTEM_left_btnevent_handler(lv_obj_t * obj, lv_event_t even
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openMenuScreen();
 	}
@@ -341,7 +359,7 @@ static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
-	case LV_EVENT_PRESSED:
+	case LV_EVENT_RELEASED:
 	{
 		openMenuScreen();
 	}
