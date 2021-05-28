@@ -323,24 +323,6 @@ BaseType_t exitCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *
     return pdFALSE;
 }
 
-/*****************************************************************************\
- * Function:    scanWifiCommand
- * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
- * Returns:     BaseType_t
- * Description:
- *     This function scans the wifi networks and print.
-\*****************************************************************************/
-BaseType_t scanWifiCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
-{
-    (void)pcCommandString;
-    static int processed = 0;
-
-    pcWriteBuffer[0]=0;
-    ssidScan();
-
-    return pdFALSE;
-}
-
 #if configGENERATE_RUN_TIME_STATS
 /*****************************************************************************\
  * Function:    taskStatsCommand
@@ -566,14 +548,6 @@ static const CLI_Command_Definition_t exitCommandStruct =
     0
 };
 
-static const CLI_Command_Definition_t wifiScanCommandStruct =
-{
-    "scan",
-    " scan     : Scan SSID \r\n",
-	scanWifiCommand,
-    0
-};
-
 #if configGENERATE_RUN_TIME_STATS
 static const CLI_Command_Definition_t taskStatsCommandStruct =
 {
@@ -631,7 +605,6 @@ void console_task(void *pvParameters)
     FreeRTOS_CLIRegisterCommand( &listUSBCommandStruct );
     FreeRTOS_CLIRegisterCommand( &enableMouseCommandStruct );
     FreeRTOS_CLIRegisterCommand( &enableKeyboardCommandStruct );
-    FreeRTOS_CLIRegisterCommand( &wifiScanCommandStruct );
 #if configGENERATE_RUN_TIME_STATS
     FreeRTOS_CLIRegisterCommand( &taskStatsCommandStruct );
 #endif
