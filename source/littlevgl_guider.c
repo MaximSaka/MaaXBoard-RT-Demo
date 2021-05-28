@@ -48,7 +48,7 @@ static QueueHandle_t hid_devices_queue = NULL;
 static QueueHandle_t wifi_commands_queue = NULL;
 static QueueHandle_t wifi_response_queue = NULL;
 
-uint8_t shared_buff[1024];
+uint8_t shared_buff[2048];
 
 /******* UART handle definition ***************/
 static lpuart_rtos_handle_t uart_rtos_handle;
@@ -201,6 +201,9 @@ int main(void)
 
     // Create wifi task
 
+	t_wifi_cmd.cmd_queue = &wifi_commands_queue;
+	t_wifi_cmd.event_group_wifi = &event_group_demo;
+	t_wifi_cmd.wifi_resQ = &wifi_response_queue;
     stat = xTaskCreate(
         wifi_task, 
         "wifi", 
@@ -220,18 +223,58 @@ int main(void)
 //        tskIDLE_PRIORITY + 2,
 //        &console_task_task_handler);
 //    assert(pdPASS == stat);
-   
-    // t_console.cmd_queue = &wifi_commands_queue;
-    // t_console.uart_handle = &uart_rtos_handle;
-    // t_console.event_group_wifi = event_group_demo;
-    // t_console.wifi_resQ = wifi_response_queue;
-	// if (xTaskCreate(console_task, "Console_task", configMINIMAL_STACK_SIZE + 200, &t_console, 3, NULL) != pdPASS)
-	// {
-	// 	PRINTF("Failed to create console task\r\n");
-	// 	while (1);
-	// }
+
+//    /* usb host, freertos task initialization */
+//	USB_HostApplicationInit(&g_HostHandle);
+//	if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 4, NULL) != pdPASS)
+//	{
+//		PRINTF("Failed to create USB host task\r\n");
+//		while (1);
+//	}
+//
+//	/* input parameters are queue, ad mouseHandle */
+//	t_usb_host_mouse.hid_queue = &hid_devices_queue;
+//	t_usb_host_mouse.host_hid_mouse = &g_HostHidMouse;
+//	if (xTaskCreate(USB_HostApplicationMouseTask, "mouse task", 2000L / sizeof(portSTACK_TYPE), &t_usb_host_mouse, 3,
+//					NULL) != pdPASS)
+//	{
+//		PRINTF("Failed to create mouse task\r\n");
+//		while (1);
+//	}
+//
+//	/* input parameters are queue, ad keyboardHandle */
+//	t_usb_host_keyboard.hid_queue = &hid_devices_queue;
+//	t_usb_host_keyboard.host_hid_keyboard = &g_HostHidKeyboard;
+//	if (xTaskCreate(USB_HostApplicationKeyboardTask, "keyboard task", 2000L / sizeof(portSTACK_TYPE),
+//					&t_usb_host_keyboard, 3, NULL) != pdPASS)
+//	{
+//		PRINTF("Failed to create keyboard task\r\n");
+//		while (1);
+//	}
+//
+//	/*! Following task can be removed */
+//	t_usb_log.hid_queue = &hid_devices_queue;
+//	t_usb_log.uart_handle = &uart_rtos_handle;
+//	#if defined(ENABLED_LOG_TASK)
+//	if (xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 3, NULL) != pdPASS)
+//	{
+//		PRINTF("Failed to create log task\r\n");
+//		while (1);
+//	}
+//	#endif
+//
 
     // Init scheduler
+
+    t_console.cmd_queue = &wifi_commands_queue;
+    t_console.wifi_resQ = &wifi_response_queue;
+    t_console.uart_handle = &uart_rtos_handle;
+    t_console.event_group_wifi = &event_group_demo;
+	if (xTaskCreate(console_task, "Console_task", configMINIMAL_STACK_SIZE + 200, &t_console, 3, NULL) != pdPASS)
+	{
+		PRINTF("Failed to create console task\r\n");
+		while (1);
+	}
 
     vTaskStartScheduler();
 

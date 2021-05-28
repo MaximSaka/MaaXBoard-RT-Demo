@@ -85,7 +85,7 @@ typedef struct
 {
 	QueueHandle_t *cmd_queue;
 	QueueHandle_t *wifi_resQ;
-	EventGroupHandle_t event_group_wifi;
+	EventGroupHandle_t *event_group_wifi;
 }custom_wifi_instance_t;
 
 /* struct wrapper for freertos console task input parameter */
@@ -94,7 +94,7 @@ typedef struct
 	lpuart_rtos_handle_t *uart_handle;
 	QueueHandle_t *cmd_queue;
 	QueueHandle_t *wifi_resQ;
-	EventGroupHandle_t event_group_wifi;
+	EventGroupHandle_t *event_group_wifi;
 }custom_console_instance_t;
 
 typedef enum
@@ -121,5 +121,5 @@ struct t_user_wifi_command
 #define WIFI_GUI_NDATA	(1UL<<0UL)
 #define WIFI_CONSOLE_NDATA	(1UL<<1UL)
 
-extern uint8_t shared_buff[1024];
+extern uint8_t shared_buff[2048];
 #endif /* GLOBALS_H_ */

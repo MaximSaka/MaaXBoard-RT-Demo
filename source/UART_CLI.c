@@ -37,6 +37,7 @@
 #include "globals.h"
 #include "fsl_lpuart.h"
 #include "network_demo.h"
+#include "wlan.h"
 /*******************************************************************************
  * Globals
  ******************************************************************************/
@@ -44,7 +45,8 @@ extern struct hid_peripheral usb_devices[2];
 static uint8_t i2cScannedNodes[16];
 static lpuart_rtos_handle_t *handle;
 static QueueHandle_t *wifi_cmd_queue;
-static EventGroupHandle_t event_group_wifi;
+static QueueHandle_t *wifi_response_queue;
+static EventGroupHandle_t *event_group_wifi;
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -408,7 +410,7 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
     (void)pcCommandString;
     static int processed = 0;
     BaseType_t xReturn;
-
+    uint8_t dummy_byte;
     const EventBits_t xBitsToWaitFor = WIFI_CONSOLE_NDATA;
     char *text;
     if (processed == 0)	// initial call
@@ -416,7 +418,6 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
     	wifi_cmd_toSend.cmd_type = WIFI_SCAN;
 		wifi_cmd_toSend.task_name = CONSOLE_TASK;
 		wifi_cmd_toSend.payload = NULL;
-		xEventGroupClearBits(event_group_wifi, xBitsToWaitFor);
 		xQueueSend(*wifi_cmd_queue, (void *) &wifi_cmd_toSend, 10);
 		text = "\r\nScanning Wifi\r\n";
 		// Only allowed to write up top xWriteBufferLen bytes ...
@@ -427,13 +428,23 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
     }
     else if (processed==1)
     {
-    	// wait 10seconds;
-    	bits = xEventGroupWaitBits(event_group_wifi, xBitsToWaitFor, pdTRUE, pdFALSE, 30000 / portTICK_RATE_MS);
+    	// wait 15seconds;
+    	bits = xEventGroupWaitBits(*event_group_wifi, xBitsToWaitFor, pdTRUE, pdFALSE, 15000 / portTICK_RATE_MS);
 
-    	if (bits&WIFI_CONSOLE_NDATA)
+    	if (!(bits&xBitsToWaitFor))
+    	//if (xQueueReceive(*wifi_response_queue, &(dummy_byte), 15000 / portTICK_RATE_MS) != pdTRUE)
+		{
+    		//no event arrived
+    		text = "\r\n Wifi not working\r\n";
+			strncpy(pcWriteBuffer,text,xWriteBufferLen-1);
+			pcWriteBuffer[xWriteBufferLen-1]=0;
+			processed = 0;
+			xReturn = pdFALSE;
+		}
+    	else
     	{
     		//event arrived
-    		text = "\r\nScan ended\r\n";
+			text = "\r\nScan ended\r\n";
 			// Only allowed to write up top xWriteBufferLen bytes ...
 			strncpy(pcWriteBuffer,&text[0],xWriteBufferLen-1);
 			sprintf(pcWriteBuffer+strlen(pcWriteBuffer),"ssid cnt=%d\r\n", shared_buff[2]);
@@ -441,15 +452,28 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
 			processed = 0;
 			xReturn = pdFALSE;
     	}
-    	else
-    	{
-    		//no event arrived
-    		text = "\r\n Wifi not working\r\n";
-			strncpy(pcWriteBuffer,text,xWriteBufferLen-1);
-			pcWriteBuffer[xWriteBufferLen-1]=0;
-			processed = 0;
-			xReturn = pdFALSE;
-    	}
+
+
+//    	if (bits&WIFI_CONSOLE_NDATA)
+//    	{
+//    		//event arrived
+//    		text = "\r\nScan ended\r\n";
+//			// Only allowed to write up top xWriteBufferLen bytes ...
+//			strncpy(pcWriteBuffer,&text[0],xWriteBufferLen-1);
+//			sprintf(pcWriteBuffer+strlen(pcWriteBuffer),"ssid cnt=%d\r\n", shared_buff[2]);
+//			pcWriteBuffer[xWriteBufferLen-1]=0;
+//			processed = 0;
+//			xReturn = pdFALSE;
+//    	}
+//    	else
+//    	{
+//    		//no event arrived
+//    		text = "\r\n Wifi not working\r\n";
+//			strncpy(pcWriteBuffer,text,xWriteBufferLen-1);
+//			pcWriteBuffer[xWriteBufferLen-1]=0;
+//			processed = 0;
+//			xReturn = pdFALSE;
+//    	}
     }
     return xReturn;
 }
@@ -572,7 +596,7 @@ void console_task(void *pvParameters)
 	handle = t_console_instance->uart_handle;
 	wifi_cmd_queue = t_console_instance->cmd_queue;
 	event_group_wifi = t_console_instance->event_group_wifi;
-
+	wifi_response_queue = t_console_instance->wifi_resQ;
 	char pcOutputString[ MAX_OUTPUT_LENGTH ], pcInputString[ MAX_INPUT_LENGTH ];
 
 	memset( pcInputString, 0x00, MAX_INPUT_LENGTH );

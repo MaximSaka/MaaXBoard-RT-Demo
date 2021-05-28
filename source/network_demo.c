@@ -87,6 +87,10 @@ static int uap_network_added = 0;
 
 static bool s_wifi_ready     = false;
 
+static QueueHandle_t *wifi_cmd_queue;
+static QueueHandle_t *wifi_response_queue;
+static volatile EventGroupHandle_t *event_group_wifi;
+static volatile uint8_t ssid_scan_ready = 0;
 /*******************************************************************************
  * Functions
  ******************************************************************************/
@@ -107,56 +111,63 @@ int __scan_cb(unsigned int count)
 
     for (i = 0; i < count; i++)
     {
-        err = wlan_get_scan_result(i, &res);
-        if (err)
-        {
-            PRINTF("Error: can't get scan res %d\r\n", i);
-            continue;
-        }
+		int offset = 3;
+		PRINTF("%d network%s found:\r\n", count, count == 1 ? "" : "s");
 
-        print_mac(res.bssid);
+		for (i = 0; i < count; i++)
+		{
+			//err = wlan_get_scan_result(i, shared_buff+offset+i*sizeof(struct wlan_scan_result));
+			err = wlan_get_scan_result(i, &res);
+			if (err)
+			{
+				PRINTF("Error: can't get scan res %d\r\n", i);
+				continue;
+			}
+			memcpy((shared_buff+offset+i*sizeof(struct wlan_scan_result)), &res, sizeof(struct wlan_scan_result));
+			print_mac(res.bssid);
 
-        char strBuffer[40];
-        if (res.ssid[0])
-            sprintf(strBuffer, "\"%s\"", res.ssid);
-        else
-            sprintf(strBuffer, "(hidden)");
-        
-        PRINTF(" %s \r\n", strBuffer);
+			char strBuffer[40];
+			if (res.ssid[0])
+				sprintf(strBuffer, "\"%s\"", res.ssid);
+			else
+				sprintf(strBuffer, "(hidden)");
 
-        PRINTF("\tchannel: %d\r\n", res.channel);
+			PRINTF(" %s \r\n", strBuffer);
 
-        char strBuffer2[40];
-        sprintf(strBuffer2, "rssi: -%d dBm", res.rssi);
+			PRINTF("\tchannel: %d\r\n", res.channel);
 
-        PRINTF("\t%s\r\n", strBuffer2);
-        
-        char strBuffer3[100];
-        sprintf(strBuffer3, "%s, %s", strBuffer, strBuffer2);
+			char strBuffer2[40];
+			sprintf(strBuffer2, "rssi: -%d dBm", res.rssi);
 
-        addItemToSSIDList(strBuffer3);
+			PRINTF("\t%s\r\n", strBuffer2);
 
-        PRINTF("\tsecurity: ");
-        if (res.wep)
-            PRINTF("WEP ");
-        if (res.wpa && res.wpa2)
-            PRINTF("WPA/WPA2 Mixed ");
-        else
-        {
-            if (res.wpa)
-                PRINTF("WPA ");
-            if (res.wpa2)
-                PRINTF("WPA2 ");
-            if (res.wpa3_sae)
-                PRINTF("WPA3 SAE ");
-            if (res.wpa2_entp)
-                PRINTF("WPA2 Enterprise");
-        }
-        if (!(res.wep || res.wpa || res.wpa2 || res.wpa3_sae || res.wpa2_entp))
-            PRINTF("OPEN ");
-        PRINTF("\r\n");
+			char strBuffer3[100];
+			sprintf(strBuffer3, "%s, %s", strBuffer, strBuffer2);
 
-        PRINTF("\tWMM: %s\r\n", res.wmm ? "YES" : "NO");
+			addItemToSSIDList(strBuffer3);
+
+			PRINTF("\tsecurity: ");
+			if (res.wep)
+				PRINTF("WEP ");
+			if (res.wpa && res.wpa2)
+				PRINTF("WPA/WPA2 Mixed ");
+			else
+			{
+				if (res.wpa)
+					PRINTF("WPA ");
+				if (res.wpa2)
+					PRINTF("WPA2 ");
+				if (res.wpa3_sae)
+					PRINTF("WPA3 SAE ");
+				if (res.wpa2_entp)
+					PRINTF("WPA2 Enterprise");
+			}
+			if (!(res.wep || res.wpa || res.wpa2 || res.wpa3_sae || res.wpa2_entp))
+				PRINTF("OPEN ");
+			PRINTF("\r\n");
+
+			PRINTF("\tWMM: %s\r\n", res.wmm ? "YES" : "NO");
+		}
     }
 
     return 0;
@@ -527,8 +538,30 @@ bool isWifiReady(void)
     return s_wifi_ready;
 }
 
+static int32_t waitSsidScan(uint32_t ms)
+{
+	uint32_t curr_ms = 0;
+	while(ssid_scan_ready==0 && curr_ms < ms)
+	{
+		vTaskDelay(100/portTICK_RATE_MS);// 100ms
+		curr_ms = curr_ms + 100;
+	}
+	ssid_scan_ready=0;
+	if (curr_ms>=ms)
+	{
+		return 0; // timed out;
+	}
+	return 1;
+}
+
 void wifi_task(void *param)
 {
+	custom_wifi_instance_t *t_wifi = (custom_wifi_instance_t *)param;
+	wifi_cmd_queue = t_wifi->cmd_queue;
+	wifi_response_queue = t_wifi->wifi_resQ;
+	event_group_wifi = t_wifi->event_group_wifi;
+	const EventBits_t xBitsToSet = WIFI_CONSOLE_NDATA;
+	uint8_t dummy_byte = 0xAA;
     int32_t result = 0;
     (void)result;
 
@@ -547,6 +580,35 @@ void wifi_task(void *param)
     {
         /* wait for interface up */
         os_thread_sleep(os_msec_to_ticks(500));
+
+        if (xQueueReceive(*wifi_cmd_queue, &(wifi_cmd_received), portMAX_DELAY) != pdTRUE)
+        {
+        	PRINTF("no received\r\n");
+        }
+        else
+        {
+        	PRINTF("command received\r\n");
+        	if (wifi_cmd_received.cmd_type == WIFI_SCAN)
+        	{
+        		PRINTF("cmd: wifi scan\r\n");
+        		ssidScan();
+        		if(waitSsidScan(10000))
+        		{
+        			PRINTF("wifi scan ready\r\n");
+        			//xQueueSend(*wifi_response_queue, &dummy_byte, 10);
+        			xEventGroupSetBits(*event_group_wifi, xBitsToSet );
+        		} else
+        		{
+        			PRINTF("Timeout: wifi scan\r\n");
+        		}
+        		//vTaskDelay(2000/portTICK_RATE_MS);// 100ms
+        		//xEventGroupSetBits(*event_group_wifi, xBitsToSet );
+        	}
+        	else if (wifi_cmd_received.cmd_type == WIFI_IP)
+        	{
+        		PRINTF("cmd: wifi ip\r\n");
+        	}
+        }
     }
 }
 
