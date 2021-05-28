@@ -4,10 +4,29 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "event_groups.h"
+#include "fsl_lpuart_freertos.h"
 
+#include "fsl_debug_console.h"
+#include "littlevgl_support.h"
+#include "pin_mux.h"
+#include "board.h"
+#include "lvgl.h"
+#include "gui_guider.h"
+#include "events_init.h"
+
+#include "fsl_soc_src.h"
+
+#include "fsl_lpuart_freertos.h"
+#include "fsl_lpuart.h"
+#include "globals.h"
 #include "demo_common.h"
 #include "lvgl_demo.h"
 #include "network_demo.h"
+#include "usb_peripherals.h"
+#include "UART_CLI.h"
 
 /*******************************************************************************
  * Definitions
@@ -21,6 +40,52 @@ TaskHandle_t wifi_task_task_handler;
 
 portSTACK_TYPE *console_task_stack = NULL;
 TaskHandle_t console_task_task_handler;
+
+volatile uint32_t cmdEnable = 0;
+
+/* Freertos queue */
+static QueueHandle_t hid_devices_queue = NULL;
+static QueueHandle_t wifi_commands_queue = NULL;
+static QueueHandle_t wifi_response_queue = NULL;
+
+uint8_t shared_buff[1024];
+
+/******* UART handle definition ***************/
+static lpuart_rtos_handle_t uart_rtos_handle;
+static struct _lpuart_handle tuart_handle;
+static uint8_t background_buffer[32];
+//uint8_t recv_buffer[4];
+
+lpuart_rtos_config_t lpuart_config = {
+	.base		 = DEMO_LPUART,
+    .baudrate    = 115200,
+    .parity      = kLPUART_ParityDisabled,
+    .stopbits    = kLPUART_OneStopBit,
+    .buffer      = background_buffer,
+    .buffer_size = sizeof(background_buffer),
+};
+
+/******* USB HID device definition ***************/
+static usb_host_handle g_HostHandle;
+/*! @brief USB host mouse instance global variable */
+static usb_host_mouse_instance_t g_HostHidMouse;
+/*! @brief USB host keyboard instance global variable */
+static usb_host_keyboard_instance_t g_HostHidKeyboard;
+static custom_usb_host_mouse_instance_t t_usb_host_mouse;
+static custom_usb_host_keyboard_instance_t t_usb_host_keyboard;
+static custom_usb_log_instance_t t_usb_log;
+static custom_wifi_instance_t t_wifi_cmd;
+static custom_console_instance_t t_console;
+
+static EventGroupHandle_t event_group_demo;
+
+/* counter used for freeRTOS tasks runtime analysis */
+static uint32_t perfCounter = 0;
+
+/*******************************************************************************
+ * Function Prototypes
+ ******************************************************************************/
+static void uart_init();
 
 /*******************************************************************************
  * Code
@@ -37,6 +102,32 @@ void BOARD_USER_BUTTON_IRQ_HANDLER(void)
     setInputSignal(true);
 
     SDK_ISR_EXIT_BARRIER;
+}
+
+/*!
+ * @brief PIT1 Timer interrupt service ISR
+ */
+void PIT1_IRQHANDLER(void)
+{
+	PIT_ClearStatusFlags(PIT1_PERIPHERAL, PIT1_CHANNEL_0, kPIT_TimerFlag);
+	perfCounter++;
+	//__DSB();
+}
+
+void AppConfigureTimerForRuntimeStats(void) {
+	pit_config_t config;
+
+	PIT_GetDefaultConfig(&config);
+	config.enableRunInDebug = false;
+	PIT_Init(PIT1_PERIPHERAL, &config);
+	PIT_SetTimerPeriod(PIT1_PERIPHERAL, PIT1_CHANNEL_0, PIT1_CHANNEL_0_TICKS);
+	PIT_EnableInterrupts(PIT1_PERIPHERAL, PIT1_CHANNEL_0, kPIT_TimerInterruptEnable);
+	EnableIRQ(PIT1_IRQN);
+	PIT_StartTimer(PIT1_PERIPHERAL, PIT1_CHANNEL_0);
+}
+
+uint32_t AppGetRuntimeCounterValueFromISR(void) {
+	return perfCounter;
 }
 
 /*!
@@ -62,11 +153,39 @@ int main(void)
     BOARD_MIPIPanelTouch_I2C_Init();
     BOARD_InitDebugConsole();
 
+    // configure uart for Maaxboard RT
+    uart_init();
 	/* Init input switch GPIO. */
     EnableIRQ(BOARD_USER_BUTTON_IRQ);
 
     setInputSignal(false);
 
+    /* Freertos Queue for usb mouse and keyboards */
+	hid_devices_queue = xQueueCreate(10, sizeof(struct hid_device*));
+	/* Enable queue view in MCUX IDE FreeRTOS TAD plugin. */
+	if (hid_devices_queue != NULL)
+	{
+		vQueueAddToRegistry(hid_devices_queue, "usbQ");
+	}
+
+	wifi_commands_queue = xQueueCreate(10, sizeof(struct t_user_wifi_command));
+	if (wifi_commands_queue != NULL)
+	{
+		vQueueAddToRegistry(wifi_commands_queue, "wifiQ");
+	}
+
+	wifi_response_queue = xQueueCreate(1, sizeof(uint8_t));
+	/* Enable queue view in MCUX IDE FreeRTOS TAD plugin. */
+	if (wifi_response_queue != NULL)
+	{
+		vQueueAddToRegistry(wifi_response_queue, "wResQ");
+	}
+	event_group_demo = xEventGroupCreate();
+
+	PRINTF("Debug Session");
+	SDK_DelayAtLeastUs(1000000, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
+
+	/******** Freertos task declarations ********/
     os_setup_tick_function(vApplicationTickHook_lvgl);
 
    // Create lvgl task
@@ -93,14 +212,24 @@ int main(void)
 
    // Create console task
 
-   stat = xTaskCreate(
-       console_task,
-       "console",
-       configMINIMAL_STACK_SIZE + 800,
-       console_task_stack,
-       tskIDLE_PRIORITY + 2,
-       &console_task_task_handler);
-   assert(pdPASS == stat);
+//    stat = xTaskCreate(
+//        console_task,
+//        "console",
+//        configMINIMAL_STACK_SIZE + 800,
+//        console_task_stack,
+//        tskIDLE_PRIORITY + 2,
+//        &console_task_task_handler);
+//    assert(pdPASS == stat);
+   
+    // t_console.cmd_queue = &wifi_commands_queue;
+    // t_console.uart_handle = &uart_rtos_handle;
+    // t_console.event_group_wifi = event_group_demo;
+    // t_console.wifi_resQ = wifi_response_queue;
+	// if (xTaskCreate(console_task, "Console_task", configMINIMAL_STACK_SIZE + 200, &t_console, 3, NULL) != pdPASS)
+	// {
+	// 	PRINTF("Failed to create console task\r\n");
+	// 	while (1);
+	// }
 
     // Init scheduler
 
@@ -109,6 +238,13 @@ int main(void)
     for (;;)
     {
     } /* should never get here */
+}
+
+static void uart_init()
+{
+	NVIC_SetPriority(DEMO_LPUART_IRQn, 5);
+	lpuart_config.srcclk = DEMO_LPUART_CLK_FREQ;
+	LPUART_RTOS_Init(&uart_rtos_handle, &tuart_handle, &lpuart_config);
 }
 
 /*!

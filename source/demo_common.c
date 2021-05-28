@@ -115,33 +115,33 @@ bool getInputSignal()
  * Prototypes
  ******************************************************************************/
 
-void console_task(void *param)
-{
-    while (!isWifiReady() || !isLvglReady())
-    {
-        vTaskDelay(15);
-    }
+// void console_task(void *param)
+// {
+//     while (!isWifiReady() || !isLvglReady())
+//     {
+//         vTaskDelay(15);
+//     }
 
-    int32_t result = 0;
-    (void)result;
+//     int32_t result = 0;
+//     (void)result;
 
-    printSeparator();
+//     printSeparator();
 
-    menuPrint();
+//     menuPrint();
 
-    while (1)
-    {
-        int ch = pollChar();
+//     while (1)
+//     {
+//         int ch = pollChar();
 
-        if (ch != -1)
-        {
-            menuAction(ch);
-        }
+//         if (ch != -1)
+//         {
+//             menuAction(ch);
+//         }
 
-        // os_thread_sleep(os_msec_to_ticks(500));
-        vTaskDelay(5);
-    }
-}
+//         // os_thread_sleep(os_msec_to_ticks(500));
+//         vTaskDelay(5);
+//     }
+// }
 
 void set_red_led(bool state)
 {

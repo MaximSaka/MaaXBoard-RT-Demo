@@ -25,7 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
-/* clang-format off */
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -45,7 +44,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define configTICK_RATE_HZ                      ((TickType_t)1000)
 #define configMAX_PRIORITIES                    18
 #define configMINIMAL_STACK_SIZE                ((unsigned short)128)
-#define configMAX_TASK_NAME_LEN                 10
+#define configMAX_TASK_NAME_LEN                 20
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
 #define configUSE_TASK_NOTIFICATIONS            1
@@ -90,9 +89,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* Software timer related definitions. */
 #define configUSE_TIMERS                        1
-#define configTIMER_TASK_PRIORITY    4
+#define configTIMER_TASK_PRIORITY   (configMAX_PRIORITIES - 1)
 #define configTIMER_QUEUE_LENGTH     5
-#define configTIMER_TASK_STACK_DEPTH (configMINIMAL_STACK_SIZE)
+#define configTIMER_TASK_STACK_DEPTH (configMINIMAL_STACK_SIZE*2)
 
 /* Define to trap errors during development. */
 #define configASSERT(x)           \
@@ -121,6 +120,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define INCLUDE_xTaskAbortDelay                 0
 #define INCLUDE_xTaskGetHandle                  0
 #define INCLUDE_xTaskResumeFromISR              1
+#define INCLUDE_xSemaphoreGetMutexHolder 1
 
 
 
@@ -161,5 +161,10 @@ standard names. */
 #define xPortPendSVHandler PendSV_Handler
 #define xPortSysTickHandler SysTick_Handler
 
-/* clang-format on */
+/* Definition for FreeRTOS CLI output buffer size */
+#define configCOMMAND_INT_MAX_OUTPUT_SIZE  128
+
+// #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() AppConfigureTimerForRuntimeStats()
+// #define portGET_RUN_TIME_COUNTER_VALUE()         AppGetRuntimeCounterValueFromISR()
+
 #endif /* FREERTOS_CONFIG_H */

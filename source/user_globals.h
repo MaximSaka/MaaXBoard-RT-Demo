@@ -1,0 +1,78 @@
+/*
+ * globals.h
+ *
+ *  Created on: May 19, 2021
+ *      Author: gulziibayar
+ */
+
+#ifndef GLOBALS_H_
+#define GLOBALS_H_
+#include "fsl_pit.h"
+#include "host_mouse.h"
+#include "host_keyboard.h"
+/*******************************************************************************
+ * Definitions
+ ******************************************************************************/
+
+/* CLI definitions */
+#define mouseLogEn		0
+#define keyboardLogEn	1
+
+#define DEMO_LPUART LPUART1
+#define DEMO_LPUART_CLK_FREQ BOARD_DebugConsoleSrcFreq()
+#define DEMO_LPUART_IRQn LPUART1_IRQn
+
+#define USER_LED_GREEN_GPIO GPIO8
+#define USER_LED_RED_GPIO GPIO9
+#define USER_LED_BLUE_GPIO GPIO9
+
+#define GREEN_PIN	28u
+#define RED_PIN		7u
+#define BLUE_PIN	9u
+
+/* PIT Timer used for runtime analysis on Freertos */
+#define PIT1_PERIPHERAL PIT1
+/* Definition of clock source frequency. */
+#define PIT1_CLK_FREQ 240000000UL
+/* Definition of ticks count for channel 0 - deprecated. */
+#define PIT1_0_TICKS 23999U
+/* PIT1 interrupt vector ID (number) - deprecated. */
+#define PIT1_0_IRQN PIT0_IRQn
+/* PIT1 interrupt handler identifier - deprecated. */
+#define PIT1_0_IRQHANDLER PIT0_IRQHandler
+/* Definition of channel number for channel 0. */
+#define PIT1_CHANNEL_0 kPIT_Chnl_0
+/* Definition of ticks count for channel 0. */
+#define PIT1_CHANNEL_0_TICKS 23999U
+/* PIT1 interrupt vector ID (number). */
+#define PIT1_IRQN PIT1_IRQn
+/* PIT1 interrupt handler identifier. */
+#define PIT1_IRQHANDLER PIT1_IRQHandler
+
+/* Function prototypes in main.c */
+void toggleRedButton(bool state);
+void toggleGreenButton(bool state);
+void toggleBlueButton(bool state);
+
+/* struct wrapper for freertos mouse task input parameter */
+typedef struct
+{
+	usb_host_mouse_instance_t *host_hid_mouse;
+	QueueHandle_t *hid_queue;
+}custom_usb_host_mouse_instance_t;
+
+/* struct wrapper for freertos keyboard task input parameter */
+typedef struct
+{
+	usb_host_keyboard_instance_t *host_hid_keyboard;
+	QueueHandle_t *hid_queue;
+}custom_usb_host_keyboard_instance_t;
+
+/* struct wrapper for freertos usb logger task input parameter */
+typedef struct
+{
+	lpuart_rtos_handle_t *uart_handle;
+	QueueHandle_t *hid_queue;
+}custom_usb_log_instance_t;
+
+#endif /* GLOBALS_H_ */

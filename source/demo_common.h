@@ -18,7 +18,7 @@ void printSeparator(void);
 void setInputSignal(bool state);
 bool getInputSignal();
 
-void console_task(void *param);
+// void console_task(void *param);
 
 void set_red_led(bool state);
 void set_green_led(bool state);
