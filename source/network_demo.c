@@ -3,6 +3,11 @@
 #include "lvgl_demo.h"
 #include "network_demo.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "event_groups.h"
+
 #if defined(SD8801)
 #include "sd8801_wlan.h"
 #elif defined(SD8977)
@@ -30,7 +35,7 @@
 
 #include "fsl_common.h"
 #include <stdio.h>
-
+#include "globals.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -100,16 +105,14 @@ int __scan_cb(unsigned int count)
     struct wlan_scan_result res;
     int i;
     int err;
-
+	shared_buff[0] = 0xAA;
+	shared_buff[1] = 0xBB;
+	shared_buff[2] = (uint8_t)count;	// assuming ssid count is < 256
     if (count == 0)
     {
         PRINTF("no networks found\r\n");
-        return 0;
     }
-
-    PRINTF("%d network%s found:\r\n", count, count == 1 ? "" : "s");
-
-    for (i = 0; i < count; i++)
+    else
     {
 		int offset = 3;
 		PRINTF("%d network%s found:\r\n", count, count == 1 ? "" : "s");
@@ -169,7 +172,7 @@ int __scan_cb(unsigned int count)
 			PRINTF("\tWMM: %s\r\n", res.wmm ? "YES" : "NO");
 		}
     }
-
+    ssid_scan_ready = 1;
     return 0;
 }
 
@@ -575,7 +578,8 @@ void wifi_task(void *param)
     result = wlan_start(wlan_event_callback);
 
     assert(WM_SUCCESS == result);
-
+    struct t_user_wifi_command wifi_cmd_received;
+    PRINTF("wifi task running\r\n");
     while (1)
     {
         /* wait for interface up */

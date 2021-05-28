@@ -208,8 +208,8 @@ int main(void)
         wifi_task, 
         "wifi", 
         configMINIMAL_STACK_SIZE + 800, 
-        wifi_task_stack, 
-        tskIDLE_PRIORITY + 4,
+		&t_wifi_cmd,
+        tskIDLE_PRIORITY + 3,
         &wifi_task_task_handler);
     assert(pdPASS == stat);
 

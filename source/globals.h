@@ -54,10 +54,10 @@
 /* PIT1 interrupt handler identifier. */
 #define PIT1_IRQHANDLER PIT1_IRQHandler
 
-/* Function prototypes in main.c */
-void toggleRedButton(bool state);
-void toggleGreenButton(bool state);
-void toggleBlueButton(bool state);
+// /* Function prototypes in main.c */
+// void toggleRedButton(bool state);
+// void toggleGreenButton(bool state);
+// void toggleBlueButton(bool state);
 
 /* struct wrapper for freertos mouse task input parameter */
 typedef struct

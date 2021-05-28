@@ -38,6 +38,7 @@
 #include "fsl_lpuart.h"
 #include "network_demo.h"
 #include "wlan.h"
+#include "demo_common.h"
 /*******************************************************************************
  * Globals
  ******************************************************************************/
@@ -286,9 +287,9 @@ BaseType_t controlLedCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const 
     		}
     	}
     	if (count==3) {
-    		toggleRedButton(pcParameter1[0]==0x30?0:1);
-    		toggleGreenButton(pcParameter1[1]==0x30?0:1);
-    		toggleBlueButton(pcParameter1[2]==0x30?0:1);
+    		set_red_led(pcParameter1[0]==0x30?0:1);
+    		set_green_led(pcParameter1[1]==0x30?0:1);
+    		set_blue_led(pcParameter1[2]==0x30?0:1);
     		pcWriteBuffer[0] = 0; // to make sure
     		return pdFALSE;
     	}
@@ -340,6 +341,7 @@ BaseType_t scanWifiCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
     return pdFALSE;
 }
 
+#if configGENERATE_RUN_TIME_STATS
 /*****************************************************************************\
  * Function:    taskStatsCommand
  * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
@@ -397,6 +399,7 @@ BaseType_t taskStatsCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const c
     }
     return xReturn;
 }
+#endif
 
 /*****************************************************************************\
  * Function:    wifiScanCommand
@@ -571,6 +574,7 @@ static const CLI_Command_Definition_t wifiScanCommandStruct =
     0
 };
 
+#if configGENERATE_RUN_TIME_STATS
 static const CLI_Command_Definition_t taskStatsCommandStruct =
 {
     "stats",
@@ -578,6 +582,7 @@ static const CLI_Command_Definition_t taskStatsCommandStruct =
 	taskStatsCommand,
     0
 };
+#endif
 
 static const CLI_Command_Definition_t scanWifiCommandStruct =
 {
@@ -627,7 +632,9 @@ void console_task(void *pvParameters)
     FreeRTOS_CLIRegisterCommand( &enableMouseCommandStruct );
     FreeRTOS_CLIRegisterCommand( &enableKeyboardCommandStruct );
     FreeRTOS_CLIRegisterCommand( &wifiScanCommandStruct );
+#if configGENERATE_RUN_TIME_STATS
     FreeRTOS_CLIRegisterCommand( &taskStatsCommandStruct );
+#endif
     FreeRTOS_CLIRegisterCommand( &scanWifiCommandStruct );
     FreeRTOS_CLIRegisterCommand( &exitCommandStruct );
 
