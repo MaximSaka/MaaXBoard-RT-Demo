@@ -10,7 +10,7 @@ product: Pins v9.0
 processor: MIMXRT1176xxxxx
 package_id: MIMXRT1176DVMAA
 mcu_data: ksdk2_0
-processor_version: 9.0.1
+processor_version: 9.0.2
 board: MIMXRT1170-EVK
 pin_labels:
 - {pin_num: R1, pin_signal: GPIO_EMC_B2_03, label: DSI_BL_PWM, identifier: DSI_BL_PWM}
@@ -68,6 +68,10 @@ BOARD_InitPins:
   - {pin_num: A16, peripheral: USDHC1, signal: 'usdhc_data, 3', pin_signal: GPIO_SD_B1_05, software_input_on: Enable, pull_down_pull_up_config: Pull_Up, pdrv_config: High_Driver}
   - {pin_num: G17, peripheral: GPIO10, signal: 'gpio_io, 02', pin_signal: GPIO_AD_35}
   - {pin_num: K16, peripheral: CM7_GPIO3, signal: 'gpio_mux_io_cm7, 31', pin_signal: GPIO_AD_32}
+  - {pin_num: D9, peripheral: LPI2C3, signal: SCL, pin_signal: GPIO_DISP_B2_10, software_input_on: Enable, open_drain: Enable, drive_strength: Normal}
+  - {pin_num: A6, peripheral: LPI2C3, signal: SDA, pin_signal: GPIO_DISP_B2_11, software_input_on: Enable, open_drain: Enable, drive_strength: Normal}
+  - {pin_num: L1, peripheral: LPUART6, signal: RXD, pin_signal: GPIO_EMC_B1_41}
+  - {pin_num: K1, peripheral: LPUART6, signal: TXD, pin_signal: GPIO_EMC_B1_40}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -140,6 +144,18 @@ void BOARD_InitPins(void) {
       IOMUXC_GPIO_AD_35_GPIO10_IO02,          /* GPIO_AD_35 is configured as GPIO10_IO02 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
+      IOMUXC_GPIO_DISP_B2_10_LPI2C3_SCL,      /* GPIO_DISP_B2_10 is configured as LPI2C3_SCL */
+      1U);                                    /* Software Input On Field: Force input path of pad GPIO_DISP_B2_10 */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_DISP_B2_11_LPI2C3_SDA,      /* GPIO_DISP_B2_11 is configured as LPI2C3_SDA */
+      1U);                                    /* Software Input On Field: Force input path of pad GPIO_DISP_B2_11 */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_EMC_B1_40_LPUART6_TXD,      /* GPIO_EMC_B1_40 is configured as LPUART6_TXD */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_EMC_B1_41_LPUART6_RXD,      /* GPIO_EMC_B1_41 is configured as LPUART6_RXD */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
       IOMUXC_GPIO_EMC_B2_18_GPIO8_IO28,       /* GPIO_EMC_B2_18 is configured as GPIO8_IO28 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
@@ -183,6 +199,24 @@ void BOARD_InitPins(void) {
                                                  Pull / Keep Select Field: Pull Disable, Highz
                                                  Pull Up / Down Config. Field: Weak pull down
                                                  Open Drain Field: Disabled
+                                                 Domain write protection: Both cores are allowed
+                                                 Domain write protection lock: Neither of DWP bits is locked */
+  IOMUXC_SetPinConfig(
+      IOMUXC_GPIO_DISP_B2_10_LPI2C3_SCL,      /* GPIO_DISP_B2_10 PAD functional properties : */
+      0x14U);                                 /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: normal drive strength
+                                                 Pull / Keep Select Field: Pull Enable
+                                                 Pull Up / Down Config. Field: Weak pull down
+                                                 Open Drain Field: Enabled
+                                                 Domain write protection: Both cores are allowed
+                                                 Domain write protection lock: Neither of DWP bits is locked */
+  IOMUXC_SetPinConfig(
+      IOMUXC_GPIO_DISP_B2_11_LPI2C3_SDA,      /* GPIO_DISP_B2_11 PAD functional properties : */
+      0x14U);                                 /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: normal drive strength
+                                                 Pull / Keep Select Field: Pull Enable
+                                                 Pull Up / Down Config. Field: Weak pull down
+                                                 Open Drain Field: Enabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
   IOMUXC_SetPinConfig(
