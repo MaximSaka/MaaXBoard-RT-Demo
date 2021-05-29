@@ -14,6 +14,7 @@
 
 typedef enum _activePage
 {
+    PAGE_NONE       = -1,
     PAGE_MENU       = 0,
     PAGE_LED        = 1,
     PAGE_NETWORK    = 2,
@@ -27,9 +28,8 @@ typedef enum _activePage
  * Variables
  ******************************************************************************/
 
-static volatile uint8_t s_current_action = 1;        // action index
 static volatile bool s_lvgl_initialized = false;
-static volatile activePage s_active_page = PAGE_LED;
+static volatile activePage s_active_page = PAGE_NONE;
 
 lv_ui guider_ui;
 
@@ -65,6 +65,36 @@ void addItemToSSIDList(const char * text)
 	lv_obj_t *screen2_WIFI_ssid_list_btn;
 	screen2_WIFI_ssid_list_btn = lv_list_add_btn(guider_ui.screen2_WIFI_ssid_list, NULL, text);
 	lv_obj_add_style(screen2_WIFI_ssid_list_btn, LV_BTN_PART_MAIN, &style_screen2_WIFI_ssid_list_main_child);
+}
+
+void setLedRedImgState(bool state)
+{
+    if (s_active_page != PAGE_LED)
+    {
+        return;
+    }
+
+    lv_obj_set_hidden(guider_ui.screen1_LEDs_led_red_off, state);
+}
+
+void setLedGreenImgState(bool state)
+{
+    if (s_active_page != PAGE_LED)
+    {
+        return;
+    }
+
+    lv_obj_set_hidden(guider_ui.screen1_LEDs_led_green_off, state);
+}
+
+void setLedBlueImgState(bool state)
+{
+    if (s_active_page != PAGE_LED)
+    {
+        return;
+    }
+
+    lv_obj_set_hidden(guider_ui.screen1_LEDs_led_blue_off, state);
 }
 
 /*!
@@ -105,10 +135,9 @@ void openLEDScreen()
     setup_scr_screen1_LEDs(&guider_ui);
     lv_scr_load_anim(guider_ui.screen1_LEDs, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_LED;
 
+    initLEDs();
 }
 
 /*!
@@ -119,9 +148,9 @@ void openUSBScreen()
     setup_scr_screen3_USB(&guider_ui);
     lv_scr_load_anim(guider_ui.screen3_USB, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_USB;
+
+    initLEDs();
 }
 
 /*!
@@ -132,9 +161,9 @@ void openAVScreen()
     setup_scr_screen4_AV(&guider_ui);
     lv_scr_load_anim(guider_ui.screen4_AV, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_AV;
+
+    initLEDs();
 }
 
 /*!
@@ -145,9 +174,9 @@ void openSystemScreen()
     setup_scr_screen5_SYSTEM(&guider_ui);
     lv_scr_load_anim(guider_ui.screen5_SYSTEM, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_SYSTEM;
+
+    initLEDs();
 }
 
 /*!
@@ -158,9 +187,9 @@ void openHelpScreen()
     setup_scr_screen6_HELP(&guider_ui);
     lv_scr_load_anim(guider_ui.screen6_HELP, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_HELP;
+
+    initLEDs();
 }
 
 /*******************************************************************************
@@ -180,63 +209,49 @@ void lvgl_task(void *param)
     lv_port_indev_init();
 
     s_lvgl_initialized = true;
-    s_current_action = 1;
-
-	set_red_led(false);
-	set_green_led(false);
-	set_blue_led(false);
 
     setup_ui(&guider_ui);
     events_init(&guider_ui);
 
     s_lgvl_ready = true;
 
+	set_red_led(false);
+	set_green_led(false);
+	set_blue_led(false);
+
     for (;;)
     {
         if (getInputSignal())
         {
-            switch (s_current_action)
+            switch (s_active_page)
             {
-                case 1:
+                case PAGE_LED:
                     openNetworkScreen();
-
-                    s_current_action++;
                     break;
                 
-                case 2:
+                case PAGE_NETWORK:
                     openUSBScreen();
-
-                    s_current_action++;
                     break;
                 
-                case 3:
+                case PAGE_USB:
                     openAVScreen();
-
-                    s_current_action++;
                     break;
                 
-                case 4:
+                case PAGE_AV:
                     openSystemScreen();
-
-                    s_current_action++;
                     break;
                 
-                case 5:
+                case PAGE_SYSTEM:
                     openHelpScreen();
-
-                    s_current_action++;
                     break;
 
-                case 6:
+                case PAGE_NONE:
+                case PAGE_HELP:
                     openMenuScreen();
-
-                    s_current_action++;
                     break;
 
-                case 7:
+                case PAGE_MENU:
                     openLEDScreen();
-
-                    s_current_action = 1;
                     break;
             }
 

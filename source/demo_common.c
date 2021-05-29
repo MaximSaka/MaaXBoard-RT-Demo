@@ -12,7 +12,6 @@
  * Variables
  ******************************************************************************/
 
-static volatile uint8_t s_current_action = 1;        // action index
 static volatile bool s_input_signal = false;         // S1 button switch page signal
 
 static volatile bool s_red_led_state = false;
@@ -115,37 +114,10 @@ bool getInputSignal()
  * Prototypes
  ******************************************************************************/
 
-// void console_task(void *param)
-// {
-//     while (!isWifiReady() || !isLvglReady())
-//     {
-//         vTaskDelay(15);
-//     }
-
-//     int32_t result = 0;
-//     (void)result;
-
-//     printSeparator();
-
-//     menuPrint();
-
-//     while (1)
-//     {
-//         int ch = pollChar();
-
-//         if (ch != -1)
-//         {
-//             menuAction(ch);
-//         }
-
-//         // os_thread_sleep(os_msec_to_ticks(500));
-//         vTaskDelay(5);
-//     }
-// }
-
 void set_red_led(bool state)
 {
 	s_red_led_state = state;
+    setLedRedImgState(state);
 
     GPIO_PinWrite(BOARD_USER_LED_RED_GPIO, BOARD_USER_LED_RED_GPIO_PIN, state ? 1U : 0U);
 }
@@ -153,6 +125,7 @@ void set_red_led(bool state)
 void set_green_led(bool state)
 {
 	s_green_led_state = state;
+    setLedGreenImgState(state);
 
     GPIO_PinWrite(BOARD_USER_LED_GPIO, BOARD_USER_LED_GPIO_PIN, state ? 1U : 0U);
 }
@@ -160,6 +133,7 @@ void set_green_led(bool state)
 void set_blue_led(bool state)
 {
 	s_blue_led_state = state;
+    setLedBlueImgState(state);
 
     GPIO_PinWrite(BOARD_USER_LED_BLUE_GPIO, BOARD_USER_LED_BLUE_GPIO_PIN, state ? 1U : 0U);
 }

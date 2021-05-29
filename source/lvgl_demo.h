@@ -21,4 +21,8 @@ void openAVScreen();
 void openSystemScreen();
 void openHelpScreen();
 
+void setLedRedImgState(bool state);
+void setLedGreenImgState(bool state);
+void setLedBlueImgState(bool state);
+
 #endif //_LVGL_DEMO_H_
