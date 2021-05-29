@@ -241,17 +241,17 @@ int main(void)
 		while (1);
 	}
 
-//	/*! Following task can be removed */
-//	t_usb_log.hid_queue = &hid_devices_queue;
-//	t_usb_log.uart_handle = &uart_rtos_handle;
-//	#if defined(ENABLED_LOG_TASK)
-//	if (xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 3, NULL) != pdPASS)
-//	{
-//		PRINTF("Failed to create log task\r\n");
-//		while (1);
-//	}
-//	#endif
-//
+	/*! Following task can be removed */
+	t_usb_log.hid_queue = &hid_devices_queue;
+	t_usb_log.uart_handle = &uart_rtos_handle;
+	#if defined(ENABLED_LOG_TASK)
+	if (xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 3, NULL) != pdPASS)
+	{
+		PRINTF("Failed to create log task\r\n");
+		while (1);
+	}
+	#endif
+
 
     t_console.cmd_queue = &wifi_commands_queue;
     t_console.wifi_resQ = &wifi_response_queue;
