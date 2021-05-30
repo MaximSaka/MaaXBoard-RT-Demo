@@ -60,7 +60,7 @@ void addItemToSSIDList(const char * text)
 	lv_style_set_bg_grad_dir(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, 255);
 	lv_style_set_text_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
-	lv_style_set_text_font(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, &lv_font_simsun_28);
+	lv_style_set_text_font(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, &lv_font_OpenSans_Light_28);
 
 	lv_obj_t *screen2_WIFI_ssid_list_btn;
 	screen2_WIFI_ssid_list_btn = lv_list_add_btn(guider_ui.screen2_WIFI_ssid_list, NULL, text);

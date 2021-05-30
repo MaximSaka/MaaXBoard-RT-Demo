@@ -240,7 +240,7 @@ static void screen2_WIFI_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openMenuScreen();
+		openLEDScreen();
 	}
 		break;
 	default:
