@@ -13,6 +13,100 @@ void events_init(lv_ui *ui)
 {
 }
 
+static void screen0_MENU_imgbtn_1event_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openLEDScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen0_MENU_imgbtn_2event_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openAVScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen0_MENU_imgbtn_3event_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openNetworkScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen0_MENU_imgbtn_4event_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openSystemScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen0_MENU_imgbtn_5event_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openUSBScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen0_MENU_imgbtn_6event_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openHelpScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+void events_init_screen0_MENU(lv_ui *ui)
+{
+	lv_obj_set_event_cb(ui->screen0_MENU_imgbtn_1, screen0_MENU_imgbtn_1event_handler);
+	lv_obj_set_event_cb(ui->screen0_MENU_imgbtn_2, screen0_MENU_imgbtn_2event_handler);
+	lv_obj_set_event_cb(ui->screen0_MENU_imgbtn_3, screen0_MENU_imgbtn_3event_handler);
+	lv_obj_set_event_cb(ui->screen0_MENU_imgbtn_4, screen0_MENU_imgbtn_4event_handler);
+	lv_obj_set_event_cb(ui->screen0_MENU_imgbtn_5, screen0_MENU_imgbtn_5event_handler);
+	lv_obj_set_event_cb(ui->screen0_MENU_imgbtn_6, screen0_MENU_imgbtn_6event_handler);
+}
+
 static void screen1_LEDs_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
@@ -144,100 +238,6 @@ void events_init_screen1_LEDs(lv_ui *ui)
 	lv_obj_set_event_cb(ui->screen1_LEDs_greenbtn0, screen1_LEDs_greenbtn0event_handler);
 	lv_obj_set_event_cb(ui->screen1_LEDs_bluebtn0, screen1_LEDs_bluebtn0event_handler);
 	lv_obj_set_event_cb(ui->screen1_LEDs_home_btn, screen1_LEDs_home_btnevent_handler);
-}
-
-static void screen0_MENU_btn_1event_handler(lv_obj_t * obj, lv_event_t event)
-{
-	switch (event)
-	{
-	case LV_EVENT_RELEASED:
-	{
-		openLEDScreen();
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-static void screen0_MENU_btn_2event_handler(lv_obj_t * obj, lv_event_t event)
-{
-	switch (event)
-	{
-	case LV_EVENT_RELEASED:
-	{
-		openNetworkScreen();
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-static void screen0_MENU_btn_3event_handler(lv_obj_t * obj, lv_event_t event)
-{
-	switch (event)
-	{
-	case LV_EVENT_RELEASED:
-	{
-		openUSBScreen();
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-static void screen0_MENU_btn_4event_handler(lv_obj_t * obj, lv_event_t event)
-{
-	switch (event)
-	{
-	case LV_EVENT_RELEASED:
-	{
-		openAVScreen();
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-static void screen0_MENU_btn_5event_handler(lv_obj_t * obj, lv_event_t event)
-{
-	switch (event)
-	{
-	case LV_EVENT_RELEASED:
-	{
-		openSystemScreen();
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-static void screen0_MENU_btn_6event_handler(lv_obj_t * obj, lv_event_t event)
-{
-	switch (event)
-	{
-	case LV_EVENT_RELEASED:
-	{
-		openHelpScreen();
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-void events_init_screen0_MENU(lv_ui *ui)
-{
-	lv_obj_set_event_cb(ui->screen0_MENU_btn_1, screen0_MENU_btn_1event_handler);
-	lv_obj_set_event_cb(ui->screen0_MENU_btn_2, screen0_MENU_btn_2event_handler);
-	lv_obj_set_event_cb(ui->screen0_MENU_btn_3, screen0_MENU_btn_3event_handler);
-	lv_obj_set_event_cb(ui->screen0_MENU_btn_4, screen0_MENU_btn_4event_handler);
-	lv_obj_set_event_cb(ui->screen0_MENU_btn_5, screen0_MENU_btn_5event_handler);
-	lv_obj_set_event_cb(ui->screen0_MENU_btn_6, screen0_MENU_btn_6event_handler);
 }
 
 static void screen2_WIFI_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)

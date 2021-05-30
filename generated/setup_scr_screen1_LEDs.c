@@ -88,10 +88,10 @@ void setup_scr_screen1_LEDs(lv_ui *ui){
 	lv_style_set_image_recolor_opa(&style_screen1_LEDs_avlogoimg0_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_image_opa(&style_screen1_LEDs_avlogoimg0_main, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen1_LEDs_avlogoimg0, LV_IMG_PART_MAIN, &style_screen1_LEDs_avlogoimg0_main);
-	lv_obj_set_pos(ui->screen1_LEDs_avlogoimg0, 20, 20);
-	lv_obj_set_size(ui->screen1_LEDs_avlogoimg0, 110, 110);
+	lv_obj_set_pos(ui->screen1_LEDs_avlogoimg0, 0, 0);
+	lv_obj_set_size(ui->screen1_LEDs_avlogoimg0, 130, 130);
 	lv_obj_set_click(ui->screen1_LEDs_avlogoimg0, true);
-	lv_img_set_src(ui->screen1_LEDs_avlogoimg0,&_avnet_logo_alpha_110x110);
+	lv_img_set_src(ui->screen1_LEDs_avlogoimg0,&_avnet_logo2_alpha_130x130);
 	lv_img_set_pivot(ui->screen1_LEDs_avlogoimg0, 0,0);
 	lv_img_set_angle(ui->screen1_LEDs_avlogoimg0, 0);
 
@@ -115,7 +115,7 @@ void setup_scr_screen1_LEDs(lv_ui *ui){
 
 	//Write codes screen1_LEDs_right_label
 	ui->screen1_LEDs_right_label = lv_label_create(ui->screen1_LEDs, NULL);
-	lv_label_set_text(ui->screen1_LEDs_right_label, "WIFI");
+	lv_label_set_text(ui->screen1_LEDs_right_label, "Wi-Fi");
 	lv_label_set_long_mode(ui->screen1_LEDs_right_label, LV_LABEL_LONG_BREAK);
 	lv_label_set_align(ui->screen1_LEDs_right_label, LV_LABEL_ALIGN_CENTER);
 

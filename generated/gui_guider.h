@@ -14,6 +14,24 @@ extern "C" {
 
 typedef struct
 {
+	lv_obj_t *screen0_MENU;
+	lv_obj_t *screen0_MENU_canvas_white;
+	lv_obj_t *screen0_MENU_avlogoimg0;
+	lv_obj_t *screen0_MENU_board_img;
+	lv_obj_t *screen0_MENU_page_label;
+	lv_obj_t *screen0_MENU_label_1;
+	lv_obj_t *screen0_MENU_imgbtn_1;
+	lv_obj_t *screen0_MENU_imgbtn_1_label;
+	lv_obj_t *screen0_MENU_imgbtn_2;
+	lv_obj_t *screen0_MENU_imgbtn_2_label;
+	lv_obj_t *screen0_MENU_imgbtn_3;
+	lv_obj_t *screen0_MENU_imgbtn_3_label;
+	lv_obj_t *screen0_MENU_imgbtn_4;
+	lv_obj_t *screen0_MENU_imgbtn_4_label;
+	lv_obj_t *screen0_MENU_imgbtn_5;
+	lv_obj_t *screen0_MENU_imgbtn_5_label;
+	lv_obj_t *screen0_MENU_imgbtn_6;
+	lv_obj_t *screen0_MENU_imgbtn_6_label;
 	lv_obj_t *screen1_LEDs;
 	lv_obj_t *screen1_LEDs_canvas_white;
 	lv_obj_t *screen1_LEDs_left_btn;
@@ -39,20 +57,6 @@ typedef struct
 	lv_obj_t *screen1_LEDs_led_green_off;
 	lv_obj_t *screen1_LEDs_led_blue_on;
 	lv_obj_t *screen1_LEDs_led_blue_off;
-	lv_obj_t *screen0_MENU;
-	lv_obj_t *screen0_MENU_img1;
-	lv_obj_t *screen0_MENU_btn_1;
-	lv_obj_t *screen0_MENU_btn_1_label;
-	lv_obj_t *screen0_MENU_btn_2;
-	lv_obj_t *screen0_MENU_btn_2_label;
-	lv_obj_t *screen0_MENU_btn_3;
-	lv_obj_t *screen0_MENU_btn_3_label;
-	lv_obj_t *screen0_MENU_btn_4;
-	lv_obj_t *screen0_MENU_btn_4_label;
-	lv_obj_t *screen0_MENU_btn_5;
-	lv_obj_t *screen0_MENU_btn_5_label;
-	lv_obj_t *screen0_MENU_btn_6;
-	lv_obj_t *screen0_MENU_btn_6_label;
 	lv_obj_t *screen2_WIFI;
 	lv_obj_t *screen2_WIFI_canvas_white;
 	lv_obj_t *screen2_WIFI_left_btn;
@@ -112,36 +116,38 @@ typedef struct
 
 void setup_ui(lv_ui *ui);
 extern lv_ui guider_ui;
-void setup_scr_screen1_LEDs(lv_ui *ui);
 void setup_scr_screen0_MENU(lv_ui *ui);
+void setup_scr_screen1_LEDs(lv_ui *ui);
 void setup_scr_screen2_WIFI(lv_ui *ui);
 void setup_scr_screen3_USB(lv_ui *ui);
 void setup_scr_screen4_AV(lv_ui *ui);
 void setup_scr_screen5_SYSTEM(lv_ui *ui);
 void setup_scr_screen6_HELP(lv_ui *ui);
 LV_IMG_DECLARE(_led_blue_off_alpha_110x110);
-LV_IMG_DECLARE(_led_red_on_alpha_110x110);
-LV_IMG_DECLARE(_AV_alpha_512x512);
-LV_IMG_DECLARE(_left_arrow_alpha_150x150);
-LV_IMG_DECLARE(_right_arrow_dark_alpha_150x150);
-LV_IMG_DECLARE(_SBC_Help_Image_alpha_566x860);
-LV_IMG_DECLARE(_wifi_green_512_alpha_512x512);
-LV_IMG_DECLARE(_home_icon_alpha_132x132);
 LV_IMG_DECLARE(_led_green_off_alpha_110x110);
 LV_IMG_DECLARE(_AvnetIcon310x310_alpha_176x176);
 LV_IMG_DECLARE(_lock_alpha_512x512);
 LV_IMG_DECLARE(_led_green_on_alpha_110x110);
 LV_IMG_DECLARE(_left_icon_alpha_132x132);
+LV_IMG_DECLARE(_SBC_Help_Image_alpha_424x645);
 LV_IMG_DECLARE(_USB_alpha_512x512);
 LV_IMG_DECLARE(_IoT_Smart_Asset_Monitoring_G_600ppi_alpha_500x500);
-LV_IMG_DECLARE(_left_arrow_dark_alpha_150x150);
+LV_IMG_DECLARE(_button_on_alpha_320x106);
 LV_IMG_DECLARE(_right_arrow_alpha_150x150);
 LV_IMG_DECLARE(_led_red_off_alpha_110x110);
 LV_IMG_DECLARE(_Avnet_designedby_hrz_rgb_alpha_310x151);
-LV_IMG_DECLARE(_avnet_logo_alpha_110x110);
-LV_IMG_DECLARE(_right_icon_alpha_132x132);
+LV_IMG_DECLARE(_avnet_logo2_alpha_130x130);
 LV_IMG_DECLARE(_button_alpha_190x106);
 LV_IMG_DECLARE(_button_on_alpha_190x106);
+LV_IMG_DECLARE(_button_alpha_320x106);
+LV_IMG_DECLARE(_led_red_on_alpha_110x110);
+LV_IMG_DECLARE(_AV_alpha_512x512);
+LV_IMG_DECLARE(_left_arrow_alpha_150x150);
+LV_IMG_DECLARE(_right_arrow_dark_alpha_150x150);
+LV_IMG_DECLARE(_wifi_green_512_alpha_512x512);
+LV_IMG_DECLARE(_home_icon_alpha_132x132);
+LV_IMG_DECLARE(_left_arrow_dark_alpha_150x150);
+LV_IMG_DECLARE(_right_icon_alpha_132x132);
 LV_IMG_DECLARE(_led_blue_on_alpha_110x110);
 
 #ifdef __cplusplus
