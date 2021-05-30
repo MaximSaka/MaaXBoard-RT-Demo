@@ -289,7 +289,7 @@ static void screen3_USB_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openMenuScreen();
+		openNetworkScreen();
 	}
 		break;
 	default:
@@ -311,10 +311,25 @@ static void screen3_USB_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	}
 }
 
+static void screen3_USB_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openMenuScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 void events_init_screen3_USB(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen3_USB_left_btn, screen3_USB_left_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen3_USB_right_btn, screen3_USB_right_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen3_USB_home_btn, screen3_USB_home_btnevent_handler);
 }
 
 static void screen4_AV_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
