@@ -219,6 +219,8 @@ void lvgl_task(void *param)
 	set_green_led(false);
 	set_blue_led(false);
 
+    openMenuScreen();
+
     for (;;)
     {
         if (getInputSignal())
