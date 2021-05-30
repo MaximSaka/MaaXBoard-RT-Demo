@@ -143,7 +143,6 @@ static void screen1_LEDs_redbtn0event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
 		{
-			// lv_obj_set_hidden(guider_ui.screen1_LEDs_led_red_off, true);
 			set_red_led(true);
 		}
 	}
@@ -152,7 +151,6 @@ static void screen1_LEDs_redbtn0event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 		if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
 		{
-			// lv_obj_set_hidden(guider_ui.screen1_LEDs_led_red_off, false);
 			set_red_led(false);
 		}
 	}
@@ -170,7 +168,6 @@ static void screen1_LEDs_greenbtn0event_handler(lv_obj_t * obj, lv_event_t event
 	{
 		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
 		{
-			// lv_obj_set_hidden(guider_ui.screen1_LEDs_led_green_off, true);
 			set_green_led(true);
 		}
 	}
@@ -179,7 +176,6 @@ static void screen1_LEDs_greenbtn0event_handler(lv_obj_t * obj, lv_event_t event
 	{
 		if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
 		{
-			// lv_obj_set_hidden(guider_ui.screen1_LEDs_led_green_off, false);
 			set_green_led(false);
 		}
 	}
@@ -197,7 +193,6 @@ static void screen1_LEDs_bluebtn0event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
 		{
-			// lv_obj_set_hidden(guider_ui.screen1_LEDs_led_blue_off, true);
 			set_blue_led(true);
 		}
 	}
@@ -206,7 +201,6 @@ static void screen1_LEDs_bluebtn0event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 		if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
 		{
-			// lv_obj_set_hidden(guider_ui.screen1_LEDs_led_blue_off, false);
 			set_blue_led(false);
 		}
 	}
@@ -268,10 +262,25 @@ static void screen2_WIFI_right_btnevent_handler(lv_obj_t * obj, lv_event_t event
 	}
 }
 
+static void screen2_WIFI_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openMenuScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 void events_init_screen2_WIFI(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen2_WIFI_left_btn, screen2_WIFI_left_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen2_WIFI_right_btn, screen2_WIFI_right_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen2_WIFI_home_btn, screen2_WIFI_home_btnevent_handler);
 }
 
 static void screen3_USB_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
