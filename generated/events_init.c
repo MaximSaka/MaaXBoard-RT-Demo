@@ -436,6 +436,34 @@ static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
+		openSystemScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen6_HELP_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openMenuScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen6_HELP_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
 		openMenuScreen();
 	}
 		break;
@@ -447,4 +475,6 @@ static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 void events_init_screen6_HELP(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen6_HELP_left_btn, screen6_HELP_left_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen6_HELP_right_btn, screen6_HELP_right_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen6_HELP_home_btn, screen6_HELP_home_btnevent_handler);
 }
