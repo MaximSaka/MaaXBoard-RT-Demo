@@ -9,7 +9,7 @@
  ******************************************************************************/
 
 void ssidScan(void);
-void printWlanInfo(void);
+uint8_t printWlanInfo(void);
 
 bool isWifiReady(void);
 

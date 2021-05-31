@@ -95,7 +95,13 @@ static bool s_wifi_ready     = false;
 static QueueHandle_t *wifi_cmd_queue;
 static QueueHandle_t *wifi_response_queue;
 static volatile EventGroupHandle_t *event_group_wifi;
-static volatile uint8_t ssid_scan_ready = 0;
+
+
+static volatile uint32_t wifi_status = 0;
+#define BIT_SCAN_RDY	0
+#define BIT_CONN_RDY	1
+
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
@@ -172,7 +178,7 @@ int __scan_cb(unsigned int count)
 			PRINTF("\tWMM: %s\r\n", res.wmm ? "YES" : "NO");
 		}
     }
-    ssid_scan_ready = 1;
+    wifi_status |= (1<<BIT_SCAN_RDY);
     return 0;
 }
 
@@ -189,6 +195,22 @@ void ssidScan(void)
     else
         PRINTF("Scan scheduled...\r\n");
 }
+
+static int connectToAP(void)
+{
+    int ret;
+
+    PRINTF("Connecting to %s .....", sta_network.ssid);
+
+    ret = wlan_connect(sta_network.name);
+
+    if (ret != WM_SUCCESS)
+    {
+        PRINTF("Failed to connect %d\r\n", ret);
+    }
+    return ret;
+}
+
 
 static const char *print_role(enum wlan_bss_role role)
 {
@@ -280,15 +302,16 @@ static void print_network(struct wlan_network *network)
     print_address(&network->ip, network->role);
 }
 
-void printWlanInfo(void)
+uint8_t printWlanInfo(void)
 {
     enum wlan_connection_state state;
     struct wlan_network psta_network;
     struct wlan_network puap_network;
     int sta_found = 0;
-
+    uint8_t ret = 0x01;
     if (wlan_get_connection_state(&state))
     {
+    	ret = 0;
         PRINTF(
             "Error: unable to get STA connection"
             " state\r\n");
@@ -303,15 +326,25 @@ void printWlanInfo(void)
                     PRINTF("Station connected to:\r\n");
                     print_network(&psta_network);
                     sta_found = 1;
+                	shared_buff[0] = 0xCC;
+                	shared_buff[1] = 0xDD;
+                	shared_buff[2] = 1;
+                    memcpy(&shared_buff[3], &psta_network, sizeof(struct wlan_network));
+                    ret = 0x01;
                 }
                 else
+                {
                     PRINTF("Station not connected\r\n");
+                	ret = 0x02;
+                }
                 break;
             default:
+            	ret = 0x02;
                 PRINTF("Station not connected\r\n");
                 break;
         }
     }
+    return ret;
 
     if (wlan_get_current_uap_network(&puap_network))
         PRINTF("uAP not started\r\n");
@@ -458,6 +491,7 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
 
             PRINTF("Connected to following BSS:\r\n");
             PRINTF("SSID = [%s], IP = [%s]\r\n", sta_network.ssid, ip);
+            wifi_status |= (1<<BIT_CONN_RDY); //flag used for notifying other freertos tasks
             auth_fail = 0;
             break;
         case WLAN_REASON_CONNECT_FAILED:
@@ -547,15 +581,15 @@ bool isWifiReady(void)
     return s_wifi_ready;
 }
 
-static int32_t waitSsidScan(uint32_t ms)
+static int32_t waitWifiStatus(uint32_t ms, uint32_t statusMask)
 {
 	uint32_t curr_ms = 0;
-	while(ssid_scan_ready==0 && curr_ms < ms)
+	while((wifi_status&(1<<statusMask)) == 0 && curr_ms < ms)
 	{
 		vTaskDelay(100/portTICK_RATE_MS);// 100ms
 		curr_ms = curr_ms + 100;
 	}
-	ssid_scan_ready=0;
+	wifi_status&=~(1<<statusMask);
 	if (curr_ms>=ms)
 	{
 		return 0; // timed out;
@@ -598,25 +632,47 @@ void wifi_task(void *param)
         else
         {
         	PRINTF("command received\r\n");
-        	if (wifi_cmd_received.cmd_type == WIFI_SCAN)
+        	switch (wifi_cmd_received.cmd_type)
         	{
-        		PRINTF("cmd: wifi scan\r\n");
-        		ssidScan();
-        		if(waitSsidScan(10000))
-        		{
-        			PRINTF("wifi scan ready\r\n");
-        			//xQueueSend(*wifi_response_queue, &dummy_byte, 10);
-        			xEventGroupSetBits(*event_group_wifi, xBitsToSet );
-        		} else
-        		{
-        			PRINTF("Timeout: wifi scan\r\n");
-        		}
-        		//vTaskDelay(2000/portTICK_RATE_MS);// 100ms
-        		//xEventGroupSetBits(*event_group_wifi, xBitsToSet );
-        	}
-        	else if (wifi_cmd_received.cmd_type == WIFI_IP)
-        	{
-        		PRINTF("cmd: wifi ip\r\n");
+				case WIFI_SCAN:
+					PRINTF("cmd: wifi scan\r\n");
+					ssidScan();
+					if(waitWifiStatus(10000, BIT_SCAN_RDY))
+					{
+						PRINTF("wifi scan ready\r\n");
+						//xQueueSend(*wifi_response_queue, &dummy_byte, 10);
+						xEventGroupSetBits(*event_group_wifi, xBitsToSet );
+					} else
+					{
+						PRINTF("Timeout: wifi scan\r\n");
+					}
+					break;
+				case WIFI_CONN:
+					if (connectToAP()==WM_SUCCESS)
+					{
+
+						if (waitWifiStatus(20000, BIT_CONN_RDY))
+						{
+							dummy_byte = 0x01;
+						}
+						else
+						{
+							dummy_byte = 0x02;
+							PRINTF("Timeout: wifi conn\r\n");
+						}
+					}
+					else
+					{
+						dummy_byte = 0x03;
+					}
+					xQueueSend(*wifi_response_queue, &dummy_byte, 10);
+					break;
+				case WIFI_IP:
+					dummy_byte = printWlanInfo();
+					xQueueSend(*wifi_response_queue, &dummy_byte, 10);
+					break;
+				default:
+					break;
         	}
         }
     }

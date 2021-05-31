@@ -39,6 +39,8 @@
 #include "network_demo.h"
 #include "wlan.h"
 #include "demo_common.h"
+#include "lwip/tcpip.h"
+#include "lwip/inet.h"
 
 /*******************************************************************************
  * Globals
@@ -89,12 +91,14 @@ static void *ptr_temp = NULL;
 static char *ptr_aux = NULL;
 static volatile EventBits_t bits;
 static struct t_user_wifi_command wifi_cmd_toSend;
+static struct wlan_network network;
 /*!
  * @brief Application entry point.
  */
 
 /* Utility function prototypes */
 static uint16_t copyTillNewLine(char * dest, char *src);
+static int print_address(struct wlan_ip_config *addr, enum wlan_bss_role role, uint8_t *printBuff, int length);
 
 /* Console functions starts here */
 
@@ -465,6 +469,157 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
     return xReturn;
 }
 
+
+/*****************************************************************************\
+ * Function:    connectApCommand
+ * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
+ * Returns:     BaseType_t
+ * Description:
+ *     This function connects to the External AP defined in the network_demo.c .
+\*****************************************************************************/
+BaseType_t connectApCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+{
+    (void)pcCommandString;
+    static int processed = 0;
+    BaseType_t xReturn;
+    int length = 0;
+    uint8_t response_byte;
+    if (processed == 0)
+    {
+    	wifi_cmd_toSend.cmd_type = WIFI_CONN;
+		wifi_cmd_toSend.task_name = CONSOLE_TASK;
+		wifi_cmd_toSend.payload = NULL;
+		xQueueSend(*wifi_cmd_queue, (void *) &wifi_cmd_toSend, 10);
+    	length += sprintf(pcWriteBuffer+length,"\r\nConnecting to AP...\r\n");
+    	processed++;
+    	xReturn = pdTRUE;
+    }
+    else {
+    	if (xQueueReceive(*wifi_response_queue, &(response_byte), 22000 / portTICK_RATE_MS) != pdTRUE)
+		{
+			//no event arrived
+			length = sprintf(pcWriteBuffer+length, "\r\n No response\r\n");
+			processed = 0;
+			xReturn = pdFALSE;
+		}
+		else
+		{
+			// connected to network
+			length += sprintf(pcWriteBuffer+length,"\r\n%s connected...\r\n\n", response_byte == 0x01 ? "" : "not");
+			processed=0;
+			xReturn = pdFALSE;
+		}
+    }
+    pcWriteBuffer[xWriteBufferLen-1]=0;
+    return xReturn;
+}
+
+/*****************************************************************************\
+ * Function:    printIpCommand
+ * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
+ * Returns:     BaseType_t
+ * Description:
+ *     This function prints the IP address.
+\*****************************************************************************/
+BaseType_t printIpCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+{
+    (void)pcCommandString;
+    static int processed = 0;
+    BaseType_t xReturn;
+    int length = 0;
+    uint8_t response_byte;
+
+    if (processed == 0)
+    {
+    	wifi_cmd_toSend.cmd_type = WIFI_IP;
+		wifi_cmd_toSend.task_name = CONSOLE_TASK;
+		wifi_cmd_toSend.payload = NULL;
+		xQueueSend(*wifi_cmd_queue, (void *) &wifi_cmd_toSend, 10);
+    	length += sprintf(pcWriteBuffer+length,"\r\nWlan Info\r\n");
+    	processed++;
+    	xReturn = pdTRUE;
+    }
+    else if (processed == 1)
+    {
+    	if (xQueueReceive(*wifi_response_queue, &(response_byte), 17000 / portTICK_RATE_MS) != pdTRUE)
+		{
+			//no event arrived
+			length = sprintf(pcWriteBuffer+length, "\r\n No response\r\n");
+			processed = 0;
+			xReturn = pdFALSE;
+		}
+    	else
+		{
+			if (response_byte == 0x01)
+			{
+				memcpy(&network, &shared_buff[3], sizeof(struct wlan_network));
+				length += sprintf(pcWriteBuffer+length,"Connected to \"%s\"\r\n\tSSID: %s\r\n\tBSSID: ", network.name, network.ssid[0] ? network.ssid : "(hidden)");
+				length += sprintf(pcWriteBuffer+length, "%02X:%02X:%02X:%02X:%02X:%02X ", network.bssid[0],
+						network.bssid[1], network.bssid[2],
+						network.bssid[3], network.bssid[4],
+						network.bssid[5]);
+				if (network.channel)
+				{
+					length += sprintf(pcWriteBuffer+length, "\r\n\tchannel: %d", network.channel);
+				}
+				else
+				{
+					length += sprintf(pcWriteBuffer+length, "\r\n\tchannel: %d", "(Auto)");
+				}
+
+				char *sec_tag = "\tsecurity";
+				if (!network.security_specific)
+				{
+					sec_tag = "\tsecurity [Wildcard]";
+				}
+				switch (network.security.type)
+				{
+					case WLAN_SECURITY_NONE:
+						length += sprintf(pcWriteBuffer+length, "%s: none\r\n", sec_tag);
+						break;
+					case WLAN_SECURITY_WEP_OPEN:
+						length += sprintf(pcWriteBuffer+length, "%s: WEP (open)\r\n", sec_tag);
+						break;
+					case WLAN_SECURITY_WEP_SHARED:
+						length += sprintf(pcWriteBuffer+length, "%s: WEP (shared)\r\n", sec_tag);
+						break;
+					case WLAN_SECURITY_WPA:
+						length += sprintf(pcWriteBuffer+length, "%s: WPA\r\n", sec_tag);
+						break;
+					case WLAN_SECURITY_WPA2:
+						length += sprintf(pcWriteBuffer+length, "%s: WPA2\r\n", sec_tag);
+						break;
+					case WLAN_SECURITY_WPA_WPA2_MIXED:
+						length += sprintf(pcWriteBuffer+length, "%s: WPA/WPA2 Mixed\r\n", sec_tag);
+						break;
+					case WLAN_SECURITY_WPA3_SAE:
+						length += sprintf(pcWriteBuffer+length, "%s: WPA3 SAE\r\n", sec_tag);
+						break;
+					default:
+						break;
+				}
+				processed++;
+				xReturn = pdTRUE;
+			}
+			else
+			{
+				// no ip info received.
+				length = sprintf(pcWriteBuffer+length, "\r\n Not Connected\r\n");
+				processed = 0;
+				xReturn = pdFALSE;
+			}
+		}
+    }
+    else {
+    	// print ip, this is last line.
+    	length = print_address(&network.ip, network.role, pcWriteBuffer, length);
+		processed = 0;
+		xReturn = pdFALSE;
+    }
+    pcWriteBuffer[xWriteBufferLen-1]=0;
+    return xReturn;
+}
+
 /* Utility functions */
 
 /*****************************************************************************\
@@ -491,6 +646,43 @@ static uint16_t copyTillNewLine(char * dest, char *src)
     *dest = 0;
 	return cnt;
 }
+
+static int print_address(struct wlan_ip_config *addr, enum wlan_bss_role role, uint8_t *printBuff, int length)
+{
+    struct in_addr ip, gw, nm, dns1, dns2;
+    char addr_type[10];
+    ip.s_addr   = addr->ipv4.address;
+    gw.s_addr   = addr->ipv4.gw;
+    nm.s_addr   = addr->ipv4.netmask;
+    dns1.s_addr = addr->ipv4.dns1;
+    dns2.s_addr = addr->ipv4.dns2;
+    if (addr->ipv4.addr_type == ADDR_TYPE_STATIC)
+        strncpy(addr_type, "STATIC", sizeof(addr_type));
+    else if (addr->ipv4.addr_type == ADDR_TYPE_STATIC)
+        strncpy(addr_type, "AUTO IP", sizeof(addr_type));
+    else
+        strncpy(addr_type, "DHCP", sizeof(addr_type));
+
+    //PRINTF("\r\n\tIPv4 Address\r\n");
+    length += sprintf(printBuff+length, "\r\n\tIPv4 Address\r\n");
+    //PRINTF("\taddress: %s", addr_type);
+    length += sprintf(printBuff+length, "\taddress: %s", addr_type);
+    //PRINTF("\r\n\t\tIP:\t\t%s", inet_ntoa(ip));
+    length += sprintf(printBuff+length, "\r\n\t\tIP:\t\t%s", inet_ntoa(ip));
+    //PRINTF("\r\n\t\tgateway:\t%s", inet_ntoa(gw));
+    length += sprintf(printBuff+length, "\r\n\t\tgateway:\t%s", inet_ntoa(gw));
+    //PRINTF("\r\n\t\tnetmask:\t%s", inet_ntoa(nm));
+    length += sprintf(printBuff+length, "\r\n\t\tnetmask:\t%s", inet_ntoa(nm));
+    //PRINTF("\r\n\t\tdns1:\t\t%s", inet_ntoa(dns1));
+    length += sprintf(printBuff+length, "\r\n\t\tdns1:\t\t%s", inet_ntoa(dns1));
+    //PRINTF("\r\n\t\tdns2:\t\t%s", inet_ntoa(dns2));
+    length += sprintf(printBuff+length, "\r\n\t\tdns1:\t\t%s", inet_ntoa(dns2));
+    //PRINTF("\r\n");
+    length += sprintf(printBuff+length, "\r\n");
+    return length;
+}
+
+
 
 /* Console command structs */
 
@@ -568,6 +760,23 @@ static const CLI_Command_Definition_t scanWifiCommandStruct =
     0
 };
 
+static const CLI_Command_Definition_t connectWifiCommandStruct =
+{
+    "c",
+    " c        : connect wifi \r\n",
+	connectApCommand,
+    0
+};
+
+static const CLI_Command_Definition_t printIpCommandStruct =
+{
+    "p",
+    " p        : show wlan info \r\n",
+	printIpCommand,
+    0
+};
+
+
 /*!
  * @brief Task responsible for loopback.
  */
@@ -611,6 +820,8 @@ void console_task(void *pvParameters)
     FreeRTOS_CLIRegisterCommand( &taskStatsCommandStruct );
 #endif
     FreeRTOS_CLIRegisterCommand( &scanWifiCommandStruct );
+    FreeRTOS_CLIRegisterCommand( &connectWifiCommandStruct );
+    FreeRTOS_CLIRegisterCommand( &printIpCommandStruct );
     FreeRTOS_CLIRegisterCommand( &exitCommandStruct );
 
     /* Receive user input and send it back to terminal. */
