@@ -338,7 +338,7 @@ static void screen4_AV_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openMenuScreen();
+		openUSBScreen();
 	}
 		break;
 	default:
@@ -360,13 +360,7 @@ static void screen4_AV_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	}
 }
 
-void events_init_screen4_AV(lv_ui *ui)
-{
-	lv_obj_set_event_cb(ui->screen4_AV_left_btn, screen4_AV_left_btnevent_handler);
-	lv_obj_set_event_cb(ui->screen4_AV_right_btn, screen4_AV_right_btnevent_handler);
-}
-
-static void screen5_SYSTEM_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+static void screen4_AV_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
@@ -380,13 +374,48 @@ static void screen5_SYSTEM_left_btnevent_handler(lv_obj_t * obj, lv_event_t even
 	}
 }
 
+void events_init_screen4_AV(lv_ui *ui)
+{
+	lv_obj_set_event_cb(ui->screen4_AV_left_btn, screen4_AV_left_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen4_AV_right_btn, screen4_AV_right_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen4_AV_home_btn, screen4_AV_home_btnevent_handler);
+}
+
+static void screen5_SYSTEM_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openAVScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 static void screen5_SYSTEM_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 {
 	switch (event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openLEDScreen();
+		openHelpScreen();
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen5_SYSTEM_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		openMenuScreen();
 	}
 		break;
 	default:
@@ -398,6 +427,7 @@ void events_init_screen5_SYSTEM(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen5_SYSTEM_left_btn, screen5_SYSTEM_left_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen5_SYSTEM_right_btn, screen5_SYSTEM_right_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen5_SYSTEM_home_btn, screen5_SYSTEM_home_btnevent_handler);
 }
 
 static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)

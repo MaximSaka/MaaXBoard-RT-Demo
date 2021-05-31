@@ -233,9 +233,9 @@ void setup_scr_screen2_WIFI(lv_ui *ui){
 
 	//Write codes screen2_WIFI_ssid_label
 	ui->screen2_WIFI_ssid_label = lv_label_create(ui->screen2_WIFI, NULL);
-	lv_label_set_text(ui->screen2_WIFI_ssid_label, "Wi-Fi: SSIDs");
+	lv_label_set_text(ui->screen2_WIFI_ssid_label, "Wi-Fi SSIDs:");
 	lv_label_set_long_mode(ui->screen2_WIFI_ssid_label, LV_LABEL_LONG_BREAK);
-	lv_label_set_align(ui->screen2_WIFI_ssid_label, LV_LABEL_ALIGN_CENTER);
+	lv_label_set_align(ui->screen2_WIFI_ssid_label, LV_LABEL_ALIGN_LEFT);
 
 	//Write style LV_LABEL_PART_MAIN for screen2_WIFI_ssid_label
 	static lv_style_t style_screen2_WIFI_ssid_label_main;
@@ -255,12 +255,12 @@ void setup_scr_screen2_WIFI(lv_ui *ui){
 	lv_style_set_pad_top(&style_screen2_WIFI_ssid_label_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_pad_bottom(&style_screen2_WIFI_ssid_label_main, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen2_WIFI_ssid_label, LV_LABEL_PART_MAIN, &style_screen2_WIFI_ssid_label_main);
-	lv_obj_set_pos(ui->screen2_WIFI_ssid_label, 163, 180);
+	lv_obj_set_pos(ui->screen2_WIFI_ssid_label, 30, 180);
 	lv_obj_set_size(ui->screen2_WIFI_ssid_label, 400, 0);
 
 	//Write codes screen2_WIFI_ip_addr_label
 	ui->screen2_WIFI_ip_addr_label = lv_label_create(ui->screen2_WIFI, NULL);
-	lv_label_set_text(ui->screen2_WIFI_ip_addr_label, "Ethernet: IP Address");
+	lv_label_set_text(ui->screen2_WIFI_ip_addr_label, "Ethernet IP Address:");
 	lv_label_set_long_mode(ui->screen2_WIFI_ip_addr_label, LV_LABEL_LONG_BREAK);
 	lv_label_set_align(ui->screen2_WIFI_ip_addr_label, LV_LABEL_ALIGN_LEFT);
 
@@ -308,7 +308,7 @@ void setup_scr_screen2_WIFI(lv_ui *ui){
 	lv_style_set_pad_top(&style_screen2_WIFI_font_label_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_pad_bottom(&style_screen2_WIFI_font_label_main, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen2_WIFI_font_label, LV_LABEL_PART_MAIN, &style_screen2_WIFI_font_label_main);
-	lv_obj_set_pos(ui->screen2_WIFI_font_label, 20, 180);
+	lv_obj_set_pos(ui->screen2_WIFI_font_label, 20, 140);
 	lv_obj_set_size(ui->screen2_WIFI_font_label, 200, 0);
 
 	//Write codes screen2_WIFI_ip_addr_edit_label
