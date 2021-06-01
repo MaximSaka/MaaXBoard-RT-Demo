@@ -221,7 +221,7 @@ int main(void)
 		while (1);
 	}
     
-	/* input parameters are queue, ad mouseHandle */
+	/* handle USB mouse input */
 	t_usb_host_mouse.hid_queue = &hid_devices_queue;
 	t_usb_host_mouse.host_hid_mouse = &g_HostHidMouse;
 	if (xTaskCreate(USB_HostApplicationMouseTask, "mouse task", 2000L / sizeof(portSTACK_TYPE), &t_usb_host_mouse, 3,
@@ -231,7 +231,7 @@ int main(void)
 		while (1);
 	}
 
-	/* input parameters are queue, ad keyboardHandle */
+	/* handle USB keyboard input */
 	t_usb_host_keyboard.hid_queue = &hid_devices_queue;
 	t_usb_host_keyboard.host_hid_keyboard = &g_HostHidKeyboard;
 	if (xTaskCreate(USB_HostApplicationKeyboardTask, "keyboard task", 2000L / sizeof(portSTACK_TYPE),
@@ -241,7 +241,7 @@ int main(void)
 		while (1);
 	}
 
-	/*! Following task can be removed */
+    /* launch HID input logging task */
 	t_usb_log.hid_queue = &hid_devices_queue;
 	t_usb_log.uart_handle = &uart_rtos_handle;
 	#if defined(ENABLED_LOG_TASK)
@@ -252,7 +252,7 @@ int main(void)
 	}
 	#endif
 
-
+    /* launch demo console task */
     t_console.cmd_queue = &wifi_commands_queue;
     t_console.wifi_resQ = &wifi_response_queue;
     t_console.uart_handle = &uart_rtos_handle;

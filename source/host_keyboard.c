@@ -13,13 +13,15 @@
 #include "host_keyboard.h"
 #include "usb_peripherals.h"
 #include "globals.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+
 #define KEYBOARD_USAGE_ID_NUMBER (57U)
 
 static QueueHandle_t *hid_devices_queue;
-extern struct hid_peripheral usb_devices[2];
+
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/

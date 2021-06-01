@@ -18,9 +18,11 @@
 #include "globals.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
+
 /*******************************************************************************
  * Globals
  ******************************************************************************/
+
 static QueueHandle_t *hid_devices_queue;
 /*! Global variables for storing x,y coordinates of display, can be removed*/
 int x_coordinate = 0;

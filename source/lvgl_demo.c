@@ -7,6 +7,7 @@
 #include "demo_common.h"
 #include "lvgl_demo.h"
 #include "network_demo.h"
+#include "usb_peripherals.h"
 
 /*******************************************************************************
  * Definitions
@@ -35,9 +36,74 @@ lv_ui guider_ui;
 
 static bool s_lgvl_ready = false;
 
+static void (*s_page_refresh)(void) = NULL;
+
+static bool s_hid_list_refresh_required = true;
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
+
+/*!
+ * @brief adds item to lvgl list
+ */
+void addItemToList(lv_obj_t * obj, const char * text)
+{
+	static lv_style_t list_child_style;
+	lv_style_init(&list_child_style);
+
+	lv_style_set_radius(&list_child_style, LV_STATE_DEFAULT, 3);
+	lv_style_set_bg_color(&list_child_style, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&list_child_style, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&list_child_style, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&list_child_style, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&list_child_style, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_font(&list_child_style, LV_STATE_DEFAULT, &lv_font_OpenSans_Light_28);
+
+	lv_obj_t *list_btn;
+	list_btn = lv_list_add_btn(obj, NULL, text);
+	lv_obj_add_style(list_btn, LV_BTN_PART_MAIN, &list_child_style);
+}
+
+/*!
+ * @brief updates the list of HID devices in the USB page.
+ */
+void refreshHIDList(void)
+{
+    if (!s_hid_list_refresh_required)
+        return;
+
+    lv_list_clean(guider_ui.screen3_USB_usb_list);
+
+    char buffer[100];
+
+    if (usb_devices[0].deviceExist) {
+    	sprintf(buffer, "hid mouse: pid=0x%x vid=0x%x addr=%d",
+    			usb_devices[0].devicePid, usb_devices[0].deviceVid, usb_devices[0].address);
+        addItemToList(guider_ui.screen3_USB_usb_list, buffer); 
+    }
+
+    if (usb_devices[1].deviceExist) {
+    	sprintf(buffer, "hid keyboard: pid=0x%x vid=0x%x addr=%d",
+        		usb_devices[1].devicePid, usb_devices[1].deviceVid, usb_devices[1].address);
+        addItemToList(guider_ui.screen3_USB_usb_list, buffer); 
+    }
+
+    s_hid_list_refresh_required = false;
+}
+
+/*!
+ * @brief refreshes the USB page.
+ */
+void refreshUSBPage(void)
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    refreshHIDList();
+}
 
 /*!
  * @brief adds item to the list of SSIDs
@@ -49,22 +115,7 @@ void addItemToSSIDList(const char * text)
         return;
     }
 
-	//Write style LV_BTN_PART_MAIN for screen2_WIFI_ssid_list
-	static lv_style_t style_screen2_WIFI_ssid_list_main_child;
-	lv_style_init(&style_screen2_WIFI_ssid_list_main_child);
-
-	//Write style state: LV_STATE_DEFAULT for style_screen2_WIFI_ssid_list_main_child
-	lv_style_set_radius(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, 3);
-	lv_style_set_bg_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_dir(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
-	lv_style_set_bg_opa(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, 255);
-	lv_style_set_text_color(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
-	lv_style_set_text_font(&style_screen2_WIFI_ssid_list_main_child, LV_STATE_DEFAULT, &lv_font_OpenSans_Light_28);
-
-	lv_obj_t *screen2_WIFI_ssid_list_btn;
-	screen2_WIFI_ssid_list_btn = lv_list_add_btn(guider_ui.screen2_WIFI_ssid_list, NULL, text);
-	lv_obj_add_style(screen2_WIFI_ssid_list_btn, LV_BTN_PART_MAIN, &style_screen2_WIFI_ssid_list_main_child);
+	addItemToList(guider_ui.screen2_WIFI_ssid_list, text);
 }
 
 void setLedRedImgState(bool state)
@@ -98,6 +149,16 @@ void setLedBlueImgState(bool state)
 }
 
 /*!
+* @brief Init color LEDs
+*/
+void initDefaultPageInteractions()
+{
+    initLEDs();
+
+    s_page_refresh = NULL;
+}
+
+/*!
 * @brief Opens the network screen
 */
 void openNetworkScreen()
@@ -105,9 +166,9 @@ void openNetworkScreen()
     setup_scr_screen2_WIFI(&guider_ui);
     lv_scr_load_anim(guider_ui.screen2_WIFI, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_NETWORK;
+
+    initDefaultPageInteractions();
 
     lv_list_clean(guider_ui.screen2_WIFI_ssid_list);
 
@@ -122,9 +183,9 @@ void openMenuScreen()
     setup_scr_screen0_MENU(&guider_ui);
     lv_scr_load_anim(guider_ui.screen0_MENU, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    initLEDs();
-
     s_active_page = PAGE_MENU;
+
+    initDefaultPageInteractions();
 }
 
 /*!
@@ -137,7 +198,7 @@ void openLEDScreen()
 
     s_active_page = PAGE_LED;
 
-    initLEDs();
+    initDefaultPageInteractions();
 }
 
 /*!
@@ -150,7 +211,11 @@ void openUSBScreen()
 
     s_active_page = PAGE_USB;
 
-    initLEDs();
+    initDefaultPageInteractions();
+
+    s_page_refresh = &refreshUSBPage;
+
+    s_hid_list_refresh_required = true;
 }
 
 /*!
@@ -163,7 +228,7 @@ void openAVScreen()
 
     s_active_page = PAGE_AV;
 
-    initLEDs();
+    initDefaultPageInteractions();
 }
 
 /*!
@@ -176,7 +241,7 @@ void openSystemScreen()
 
     s_active_page = PAGE_SYSTEM;
 
-    initLEDs();
+    initDefaultPageInteractions();
 }
 
 /*!
@@ -189,11 +254,30 @@ void openHelpScreen()
 
     s_active_page = PAGE_HELP;
 
-    initLEDs();
+    initDefaultPageInteractions();
+}
+
+/*!
+ * @brief FreeRTOS tick hook.
+ */
+void vApplicationTickHook_lvgl(void)
+{
+    if (s_lvgl_initialized)
+    {
+        lv_tick_inc(1);
+    }
+}
+
+/*!
+ * @brief returns 'true' if lvgl task has been properly initialized.
+ */
+bool isLvglReady(void)
+{
+    return s_lgvl_ready;
 }
 
 /*******************************************************************************
- * Prototypes
+ * Task
  ******************************************************************************/
 
 void lvgl_task(void *param)
@@ -218,6 +302,8 @@ void lvgl_task(void *param)
 	set_red_led(false);
 	set_green_led(false);
 	set_blue_led(false);
+
+    s_page_refresh = NULL;
 
     openMenuScreen();
 
@@ -260,26 +346,12 @@ void lvgl_task(void *param)
             setInputSignal(false);
         }
 
+        if (s_page_refresh != NULL)
+        {
+            (*s_page_refresh)();
+        }
+
         lv_task_handler();
         vTaskDelay(5);
     }
-}
-
-/*!
- * @brief FreeRTOS tick hook.
- */
-void vApplicationTickHook_lvgl(void)
-{
-    if (s_lvgl_initialized)
-    {
-        lv_tick_inc(1);
-    }
-}
-
-/*!
- * @brief returns 'true' if lvgl task has been properly initialized.
- */
-bool isLvglReady(void)
-{
-    return s_lgvl_ready;
 }

@@ -54,6 +54,8 @@ struct hid_peripheral
 	uint32_t address;
 };
 
+extern struct hid_peripheral usb_devices[2];
+
 /*! hid mouse structure for mouse/keyboard */
 struct hid_device
 {

@@ -39,15 +39,17 @@
 #include "network_demo.h"
 #include "wlan.h"
 #include "demo_common.h"
+
 /*******************************************************************************
  * Globals
  ******************************************************************************/
-extern struct hid_peripheral usb_devices[2];
+
 static uint8_t i2cScannedNodes[16];
 static lpuart_rtos_handle_t *handle;
 static QueueHandle_t *wifi_cmd_queue;
 static QueueHandle_t *wifi_response_queue;
 static EventGroupHandle_t *event_group_wifi;
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
