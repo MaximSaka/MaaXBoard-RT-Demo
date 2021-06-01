@@ -28,5 +28,6 @@ void setLedBlueImgState(bool state);
 void setHIDsRefreshed(void);
 
 void scani2cBusAndDisplay(void);
+void writeToHIDInputTextArea(const char* text);
 
 #endif //_LVGL_DEMO_H_

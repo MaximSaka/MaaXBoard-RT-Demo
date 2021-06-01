@@ -178,6 +178,12 @@ int __scan_cb(unsigned int count)
 
 void ssidScan(void)
 {
+    if (!isWifiReady())
+    {
+        PRINTF("Error: Wi-Fi module is still not ready. Wait a few seconds and retry\r\n");
+        return;
+    }
+
     if (wlan_scan(__scan_cb))
         PRINTF("Error: scan request failed\r\n");
     else

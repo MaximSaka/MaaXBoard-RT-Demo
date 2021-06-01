@@ -245,7 +245,7 @@ int main(void)
 	t_usb_log.hid_queue = &hid_devices_queue;
 	t_usb_log.uart_handle = &uart_rtos_handle;
 	#if defined(ENABLED_LOG_TASK)
-	if (xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 3, NULL) != pdPASS)
+	if (xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 2, NULL) != pdPASS)
 	{
 		PRINTF("Failed to create log task\r\n");
 		while (1);

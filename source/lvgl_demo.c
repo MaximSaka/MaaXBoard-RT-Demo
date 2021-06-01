@@ -41,7 +41,10 @@ static void (*s_page_refresh)(void) = NULL;
 
 static bool s_hid_list_refresh_required = true;
 
-static uint8_t i2cScannedNodes[16];
+static uint8_t s_i2c_scanned_nodes[16];
+
+static char s_text_area_buffer[100];
+static volatile char s_text_area_buffer_offset = 0;
 
 /*******************************************************************************
  * Functions
@@ -74,13 +77,13 @@ void addItemToList(lv_obj_t * obj, const char * text)
 void scani2cBusAndDisplay(void)
 {
     char buffer[12];
-    
+
     if (s_active_page != PAGE_USB)
     {
         return;
     }
 
-    scan_i2c_bus(i2cScannedNodes);
+    scan_i2c_bus(s_i2c_scanned_nodes);
 
     for (uint16_t row = 1; row < 9; row++)
     {
@@ -94,7 +97,7 @@ void scani2cBusAndDisplay(void)
             uint8_t offset = (i2caddress % 4);
             uint8_t bufferOffset = offset * 3;
 
-            if (i2cScannedNodes[index] & (1 << bit_pos))
+            if (s_i2c_scanned_nodes[index] & (1 << bit_pos))
             {
                 sprintf(buffer + bufferOffset, "%02X", curr_node);
             } 
@@ -114,6 +117,63 @@ void scani2cBusAndDisplay(void)
             }
         }
     }
+}
+
+/*!
+ * @brief send text to the HID input test text area
+ */
+void writeToHIDInputTextArea(const char* text)
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    taskENTER_CRITICAL();
+
+    s_text_area_buffer_offset += sprintf(s_text_area_buffer + s_text_area_buffer_offset, text);
+
+    taskEXIT_CRITICAL();
+}
+
+/*!
+ * @brief clear the HID input test text area buffer
+ */
+void clearTextAreaBuffer()
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    taskENTER_CRITICAL();
+
+    s_text_area_buffer[0] = '\0';
+    s_text_area_buffer_offset = 0;
+
+    taskEXIT_CRITICAL();
+}
+
+/*!
+ * @brief refresh the HID input test text area
+ */
+void refreshTextArea()
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    taskENTER_CRITICAL();
+
+    if (s_text_area_buffer[0] != '\0')
+    {
+        lv_textarea_add_text(guider_ui.screen3_USB_input_area, s_text_area_buffer);
+        s_text_area_buffer[0] = '\0';
+        s_text_area_buffer_offset = 0;
+    }
+
+    taskEXIT_CRITICAL();
 }
 
 /*!
@@ -154,6 +214,7 @@ void refreshHIDList(void)
 void refreshUSBPage(void)
 {
     refreshHIDList();
+    refreshTextArea();
 }
 
 /*!
@@ -262,6 +323,8 @@ void openUSBScreen()
 
     s_active_page = PAGE_USB;
 
+    clearTextAreaBuffer();
+
     initDefaultPageInteractions();
 
     s_page_refresh = &refreshUSBPage;
@@ -343,11 +406,6 @@ void setHIDsRefreshed(void)
 
 void lvgl_task(void *param)
 {
-    while (!isWifiReady())
-    {
-        vTaskDelay(15);
-    }
-
     lv_port_pre_init();
     lv_init();
     lv_port_disp_init();

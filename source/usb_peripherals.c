@@ -18,6 +18,7 @@
 #include "globals.h"
 #include "fsl_lpuart_freertos.h"
 #include "fsl_lpuart.h"
+#include "lvgl_demo.h"
 
 /*******************************************************************************
  * Globals
@@ -262,16 +263,23 @@ void USB_logTask(void *param)
 					y_coordinate = Y_MAX;
 				}
 				if (cmdEnable & (1<<mouseLogEn)) {
-					sprintf(usb_buff, "%d %d\r\n", x_coordinate, y_coordinate);
+					sprintf(usb_buff, "%d:%d\r\n", x_coordinate, y_coordinate);
 					LPUART_RTOS_Send(handle,usb_buff,strlen(usb_buff));
 				}
 				//usb_echo("%d %d\r\n", x_coordinate, y_coordinate);
+
+                sprintf(usb_buff, "%d:%d\r\n", x_coordinate, y_coordinate);
+                writeToHIDInputTextArea(usb_buff);
+
         	} else if (usb_hid_received.dev_type == KEYBOARD_DEVICE) {
         		//usb_echo("%c", usb_hid_received.dev_btn);
 				if (cmdEnable & (1<<keyboardLogEn)) {
 					sprintf(usb_buff, "%c", usb_hid_received.dev_btn);
 					LPUART_RTOS_Send(handle,usb_buff,strlen(usb_buff));
 				}
+
+                sprintf(usb_buff, "%c", usb_hid_received.dev_btn);
+                writeToHIDInputTextArea(usb_buff);
         	}
         }
     }
