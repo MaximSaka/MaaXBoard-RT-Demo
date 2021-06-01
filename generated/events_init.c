@@ -325,11 +325,56 @@ static void screen3_USB_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	}
 }
 
+static void screen3_USB_kbd_imgbtnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_kbd_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen3_USB_mouse_imgbtnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_mouse_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen3_USB_ic2_scan_imgbtnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_ic2_scan_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 void events_init_screen3_USB(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen3_USB_left_btn, screen3_USB_left_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen3_USB_right_btn, screen3_USB_right_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen3_USB_home_btn, screen3_USB_home_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen3_USB_kbd_imgbtn, screen3_USB_kbd_imgbtnevent_handler);
+	lv_obj_set_event_cb(ui->screen3_USB_mouse_imgbtn, screen3_USB_mouse_imgbtnevent_handler);
+	lv_obj_set_event_cb(ui->screen3_USB_ic2_scan_imgbtn, screen3_USB_ic2_scan_imgbtnevent_handler);
 }
 
 static void screen4_AV_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
