@@ -276,6 +276,14 @@ bool isLvglReady(void)
     return s_lgvl_ready;
 }
 
+/*!
+ * @brief indicate that array of connected HIDs has been refreshed.
+ */
+void setHIDsRefreshed(void)
+{
+    s_hid_list_refresh_required = true;
+}
+
 /*******************************************************************************
  * Task
  ******************************************************************************/

@@ -13,6 +13,7 @@
 #include "host_keyboard.h"
 #include "usb_peripherals.h"
 #include "globals.h"
+#include "lvgl_demo.h"
 
 /*******************************************************************************
  * Definitions
@@ -309,6 +310,9 @@ void USB_HostHidKeyboardTask(void *param)
                 }
                 keyboardInstance->keyboardBuffer[6] = keyboardInstance->keyboardBuffer[7] = 0x00;
                 usb_echo("keyboard detached\r\n");
+                usb_devices[1].deviceExist = 0;
+
+                setHIDsRefreshed();
                 break;
 
             default:
@@ -524,6 +528,8 @@ usb_status_t USB_HostHidKeyboardEvent(usb_device_handle deviceHandle,
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceAddress, &infoValue);
                         usb_devices[1].address = infoValue;
                         usb_echo("address=%d\r\n", infoValue);
+
+                        setHIDsRefreshed();
                     }
                     else
                     {

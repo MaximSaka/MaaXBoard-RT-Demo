@@ -34,7 +34,6 @@ struct hid_peripheral usb_devices[2] = {
 		{0,0,0,0}	// keyboard
 };
 
-
 /*!
  * @brief host callback function.
  *

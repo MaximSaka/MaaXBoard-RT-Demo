@@ -25,4 +25,6 @@ void setLedRedImgState(bool state);
 void setLedGreenImgState(bool state);
 void setLedBlueImgState(bool state);
 
+void setHIDsRefreshed(void);
+
 #endif //_LVGL_DEMO_H_
