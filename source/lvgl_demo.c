@@ -8,6 +8,7 @@
 #include "lvgl_demo.h"
 #include "network_demo.h"
 #include "usb_peripherals.h"
+#include "expansion_i2c.h"
 
 /*******************************************************************************
  * Definitions
@@ -40,6 +41,8 @@ static void (*s_page_refresh)(void) = NULL;
 
 static bool s_hid_list_refresh_required = true;
 
+static uint8_t i2cScannedNodes[16];
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
@@ -63,6 +66,49 @@ void addItemToList(lv_obj_t * obj, const char * text)
 	lv_obj_t *list_btn;
 	list_btn = lv_list_add_btn(obj, NULL, text);
 	lv_obj_add_style(list_btn, LV_BTN_PART_MAIN, &list_child_style);
+}
+
+/*!
+ * @brief add scanned i2c nodes to table
+ */
+void scani2cBusAndDisplay(void)
+{
+    char buffer[12];
+
+    scan_i2c_bus(i2cScannedNodes);
+
+    for (uint16_t row = 1; row < 9; row++)
+    {
+        uint16_t col = 1;
+
+        for (int i2caddress = 0; i2caddress < 0x10; i2caddress++)
+        {
+            uint8_t curr_node = ((row - 1) * 16) + i2caddress;
+            uint8_t index = curr_node / 8;
+            uint8_t bit_pos = 7 - (curr_node % 8);
+            uint8_t offset = (i2caddress % 4);
+            uint8_t bufferOffset = offset * 3;
+
+            if (i2cScannedNodes[index] & (1 << bit_pos))
+            {
+                sprintf(buffer + bufferOffset, "%02X", curr_node);
+            } 
+            else
+            {
+                sprintf(buffer + bufferOffset, "--");
+            }
+
+            if (offset < 3)
+            {
+                sprintf(buffer + bufferOffset + 2, ":");
+            }
+            else
+            {
+	            lv_table_set_cell_value(guider_ui.screen3_USB_ic2_table, row, col, buffer);
+                col++;
+            }
+        }
+    }
 }
 
 /*!
@@ -216,6 +262,8 @@ void openUSBScreen()
     s_page_refresh = &refreshUSBPage;
 
     s_hid_list_refresh_required = true;
+
+    scani2cBusAndDisplay();
 }
 
 /*!
