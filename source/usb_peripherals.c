@@ -268,8 +268,11 @@ void USB_logTask(void *param)
 				}
 				//usb_echo("%d %d\r\n", x_coordinate, y_coordinate);
 
-                sprintf(usb_buff, "%d:%d\r\n", x_coordinate, y_coordinate);
-                writeToHIDInputTextArea(usb_buff);
+                if (capturingMouseInputOnTA())
+                {
+                    sprintf(usb_buff, "%d:%d\r\n", x_coordinate, y_coordinate);
+                    writeToHIDInputTextArea(usb_buff);
+                }
 
         	} else if (usb_hid_received.dev_type == KEYBOARD_DEVICE) {
         		//usb_echo("%c", usb_hid_received.dev_btn);
@@ -278,8 +281,11 @@ void USB_logTask(void *param)
 					LPUART_RTOS_Send(handle,usb_buff,strlen(usb_buff));
 				}
 
-                sprintf(usb_buff, "%c", usb_hid_received.dev_btn);
-                writeToHIDInputTextArea(usb_buff);
+                if (capturingKeyboardInputOnTA())
+                {
+                    sprintf(usb_buff, "%c", usb_hid_received.dev_btn);
+                    writeToHIDInputTextArea(usb_buff);
+                }
         	}
         }
     }

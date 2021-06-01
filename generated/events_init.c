@@ -331,7 +331,14 @@ static void screen3_USB_kbd_imgbtnevent_handler(lv_obj_t * obj, lv_event_t event
 	{
 	case LV_EVENT_RELEASED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_kbd_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			setCaptureKeyboardInputOnTA(true);
+		}
+		else if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		{
+			setCaptureKeyboardInputOnTA(false);
+		}
 	}
 		break;
 	default:
@@ -345,7 +352,14 @@ static void screen3_USB_mouse_imgbtnevent_handler(lv_obj_t * obj, lv_event_t eve
 	{
 	case LV_EVENT_RELEASED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_mouse_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			setCaptureMouseInputOnTA(true);
+		}
+		else if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		{
+			setCaptureMouseInputOnTA(false);
+		}
 	}
 		break;
 	default:

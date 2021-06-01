@@ -29,5 +29,9 @@ void setHIDsRefreshed(void);
 
 void scani2cBusAndDisplay(void);
 void writeToHIDInputTextArea(const char* text);
+bool capturingMouseInputOnTA(void);
+void setCaptureMouseInputOnTA(bool state);
+bool capturingKeyboardInputOnTA(void);
+void setCaptureKeyboardInputOnTA(bool state);
 
 #endif //_LVGL_DEMO_H_

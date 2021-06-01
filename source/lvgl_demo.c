@@ -45,6 +45,8 @@ static uint8_t s_i2c_scanned_nodes[16];
 
 static char s_text_area_buffer[100];
 static volatile char s_text_area_buffer_offset = 0;
+static bool s_capture_mouse_input = false;
+static bool s_capture_keyboard_input = false;
 
 /*******************************************************************************
  * Functions
@@ -152,6 +154,91 @@ void clearTextAreaBuffer()
     s_text_area_buffer_offset = 0;
 
     taskEXIT_CRITICAL();
+}
+
+/*!
+ * @brief clear the HID input test text area
+ */
+void clearTextArea()
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+    
+    lv_textarea_set_text(guider_ui.screen3_USB_input_area, "");
+}
+
+/*!
+ * @brief check if mouse input is being captured by HID input text area
+ */
+bool capturingMouseInputOnTA(void)
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return false;
+    }
+
+    return s_capture_mouse_input;
+}
+
+/*!
+ * @brief set text area to capture mouse input
+ */
+void setCaptureMouseInputOnTA(bool state)
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    s_capture_mouse_input = state;
+
+    if (state)
+    {
+        s_capture_keyboard_input = false;
+
+        lv_btn_set_state(guider_ui.screen3_USB_kbd_imgbtn, LV_BTN_STATE_RELEASED);
+
+        clearTextAreaBuffer();
+        clearTextArea();
+    }
+}
+
+/*!
+ * @brief check if keyboard input is being captured by HID input text area
+ */
+bool capturingKeyboardInputOnTA(void)
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return false;
+    }
+
+    return s_capture_keyboard_input;
+}
+
+/*!
+ * @brief set text area to capture keyboard input
+ */
+void setCaptureKeyboardInputOnTA(bool state)
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    s_capture_keyboard_input = state;
+
+    if (state)
+    {
+        s_capture_mouse_input = false;
+
+        lv_btn_set_state(guider_ui.screen3_USB_mouse_imgbtn, LV_BTN_STATE_RELEASED);
+
+        clearTextAreaBuffer();
+        clearTextArea();
+    }
 }
 
 /*!
@@ -324,6 +411,8 @@ void openUSBScreen()
     s_active_page = PAGE_USB;
 
     clearTextAreaBuffer();
+    s_capture_mouse_input = false;
+    s_capture_keyboard_input = false;
 
     initDefaultPageInteractions();
 
