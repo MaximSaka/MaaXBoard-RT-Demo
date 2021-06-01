@@ -466,7 +466,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_obj_add_style(ui->screen3_USB_input_area, LV_PAGE_PART_EDGE_FLASH, &style_screen3_USB_input_area_edge_flash);
 	lv_obj_set_pos(ui->screen3_USB_input_area, 20, 855);
 	lv_obj_set_size(ui->screen3_USB_input_area, 680, 200);
-	lv_textarea_set_text(ui->screen3_USB_input_area,"Test");
+	lv_textarea_set_text(ui->screen3_USB_input_area,"Press 'keyboard' or 'mouse' to capture HID input...");
 	lv_obj_set_event_cb(ui->screen3_USB_input_area, text_area_event_cb);
 	lv_textarea_set_text_align(ui->screen3_USB_input_area, LV_LABEL_ALIGN_LEFT);
 
