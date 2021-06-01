@@ -98,6 +98,7 @@ typedef struct
 	lv_obj_t *screen3_USB_mouse_imgbtn_label;
 	lv_obj_t *screen3_USB_ic2_scan_imgbtn;
 	lv_obj_t *screen3_USB_ic2_scan_imgbtn_label;
+	lv_obj_t *screen3_USB_font_label;
 	lv_obj_t *screen4_AV;
 	lv_obj_t *screen4_AV_canvas_white;
 	lv_obj_t *screen4_AV_left_btn;
