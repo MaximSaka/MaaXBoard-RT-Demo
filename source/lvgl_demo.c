@@ -74,6 +74,11 @@ void addItemToList(lv_obj_t * obj, const char * text)
 void scani2cBusAndDisplay(void)
 {
     char buffer[12];
+    
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
 
     scan_i2c_bus(i2cScannedNodes);
 
@@ -116,6 +121,11 @@ void scani2cBusAndDisplay(void)
  */
 void refreshHIDList(void)
 {
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
     if (!s_hid_list_refresh_required)
         return;
 
@@ -143,11 +153,6 @@ void refreshHIDList(void)
  */
 void refreshUSBPage(void)
 {
-    if (s_active_page != PAGE_USB)
-    {
-        return;
-    }
-
     refreshHIDList();
 }
 

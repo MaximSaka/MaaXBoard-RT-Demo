@@ -359,7 +359,7 @@ static void screen3_USB_ic2_scan_imgbtnevent_handler(lv_obj_t * obj, lv_event_t 
 	{
 	case LV_EVENT_RELEASED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_ic2_scan_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		scani2cBusAndDisplay();
 	}
 		break;
 	default:

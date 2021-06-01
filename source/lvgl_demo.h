@@ -27,4 +27,6 @@ void setLedBlueImgState(bool state);
 
 void setHIDsRefreshed(void);
 
+void scani2cBusAndDisplay(void);
+
 #endif //_LVGL_DEMO_H_
