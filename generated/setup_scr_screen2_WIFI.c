@@ -338,6 +338,30 @@ void setup_scr_screen2_WIFI(lv_ui *ui){
 	lv_obj_set_pos(ui->screen2_WIFI_ip_addr_edit_label, 30, 895);
 	lv_obj_set_size(ui->screen2_WIFI_ip_addr_edit_label, 500, 0);
 
+	//Write codes screen2_WIFI_ssid_refresh_imgbtn
+	ui->screen2_WIFI_ssid_refresh_imgbtn = lv_imgbtn_create(ui->screen2_WIFI, NULL);
+
+	//Write style LV_IMGBTN_PART_MAIN for screen2_WIFI_ssid_refresh_imgbtn
+	static lv_style_t style_screen2_WIFI_ssid_refresh_imgbtn_main;
+	lv_style_init(&style_screen2_WIFI_ssid_refresh_imgbtn_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen2_WIFI_ssid_refresh_imgbtn_main
+	lv_style_set_text_color(&style_screen2_WIFI_ssid_refresh_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen2_WIFI_ssid_refresh_imgbtn_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_24);
+	lv_style_set_image_recolor(&style_screen2_WIFI_ssid_refresh_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen2_WIFI_ssid_refresh_imgbtn_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen2_WIFI_ssid_refresh_imgbtn_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen2_WIFI_ssid_refresh_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen2_WIFI_ssid_refresh_imgbtn_main);
+	lv_obj_set_pos(ui->screen2_WIFI_ssid_refresh_imgbtn, 530, 176);
+	lv_obj_set_size(ui->screen2_WIFI_ssid_refresh_imgbtn, 160, 50);
+	lv_imgbtn_set_src(ui->screen2_WIFI_ssid_refresh_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_160x50);
+	lv_imgbtn_set_src(ui->screen2_WIFI_ssid_refresh_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_160x50);
+	lv_imgbtn_set_src(ui->screen2_WIFI_ssid_refresh_imgbtn,LV_BTN_STATE_CHECKED_RELEASED,&_button_on_alpha_160x50);
+	lv_imgbtn_set_src(ui->screen2_WIFI_ssid_refresh_imgbtn,LV_BTN_STATE_CHECKED_PRESSED,&_button_alpha_160x50);
+	lv_imgbtn_set_checkable(ui->screen2_WIFI_ssid_refresh_imgbtn, true);
+	ui->screen2_WIFI_ssid_refresh_imgbtn_label = lv_label_create(ui->screen2_WIFI_ssid_refresh_imgbtn, NULL);
+	lv_label_set_text(ui->screen2_WIFI_ssid_refresh_imgbtn_label, "Refresh");
+
 	//Init events for screen
 	events_init_screen2_WIFI(ui);
 }

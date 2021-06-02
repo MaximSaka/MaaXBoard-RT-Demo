@@ -310,116 +310,116 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_obj_set_pos(ui->screen3_USB_input_label, 30, 800);
 	lv_obj_set_size(ui->screen3_USB_input_label, 300, 0);
 
-	//Write codes screen3_USB_ic2_nodes_label
-	ui->screen3_USB_ic2_nodes_label = lv_label_create(ui->screen3_USB, NULL);
-	lv_label_set_text(ui->screen3_USB_ic2_nodes_label, "Discovered IC2 Nodes");
-	lv_label_set_long_mode(ui->screen3_USB_ic2_nodes_label, LV_LABEL_LONG_BREAK);
-	lv_label_set_align(ui->screen3_USB_ic2_nodes_label, LV_LABEL_ALIGN_LEFT);
+	//Write codes screen3_USB_i2c_nodes_label
+	ui->screen3_USB_i2c_nodes_label = lv_label_create(ui->screen3_USB, NULL);
+	lv_label_set_text(ui->screen3_USB_i2c_nodes_label, "Discovered I2C Nodes");
+	lv_label_set_long_mode(ui->screen3_USB_i2c_nodes_label, LV_LABEL_LONG_BREAK);
+	lv_label_set_align(ui->screen3_USB_i2c_nodes_label, LV_LABEL_ALIGN_LEFT);
 
-	//Write style LV_LABEL_PART_MAIN for screen3_USB_ic2_nodes_label
-	static lv_style_t style_screen3_USB_ic2_nodes_label_main;
-	lv_style_init(&style_screen3_USB_ic2_nodes_label_main);
+	//Write style LV_LABEL_PART_MAIN for screen3_USB_i2c_nodes_label
+	static lv_style_t style_screen3_USB_i2c_nodes_label_main;
+	lv_style_init(&style_screen3_USB_i2c_nodes_label_main);
 
-	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_ic2_nodes_label_main
-	lv_style_set_radius(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 0);
-	lv_style_set_bg_color(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_color(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_dir(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
-	lv_style_set_bg_opa(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 255);
-	lv_style_set_text_color(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
-	lv_style_set_text_font(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_40);
-	lv_style_set_text_letter_space(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 2);
-	lv_style_set_pad_left(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 0);
-	lv_style_set_pad_right(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 0);
-	lv_style_set_pad_top(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 0);
-	lv_style_set_pad_bottom(&style_screen3_USB_ic2_nodes_label_main, LV_STATE_DEFAULT, 0);
-	lv_obj_add_style(ui->screen3_USB_ic2_nodes_label, LV_LABEL_PART_MAIN, &style_screen3_USB_ic2_nodes_label_main);
-	lv_obj_set_pos(ui->screen3_USB_ic2_nodes_label, 30, 430);
-	lv_obj_set_size(ui->screen3_USB_ic2_nodes_label, 600, 0);
+	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_i2c_nodes_label_main
+	lv_style_set_radius(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_bg_color(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_40);
+	lv_style_set_text_letter_space(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 2);
+	lv_style_set_pad_left(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_right(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_top(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_bottom(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen3_USB_i2c_nodes_label, LV_LABEL_PART_MAIN, &style_screen3_USB_i2c_nodes_label_main);
+	lv_obj_set_pos(ui->screen3_USB_i2c_nodes_label, 30, 430);
+	lv_obj_set_size(ui->screen3_USB_i2c_nodes_label, 600, 0);
 
-	//Write codes screen3_USB_ic2_table
-	ui->screen3_USB_ic2_table = lv_table_create(ui->screen3_USB, NULL);
+	//Write codes screen3_USB_i2c_table
+	ui->screen3_USB_i2c_table = lv_table_create(ui->screen3_USB, NULL);
 
-	//Write style LV_TABLE_PART_BG for screen3_USB_ic2_table
-	static lv_style_t style_screen3_USB_ic2_table_bg;
-	lv_style_init(&style_screen3_USB_ic2_table_bg);
+	//Write style LV_TABLE_PART_BG for screen3_USB_i2c_table
+	static lv_style_t style_screen3_USB_i2c_table_bg;
+	lv_style_init(&style_screen3_USB_i2c_table_bg);
 
-	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_ic2_table_bg
-	lv_style_set_bg_color(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_color(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_bg_grad_dir(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_NONE);
-	lv_style_set_bg_opa(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, 255);
-	lv_style_set_border_color(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, lv_color_make(0xd5, 0xde, 0xe6));
-	lv_style_set_border_width(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, 1);
-	lv_style_set_text_color(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, lv_color_make(0x39, 0x3c, 0x41));
-	lv_style_set_text_decor(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, LV_TEXT_DECOR_NONE);
-	lv_style_set_text_font(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, &lv_font_inconsolata_light_18);
-	lv_style_set_pad_left(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, 5);
-	lv_style_set_pad_right(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, 5);
-	lv_style_set_pad_top(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, 5);
-	lv_style_set_pad_bottom(&style_screen3_USB_ic2_table_bg, LV_STATE_DEFAULT, 5);
-	lv_obj_add_style(ui->screen3_USB_ic2_table, LV_TABLE_PART_BG, &style_screen3_USB_ic2_table_bg);
+	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_i2c_table_bg
+	lv_style_set_bg_color(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_NONE);
+	lv_style_set_bg_opa(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, 255);
+	lv_style_set_border_color(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, lv_color_make(0xd5, 0xde, 0xe6));
+	lv_style_set_border_width(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, 1);
+	lv_style_set_text_color(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, lv_color_make(0x39, 0x3c, 0x41));
+	lv_style_set_text_decor(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, LV_TEXT_DECOR_NONE);
+	lv_style_set_text_font(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, &lv_font_inconsolata_light_18);
+	lv_style_set_pad_left(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_right(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_top(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_bottom(&style_screen3_USB_i2c_table_bg, LV_STATE_DEFAULT, 5);
+	lv_obj_add_style(ui->screen3_USB_i2c_table, LV_TABLE_PART_BG, &style_screen3_USB_i2c_table_bg);
 
-	//Write style LV_TABLE_PART_CELL1 for screen3_USB_ic2_table
-	static lv_style_t style_screen3_USB_ic2_table_cell1;
-	lv_style_init(&style_screen3_USB_ic2_table_cell1);
+	//Write style LV_TABLE_PART_CELL1 for screen3_USB_i2c_table
+	static lv_style_t style_screen3_USB_i2c_table_cell1;
+	lv_style_init(&style_screen3_USB_i2c_table_cell1);
 
-	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_ic2_table_cell1
-	lv_style_set_border_color(&style_screen3_USB_ic2_table_cell1, LV_STATE_DEFAULT, lv_color_make(0xd5, 0xde, 0xe6));
-	lv_style_set_border_width(&style_screen3_USB_ic2_table_cell1, LV_STATE_DEFAULT, 1);
-	lv_obj_add_style(ui->screen3_USB_ic2_table, LV_TABLE_PART_CELL1, &style_screen3_USB_ic2_table_cell1);
-	lv_obj_set_pos(ui->screen3_USB_ic2_table, 24, 485);
-	lv_table_set_col_cnt(ui->screen3_USB_ic2_table,5);
-	lv_table_set_row_cnt(ui->screen3_USB_ic2_table,9);
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,0,0," ");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,1,0,"00");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,2,0,"10");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,3,0,"20");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,4,0,"30");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,5,0,"40");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,6,0,"50");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,7,0,"60");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,8,0,"70");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,0,1,"00:01:02:03");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,1,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,2,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,3,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,4,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,5,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,6,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,7,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,8,1,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,0,2,"04:05:06:07");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,1,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,2,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,3,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,4,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,5,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,6,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,7,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,8,2,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,0,3,"08:09:0A:0B");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,1,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,2,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,3,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,4,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,5,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,6,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,7,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,8,3,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,0,4,"0C:0D:0E:0F");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,1,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,2,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,3,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,4,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,5,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,6,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,7,4,"--:--:--:--");
-	lv_table_set_cell_value(ui->screen3_USB_ic2_table,8,4,"--:--:--:--");
-	lv_obj_set_style_local_pad_left(ui->screen3_USB_ic2_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 10);
-	lv_obj_set_style_local_pad_right(ui->screen3_USB_ic2_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 10);
-	lv_obj_set_style_local_pad_top(ui->screen3_USB_ic2_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
-	lv_obj_set_style_local_pad_bottom(ui->screen3_USB_ic2_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
+	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_i2c_table_cell1
+	lv_style_set_border_color(&style_screen3_USB_i2c_table_cell1, LV_STATE_DEFAULT, lv_color_make(0xd5, 0xde, 0xe6));
+	lv_style_set_border_width(&style_screen3_USB_i2c_table_cell1, LV_STATE_DEFAULT, 1);
+	lv_obj_add_style(ui->screen3_USB_i2c_table, LV_TABLE_PART_CELL1, &style_screen3_USB_i2c_table_cell1);
+	lv_obj_set_pos(ui->screen3_USB_i2c_table, 24, 485);
+	lv_table_set_col_cnt(ui->screen3_USB_i2c_table,5);
+	lv_table_set_row_cnt(ui->screen3_USB_i2c_table,9);
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,0,0," ");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,1,0,"00");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,2,0,"10");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,3,0,"20");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,4,0,"30");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,5,0,"40");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,6,0,"50");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,7,0,"60");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,8,0,"70");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,0,1,"00:01:02:03");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,1,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,2,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,3,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,4,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,5,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,6,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,7,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,8,1,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,0,2,"04:05:06:07");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,1,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,2,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,3,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,4,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,5,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,6,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,7,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,8,2,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,0,3,"08:09:0A:0B");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,1,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,2,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,3,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,4,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,5,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,6,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,7,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,8,3,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,0,4,"0C:0D:0E:0F");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,1,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,2,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,3,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,4,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,5,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,6,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,7,4,"--:--:--:--");
+	lv_table_set_cell_value(ui->screen3_USB_i2c_table,8,4,"--:--:--:--");
+	lv_obj_set_style_local_pad_left(ui->screen3_USB_i2c_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 10);
+	lv_obj_set_style_local_pad_right(ui->screen3_USB_i2c_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 10);
+	lv_obj_set_style_local_pad_top(ui->screen3_USB_i2c_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
+	lv_obj_set_style_local_pad_bottom(ui->screen3_USB_i2c_table, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
 
 	//Write codes screen3_USB_input_area
 	ui->screen3_USB_input_area = lv_textarea_create(ui->screen3_USB, NULL);
@@ -518,26 +518,26 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	ui->screen3_USB_mouse_imgbtn_label = lv_label_create(ui->screen3_USB_mouse_imgbtn, NULL);
 	lv_label_set_text(ui->screen3_USB_mouse_imgbtn_label, "mouse");
 
-	//Write codes screen3_USB_ic2_scan_imgbtn
-	ui->screen3_USB_ic2_scan_imgbtn = lv_imgbtn_create(ui->screen3_USB, NULL);
+	//Write codes screen3_USB_i2c_scan_imgbtn
+	ui->screen3_USB_i2c_scan_imgbtn = lv_imgbtn_create(ui->screen3_USB, NULL);
 
-	//Write style LV_IMGBTN_PART_MAIN for screen3_USB_ic2_scan_imgbtn
-	static lv_style_t style_screen3_USB_ic2_scan_imgbtn_main;
-	lv_style_init(&style_screen3_USB_ic2_scan_imgbtn_main);
+	//Write style LV_IMGBTN_PART_MAIN for screen3_USB_i2c_scan_imgbtn
+	static lv_style_t style_screen3_USB_i2c_scan_imgbtn_main;
+	lv_style_init(&style_screen3_USB_i2c_scan_imgbtn_main);
 
-	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_ic2_scan_imgbtn_main
-	lv_style_set_text_color(&style_screen3_USB_ic2_scan_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
-	lv_style_set_text_font(&style_screen3_USB_ic2_scan_imgbtn_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_24);
-	lv_style_set_image_recolor(&style_screen3_USB_ic2_scan_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_image_recolor_opa(&style_screen3_USB_ic2_scan_imgbtn_main, LV_STATE_DEFAULT, 0);
-	lv_style_set_image_opa(&style_screen3_USB_ic2_scan_imgbtn_main, LV_STATE_DEFAULT, 255);
-	lv_obj_add_style(ui->screen3_USB_ic2_scan_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen3_USB_ic2_scan_imgbtn_main);
-	lv_obj_set_pos(ui->screen3_USB_ic2_scan_imgbtn, 530, 426);
-	lv_obj_set_size(ui->screen3_USB_ic2_scan_imgbtn, 160, 50);
-	lv_imgbtn_set_src(ui->screen3_USB_ic2_scan_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_160x50);
-	lv_imgbtn_set_src(ui->screen3_USB_ic2_scan_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_160x50);
-	ui->screen3_USB_ic2_scan_imgbtn_label = lv_label_create(ui->screen3_USB_ic2_scan_imgbtn, NULL);
-	lv_label_set_text(ui->screen3_USB_ic2_scan_imgbtn_label, "scan");
+	//Write style state: LV_STATE_DEFAULT for style_screen3_USB_i2c_scan_imgbtn_main
+	lv_style_set_text_color(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_24);
+	lv_style_set_image_recolor(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen3_USB_i2c_scan_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen3_USB_i2c_scan_imgbtn_main);
+	lv_obj_set_pos(ui->screen3_USB_i2c_scan_imgbtn, 530, 426);
+	lv_obj_set_size(ui->screen3_USB_i2c_scan_imgbtn, 160, 50);
+	lv_imgbtn_set_src(ui->screen3_USB_i2c_scan_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_160x50);
+	lv_imgbtn_set_src(ui->screen3_USB_i2c_scan_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_160x50);
+	ui->screen3_USB_i2c_scan_imgbtn_label = lv_label_create(ui->screen3_USB_i2c_scan_imgbtn, NULL);
+	lv_label_set_text(ui->screen3_USB_i2c_scan_imgbtn_label, "scan");
 
 	//Write codes screen3_USB_font_label
 	ui->screen3_USB_font_label = lv_label_create(ui->screen3_USB, NULL);

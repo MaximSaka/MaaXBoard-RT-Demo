@@ -71,7 +71,7 @@ void setup_scr_screen0_MENU(lv_ui *ui){
 
 	//Write codes screen0_MENU_page_label
 	ui->screen0_MENU_page_label = lv_label_create(ui->screen0_MENU, NULL);
-	lv_label_set_text(ui->screen0_MENU_page_label, "MaaxBoard i.MX8RT");
+	lv_label_set_text(ui->screen0_MENU_page_label, "MaaxBoard RT");
 	lv_label_set_long_mode(ui->screen0_MENU_page_label, LV_LABEL_LONG_BREAK);
 	lv_label_set_align(ui->screen0_MENU_page_label, LV_LABEL_ALIGN_LEFT);
 
@@ -98,7 +98,7 @@ void setup_scr_screen0_MENU(lv_ui *ui){
 
 	//Write codes screen0_MENU_label_1
 	ui->screen0_MENU_label_1 = lv_label_create(ui->screen0_MENU, NULL);
-	lv_label_set_text(ui->screen0_MENU_label_1, "Quickstart application");
+	lv_label_set_text(ui->screen0_MENU_label_1, "GUI demo application");
 	lv_label_set_long_mode(ui->screen0_MENU_label_1, LV_LABEL_LONG_BREAK);
 	lv_label_set_align(ui->screen0_MENU_label_1, LV_LABEL_ALIGN_LEFT);
 

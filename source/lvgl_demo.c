@@ -114,7 +114,7 @@ void scani2cBusAndDisplay(void)
             }
             else
             {
-	            lv_table_set_cell_value(guider_ui.screen3_USB_ic2_table, row, col, buffer);
+	            lv_table_set_cell_value(guider_ui.screen3_USB_i2c_table, row, col, buffer);
                 col++;
             }
         }

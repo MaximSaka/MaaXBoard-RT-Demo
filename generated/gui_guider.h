@@ -74,6 +74,8 @@ typedef struct
 	lv_obj_t *screen2_WIFI_ip_addr_label;
 	lv_obj_t *screen2_WIFI_font_label;
 	lv_obj_t *screen2_WIFI_ip_addr_edit_label;
+	lv_obj_t *screen2_WIFI_ssid_refresh_imgbtn;
+	lv_obj_t *screen2_WIFI_ssid_refresh_imgbtn_label;
 	lv_obj_t *screen3_USB;
 	lv_obj_t *screen3_USB_canvas_white;
 	lv_obj_t *screen3_USB_left_btn;
@@ -89,15 +91,15 @@ typedef struct
 	lv_obj_t *screen3_USB_usb_list;
 	lv_obj_t *screen3_USB_usb_devices_label;
 	lv_obj_t *screen3_USB_input_label;
-	lv_obj_t *screen3_USB_ic2_nodes_label;
-	lv_obj_t *screen3_USB_ic2_table;
+	lv_obj_t *screen3_USB_i2c_nodes_label;
+	lv_obj_t *screen3_USB_i2c_table;
 	lv_obj_t *screen3_USB_input_area;
 	lv_obj_t *screen3_USB_kbd_imgbtn;
 	lv_obj_t *screen3_USB_kbd_imgbtn_label;
 	lv_obj_t *screen3_USB_mouse_imgbtn;
 	lv_obj_t *screen3_USB_mouse_imgbtn_label;
-	lv_obj_t *screen3_USB_ic2_scan_imgbtn;
-	lv_obj_t *screen3_USB_ic2_scan_imgbtn_label;
+	lv_obj_t *screen3_USB_i2c_scan_imgbtn;
+	lv_obj_t *screen3_USB_i2c_scan_imgbtn_label;
 	lv_obj_t *screen3_USB_font_label;
 	lv_obj_t *screen4_AV;
 	lv_obj_t *screen4_AV_canvas_white;
@@ -112,9 +114,7 @@ typedef struct
 	lv_obj_t *screen4_AV_home_btn_label;
 	lv_obj_t *screen4_AV_page_label;
 	lv_obj_t *screen4_AV_camera_label;
-	lv_obj_t *screen4_AV_mic_label;
 	lv_obj_t *screen4_AV_camera_state_label;
-	lv_obj_t *screen4_AV_mic_state_label;
 	lv_obj_t *screen4_AV_playback_label;
 	lv_obj_t *screen4_AV_audio_test_imgbtn;
 	lv_obj_t *screen4_AV_audio_test_imgbtn_label;
