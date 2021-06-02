@@ -282,7 +282,7 @@ static void screen2_WIFI_ssid_refresh_imgbtnevent_handler(lv_obj_t * obj, lv_eve
 	{
 	case LV_EVENT_RELEASED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen2_WIFI_ssid_refresh_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		startSSIDScan();
 	}
 		break;
 	default:

@@ -76,6 +76,7 @@ typedef struct
 	lv_obj_t *screen2_WIFI_ip_addr_edit_label;
 	lv_obj_t *screen2_WIFI_ssid_refresh_imgbtn;
 	lv_obj_t *screen2_WIFI_ssid_refresh_imgbtn_label;
+	lv_obj_t *screen2_WIFI_ssid_scan_label;
 	lv_obj_t *screen3_USB;
 	lv_obj_t *screen3_USB_canvas_white;
 	lv_obj_t *screen3_USB_left_btn;
