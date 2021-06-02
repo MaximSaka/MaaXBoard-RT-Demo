@@ -263,7 +263,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_pad_top(&style_screen4_AV_playback_label_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_pad_bottom(&style_screen4_AV_playback_label_main, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_playback_label, LV_LABEL_PART_MAIN, &style_screen4_AV_playback_label_main);
-	lv_obj_set_pos(ui->screen4_AV_playback_label, 32, 460);
+	lv_obj_set_pos(ui->screen4_AV_playback_label, 32, 300);
 	lv_obj_set_size(ui->screen4_AV_playback_label, 600, 0);
 
 	//Write codes screen4_AV_audio_test_imgbtn
@@ -280,7 +280,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_image_recolor_opa(&style_screen4_AV_audio_test_imgbtn_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_image_opa(&style_screen4_AV_audio_test_imgbtn_main, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen4_AV_audio_test_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen4_AV_audio_test_imgbtn_main);
-	lv_obj_set_pos(ui->screen4_AV_audio_test_imgbtn, 505, 440);
+	lv_obj_set_pos(ui->screen4_AV_audio_test_imgbtn, 505, 278);
 	lv_obj_set_size(ui->screen4_AV_audio_test_imgbtn, 190, 80);
 	lv_imgbtn_set_src(ui->screen4_AV_audio_test_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_190x80);
 	lv_imgbtn_set_src(ui->screen4_AV_audio_test_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_190x80);
@@ -289,6 +289,202 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_imgbtn_set_checkable(ui->screen4_AV_audio_test_imgbtn, true);
 	ui->screen4_AV_audio_test_imgbtn_label = lv_label_create(ui->screen4_AV_audio_test_imgbtn, NULL);
 	lv_label_set_text(ui->screen4_AV_audio_test_imgbtn_label, "test");
+
+	//Write codes screen4_AV_mic_label
+	ui->screen4_AV_mic_label = lv_label_create(ui->screen4_AV, NULL);
+	lv_label_set_text(ui->screen4_AV_mic_label, "Microphone Input:");
+	lv_label_set_long_mode(ui->screen4_AV_mic_label, LV_LABEL_LONG_BREAK);
+	lv_label_set_align(ui->screen4_AV_mic_label, LV_LABEL_ALIGN_LEFT);
+
+	//Write style LV_LABEL_PART_MAIN for screen4_AV_mic_label
+	static lv_style_t style_screen4_AV_mic_label_main;
+	lv_style_init(&style_screen4_AV_mic_label_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic_label_main
+	lv_style_set_radius(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_bg_color(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 255);
+	lv_style_set_text_color(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_40);
+	lv_style_set_text_letter_space(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 2);
+	lv_style_set_pad_left(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_right(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_top(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_pad_bottom(&style_screen4_AV_mic_label_main, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen4_AV_mic_label, LV_LABEL_PART_MAIN, &style_screen4_AV_mic_label_main);
+	lv_obj_set_pos(ui->screen4_AV_mic_label, 32, 390);
+	lv_obj_set_size(ui->screen4_AV_mic_label, 600, 0);
+
+	//Write codes screen4_AV_mic1_cb
+	ui->screen4_AV_mic1_cb = lv_checkbox_create(ui->screen4_AV, NULL);
+	lv_checkbox_set_text(ui->screen4_AV_mic1_cb, "mic 1");
+
+	//Write style LV_CHECKBOX_PART_BG for screen4_AV_mic1_cb
+	static lv_style_t style_screen4_AV_mic1_cb_bg;
+	lv_style_init(&style_screen4_AV_mic1_cb_bg);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic1_cb_bg
+	lv_style_set_radius(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_style_set_text_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_font(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_letter_space(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen4_AV_mic1_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic1_cb_bg);
+
+	//Write style LV_CHECKBOX_PART_BULLET for screen4_AV_mic1_cb
+	static lv_style_t style_screen4_AV_mic1_cb_bullet;
+	lv_style_init(&style_screen4_AV_mic1_cb_bullet);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic1_cb_bullet
+	lv_style_set_radius(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, 255);
+	lv_style_set_border_color(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
+	lv_style_set_border_width(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, 1);
+	lv_obj_add_style(ui->screen4_AV_mic1_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic1_cb_bullet);
+	lv_obj_set_pos(ui->screen4_AV_mic1_cb, 620, 460);
+
+	//Write codes screen4_AV_mic2_cb
+	ui->screen4_AV_mic2_cb = lv_checkbox_create(ui->screen4_AV, NULL);
+	lv_checkbox_set_text(ui->screen4_AV_mic2_cb, "mic 2");
+
+	//Write style LV_CHECKBOX_PART_BG for screen4_AV_mic2_cb
+	static lv_style_t style_screen4_AV_mic2_cb_bg;
+	lv_style_init(&style_screen4_AV_mic2_cb_bg);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic2_cb_bg
+	lv_style_set_radius(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_style_set_text_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_font(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_letter_space(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen4_AV_mic2_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic2_cb_bg);
+
+	//Write style LV_CHECKBOX_PART_BULLET for screen4_AV_mic2_cb
+	static lv_style_t style_screen4_AV_mic2_cb_bullet;
+	lv_style_init(&style_screen4_AV_mic2_cb_bullet);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic2_cb_bullet
+	lv_style_set_radius(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, 255);
+	lv_style_set_border_color(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
+	lv_style_set_border_width(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, 1);
+	lv_obj_add_style(ui->screen4_AV_mic2_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic2_cb_bullet);
+	lv_obj_set_pos(ui->screen4_AV_mic2_cb, 620, 495);
+
+	//Write codes screen4_AV_mic3_cb
+	ui->screen4_AV_mic3_cb = lv_checkbox_create(ui->screen4_AV, NULL);
+	lv_checkbox_set_text(ui->screen4_AV_mic3_cb, "mic 3");
+
+	//Write style LV_CHECKBOX_PART_BG for screen4_AV_mic3_cb
+	static lv_style_t style_screen4_AV_mic3_cb_bg;
+	lv_style_init(&style_screen4_AV_mic3_cb_bg);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic3_cb_bg
+	lv_style_set_radius(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_style_set_text_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_font(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_letter_space(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen4_AV_mic3_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic3_cb_bg);
+
+	//Write style LV_CHECKBOX_PART_BULLET for screen4_AV_mic3_cb
+	static lv_style_t style_screen4_AV_mic3_cb_bullet;
+	lv_style_init(&style_screen4_AV_mic3_cb_bullet);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic3_cb_bullet
+	lv_style_set_radius(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, 255);
+	lv_style_set_border_color(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
+	lv_style_set_border_width(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, 1);
+	lv_obj_add_style(ui->screen4_AV_mic3_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic3_cb_bullet);
+	lv_obj_set_pos(ui->screen4_AV_mic3_cb, 620, 530);
+
+	//Write codes screen4_AV_mic4_cb
+	ui->screen4_AV_mic4_cb = lv_checkbox_create(ui->screen4_AV, NULL);
+	lv_checkbox_set_text(ui->screen4_AV_mic4_cb, "mic 4");
+
+	//Write style LV_CHECKBOX_PART_BG for screen4_AV_mic4_cb
+	static lv_style_t style_screen4_AV_mic4_cb_bg;
+	lv_style_init(&style_screen4_AV_mic4_cb_bg);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic4_cb_bg
+	lv_style_set_radius(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_style_set_text_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_font(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_letter_space(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 0);
+	lv_obj_add_style(ui->screen4_AV_mic4_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic4_cb_bg);
+
+	//Write style LV_CHECKBOX_PART_BULLET for screen4_AV_mic4_cb
+	static lv_style_t style_screen4_AV_mic4_cb_bullet;
+	lv_style_init(&style_screen4_AV_mic4_cb_bullet);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic4_cb_bullet
+	lv_style_set_radius(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, 6);
+	lv_style_set_bg_color(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, 255);
+	lv_style_set_border_color(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
+	lv_style_set_border_width(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, 1);
+	lv_obj_add_style(ui->screen4_AV_mic4_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic4_cb_bullet);
+	lv_obj_set_pos(ui->screen4_AV_mic4_cb, 620, 565);
+
+	//Write codes screen4_AV_mic_chart
+	ui->screen4_AV_mic_chart = lv_chart_create(ui->screen4_AV, NULL);
+
+	//Write style LV_CHART_PART_BG for screen4_AV_mic_chart
+	static lv_style_t style_screen4_AV_mic_chart_bg;
+	lv_style_init(&style_screen4_AV_mic_chart_bg);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic_chart_bg
+	lv_style_set_bg_color(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_bg_grad_color(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_bg_grad_dir(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+	lv_style_set_bg_opa(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, 255);
+	lv_style_set_pad_left(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_right(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_top(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, 5);
+	lv_style_set_pad_bottom(&style_screen4_AV_mic_chart_bg, LV_STATE_DEFAULT, 5);
+	lv_obj_add_style(ui->screen4_AV_mic_chart, LV_CHART_PART_BG, &style_screen4_AV_mic_chart_bg);
+
+	//Write style LV_CHART_PART_SERIES_BG for screen4_AV_mic_chart
+	static lv_style_t style_screen4_AV_mic_chart_series_bg;
+	lv_style_init(&style_screen4_AV_mic_chart_series_bg);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen4_AV_mic_chart_series_bg
+	lv_style_set_line_color(&style_screen4_AV_mic_chart_series_bg, LV_STATE_DEFAULT, lv_color_make(0xe8, 0xe8, 0xe8));
+	lv_style_set_line_width(&style_screen4_AV_mic_chart_series_bg, LV_STATE_DEFAULT, 2);
+	lv_style_set_line_opa(&style_screen4_AV_mic_chart_series_bg, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen4_AV_mic_chart, LV_CHART_PART_SERIES_BG, &style_screen4_AV_mic_chart_series_bg);
+	lv_obj_set_pos(ui->screen4_AV_mic_chart, 30, 454);
+	lv_obj_set_size(ui->screen4_AV_mic_chart, 560, 250);
+	lv_chart_set_type(ui->screen4_AV_mic_chart,LV_CHART_TYPE_LINE);
+	lv_chart_set_range(ui->screen4_AV_mic_chart,0,100);
+	lv_chart_set_div_line_count(ui->screen4_AV_mic_chart, 3, 5);
 
 	//Init events for screen
 	events_init_screen4_AV(ui);

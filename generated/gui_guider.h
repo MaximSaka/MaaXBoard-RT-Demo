@@ -119,6 +119,12 @@ typedef struct
 	lv_obj_t *screen4_AV_playback_label;
 	lv_obj_t *screen4_AV_audio_test_imgbtn;
 	lv_obj_t *screen4_AV_audio_test_imgbtn_label;
+	lv_obj_t *screen4_AV_mic_label;
+	lv_obj_t *screen4_AV_mic1_cb;
+	lv_obj_t *screen4_AV_mic2_cb;
+	lv_obj_t *screen4_AV_mic3_cb;
+	lv_obj_t *screen4_AV_mic4_cb;
+	lv_obj_t *screen4_AV_mic_chart;
 	lv_obj_t *screen5_SYSTEM;
 	lv_obj_t *screen5_SYSTEM_canvas_white;
 	lv_obj_t *screen5_SYSTEM_left_btn;
