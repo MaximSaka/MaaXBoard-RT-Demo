@@ -34,4 +34,6 @@ void setCaptureMouseInputOnTA(bool state);
 bool capturingKeyboardInputOnTA(void);
 void setCaptureKeyboardInputOnTA(bool state);
 
+void startSSIDScan();
+
 #endif //_LVGL_DEMO_H_

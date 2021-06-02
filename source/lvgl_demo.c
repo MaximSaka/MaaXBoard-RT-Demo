@@ -48,6 +48,8 @@ static volatile char s_text_area_buffer_offset = 0;
 static bool s_capture_mouse_input = false;
 static bool s_capture_keyboard_input = false;
 
+static bool s_ssid_scanning_label_visible = true;
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
@@ -314,6 +316,12 @@ void addItemToSSIDList(const char * text)
         return;
     }
 
+    if (s_ssid_scanning_label_visible)
+    {
+	    lv_obj_set_hidden(guider_ui.screen2_WIFI_ssid_scan_label, true);
+        s_ssid_scanning_label_visible = false;
+    }
+
 	addItemToList(guider_ui.screen2_WIFI_ssid_list, text);
 }
 
@@ -358,6 +366,19 @@ void initDefaultPageInteractions()
 }
 
 /*!
+* @brief starts an ssid scan
+*/
+void startSSIDScan()
+{
+    lv_list_clean(guider_ui.screen2_WIFI_ssid_list);
+    
+    lv_obj_set_hidden(guider_ui.screen2_WIFI_ssid_scan_label, false);
+    s_ssid_scanning_label_visible = true;
+    
+    ssidScan();
+}
+
+/*!
 * @brief Opens the network screen
 */
 void openNetworkScreen()
@@ -369,9 +390,7 @@ void openNetworkScreen()
 
     initDefaultPageInteractions();
 
-    lv_list_clean(guider_ui.screen2_WIFI_ssid_list);
-
-    ssidScan();
+    startSSIDScan();
 }
 
 /*!
