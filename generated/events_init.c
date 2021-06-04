@@ -350,7 +350,7 @@ static void screen3_USB_kbd_imgbtnevent_handler(lv_obj_t * obj, lv_event_t event
 		{
 			setCaptureKeyboardInputOnTA(true);
 		}
-		else if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		else
 		{
 			setCaptureKeyboardInputOnTA(false);
 		}
@@ -371,7 +371,7 @@ static void screen3_USB_mouse_imgbtnevent_handler(lv_obj_t * obj, lv_event_t eve
 		{
 			setCaptureMouseInputOnTA(true);
 		}
-		else if (!(lv_btn_get_state(obj) & LV_STATE_CHECKED))
+		else
 		{
 			setCaptureMouseInputOnTA(false);
 		}
@@ -454,7 +454,14 @@ static void screen4_AV_mic1_cbevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_VALUE_CHANGED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic1_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			enableMic(1, true);
+		}
+		else
+		{
+			enableMic(1, false);
+		}
 	}
 		break;
 	default:
@@ -468,7 +475,14 @@ static void screen4_AV_mic2_cbevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_VALUE_CHANGED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic2_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			enableMic(2, true);
+		}
+		else
+		{
+			enableMic(2, false);
+		}
 	}
 		break;
 	default:
@@ -482,7 +496,14 @@ static void screen4_AV_mic3_cbevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_VALUE_CHANGED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic3_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			enableMic(3, true);
+		}
+		else
+		{
+			enableMic(3, false);
+		}
 	}
 		break;
 	default:
@@ -496,7 +517,14 @@ static void screen4_AV_mic4_cbevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_VALUE_CHANGED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic4_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			enableMic(4, true);
+		}
+		else
+		{
+			enableMic(4, false);
+		}
 	}
 		break;
 	default:

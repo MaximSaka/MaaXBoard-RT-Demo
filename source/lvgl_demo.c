@@ -68,6 +68,11 @@ static int s_mic_2_buffer_count = 0;
 static int s_mic_3_buffer_count = 0;
 static int s_mic_4_buffer_count = 0;
 
+static bool s_mic_1_series_visible = false;
+static bool s_mic_2_series_visible = false;
+static bool s_mic_3_series_visible = false;
+static bool s_mic_4_series_visible = false;
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
@@ -465,25 +470,112 @@ void openUSBScreen()
 */
 void initMicGraph()
 {
-    s_mic_1_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_RED);
-    s_mic_2_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_GREEN);
-    s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
-    s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_TEAL);
-
     lv_chart_set_point_count(guider_ui.screen4_AV_mic_chart, MIC_GRAPH_POINTS);
-    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_1_series, MIC_GRAPH_MIDDLE_POINT);
-    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_2_series, MIC_GRAPH_MIDDLE_POINT);
-    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_3_series, MIC_GRAPH_MIDDLE_POINT);
-    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_4_series, MIC_GRAPH_MIDDLE_POINT);
+
+    s_mic_1_buffer_count = 0;
+    s_mic_2_buffer_count = 0;
+    s_mic_3_buffer_count = 0;
+    s_mic_4_buffer_count = 0;
+    
+    s_mic_1_series_visible = false;
+    s_mic_2_series_visible = false;
+    s_mic_3_series_visible = false;
+    s_mic_4_series_visible = false;
 
     lv_chart_refresh(guider_ui.screen4_AV_mic_chart);
 }
 
 /*!
+ * @brief enable microphone.
+ */
+void enableMic(int mic, bool state)
+{
+    if (s_active_page != PAGE_AV)
+    {
+        return;
+    }
+
+    taskENTER_CRITICAL();
+
+    switch (mic)
+    {
+        case 1:
+            s_mic_1_series_visible = state;
+
+            if (state)
+            {
+                s_mic_1_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_RED);
+                lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_1_series, MIC_GRAPH_MIDDLE_POINT);
+                s_mic_1_buffer_count = 0;
+            }
+            else
+            {
+                lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_1_series);
+            }
+
+            break;
+        case 2:
+            s_mic_2_series_visible = state;
+
+            if (state)
+            {
+                s_mic_2_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_GREEN);
+                lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_2_series, MIC_GRAPH_MIDDLE_POINT);
+                s_mic_2_buffer_count = 0;
+            }
+            else
+            {
+                lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_2_series);
+            }
+
+            break;
+        case 3:
+            s_mic_3_series_visible = state;
+
+            if (state)
+            {
+                s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
+                lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_3_series, MIC_GRAPH_MIDDLE_POINT);
+                s_mic_3_buffer_count = 0;
+            }
+            else
+            {
+                lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_3_series);
+            }
+
+            break;
+        case 4:
+            s_mic_4_series_visible = state;
+
+            if (state)
+            {
+                s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_TEAL);
+                lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_4_series, MIC_GRAPH_MIDDLE_POINT);
+                s_mic_4_buffer_count = 0;
+            }
+            else
+            {
+                lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_4_series);
+            }
+
+            break;
+        default:
+            PRINTF("Error: Invalid mic index: %d.\r\n", mic);
+    }
+
+    taskEXIT_CRITICAL();
+}
+
+/*!
  * @brief adds data to display on microphone graph.
  */
-void AddMicData(int mic, lv_coord_t value)
+void addMicData(int mic, int16_t value)
 {
+    if (s_active_page != PAGE_AV)
+    {
+        return;
+    }
+
     if (value > 100) 
         value = 100;
     else if (value < 0) 
@@ -494,28 +586,28 @@ void AddMicData(int mic, lv_coord_t value)
     switch (mic)
     {
         case 1:
-            if (s_mic_1_buffer_count < MIC_GRAPH_POINTS)
+            if (s_mic_1_series_visible && (s_mic_1_buffer_count < MIC_GRAPH_POINTS))
             {
                 s_mic_1_buffer[s_mic_1_buffer_count] = value;
                 s_mic_1_buffer_count++;
             }
             break;
         case 2:
-            if (s_mic_2_buffer_count < MIC_GRAPH_POINTS)
+            if (s_mic_2_series_visible && (s_mic_2_buffer_count < MIC_GRAPH_POINTS))
             {
                 s_mic_2_buffer[s_mic_2_buffer_count] = value;
                 s_mic_2_buffer_count++;
             }
             break;
         case 3:
-            if (s_mic_3_buffer_count < MIC_GRAPH_POINTS)
+            if (s_mic_3_series_visible && (s_mic_3_buffer_count < MIC_GRAPH_POINTS))
             {
                 s_mic_3_buffer[s_mic_3_buffer_count] = value;
                 s_mic_3_buffer_count++;
             }
             break;
         case 4:
-            if (s_mic_4_buffer_count < MIC_GRAPH_POINTS)
+            if (s_mic_4_series_visible && (s_mic_4_buffer_count < MIC_GRAPH_POINTS))
             {
                 s_mic_4_buffer[s_mic_4_buffer_count] = value;
                 s_mic_4_buffer_count++;
@@ -546,14 +638,14 @@ void addMicGraphTestData(void)
 
     for (i = 0; i < 30; i++)
     {
-        AddMicData(1, current1);
+        addMicData(1, current1);
         
         current1 = ((current1 - 19) % 50) + 20;
     }
 
     for (i = 0; i < 20; i++)
     {
-        AddMicData(2, current2);
+        addMicData(2, current2);
         
         if (inc2)
         {
@@ -577,14 +669,14 @@ void addMicGraphTestData(void)
 
     for (i = 0; i < 45; i++)
     {
-        AddMicData(3, current3);
+        addMicData(3, current3);
         
         current3 = ((current3 - 47) % 50) + 50;
     }
 
     for (i = 0; i < 20; i++)
     {
-        AddMicData(4, current4);
+        addMicData(4, current4);
         
         if (inc4)
         {
@@ -615,6 +707,11 @@ void addMicGraphTestData(void)
 void refreshMicGraph(void)
 {
     int i;
+
+    if (s_active_page != PAGE_AV)
+    {
+        return;
+    }
 
     ///// TEST DATA
 

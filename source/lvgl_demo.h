@@ -36,4 +36,7 @@ void setCaptureKeyboardInputOnTA(bool state);
 
 void startSSIDScan();
 
+void enableMic(int mic, bool state);
+void addMicData(int mic, int16_t value);
+
 #endif //_LVGL_DEMO_H_
