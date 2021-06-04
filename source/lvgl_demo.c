@@ -26,6 +26,9 @@ typedef enum _activePage
     PAGE_HELP       = 6,
 } activePage;
 
+#define MIC_GRAPH_POINTS 50
+#define MIC_GRAPH_MIDDLE_POINT 50
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -49,6 +52,21 @@ static bool s_capture_mouse_input = false;
 static bool s_capture_keyboard_input = false;
 
 static bool s_ssid_scanning_label_visible = true;
+
+static lv_chart_series_t *s_mic_1_series = NULL;
+static lv_chart_series_t *s_mic_2_series = NULL;
+static lv_chart_series_t *s_mic_3_series = NULL;
+static lv_chart_series_t *s_mic_4_series = NULL;
+
+static volatile lv_coord_t s_mic_1_buffer[MIC_GRAPH_POINTS];
+static volatile lv_coord_t s_mic_2_buffer[MIC_GRAPH_POINTS];
+static volatile lv_coord_t s_mic_3_buffer[MIC_GRAPH_POINTS];
+static volatile lv_coord_t s_mic_4_buffer[MIC_GRAPH_POINTS];
+
+static int s_mic_1_buffer_count = 0;
+static int s_mic_2_buffer_count = 0;
+static int s_mic_3_buffer_count = 0;
+static int s_mic_4_buffer_count = 0;
 
 /*******************************************************************************
  * Functions
@@ -374,7 +392,7 @@ void startSSIDScan()
     
     lv_obj_set_hidden(guider_ui.screen2_WIFI_ssid_scan_label, false);
     s_ssid_scanning_label_visible = true;
-    
+
     ssidScan();
 }
 
@@ -443,6 +461,211 @@ void openUSBScreen()
 }
 
 /*!
+* @brief Initializes microphone graph 
+*/
+void initMicGraph()
+{
+    s_mic_1_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_RED);
+    s_mic_2_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_GREEN);
+    s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
+    s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_TEAL);
+
+    lv_chart_set_point_count(guider_ui.screen4_AV_mic_chart, MIC_GRAPH_POINTS);
+    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_1_series, MIC_GRAPH_MIDDLE_POINT);
+    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_2_series, MIC_GRAPH_MIDDLE_POINT);
+    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_3_series, MIC_GRAPH_MIDDLE_POINT);
+    lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_4_series, MIC_GRAPH_MIDDLE_POINT);
+
+    lv_chart_refresh(guider_ui.screen4_AV_mic_chart);
+}
+
+/*!
+ * @brief adds data to display on microphone graph.
+ */
+void AddMicData(int mic, lv_coord_t value)
+{
+    if (value > 100) 
+        value = 100;
+    else if (value < 0) 
+        value = 0;
+
+    taskENTER_CRITICAL();
+
+    switch (mic)
+    {
+        case 1:
+            if (s_mic_1_buffer_count < MIC_GRAPH_POINTS)
+            {
+                s_mic_1_buffer[s_mic_1_buffer_count] = value;
+                s_mic_1_buffer_count++;
+            }
+            break;
+        case 2:
+            if (s_mic_2_buffer_count < MIC_GRAPH_POINTS)
+            {
+                s_mic_2_buffer[s_mic_2_buffer_count] = value;
+                s_mic_2_buffer_count++;
+            }
+            break;
+        case 3:
+            if (s_mic_3_buffer_count < MIC_GRAPH_POINTS)
+            {
+                s_mic_3_buffer[s_mic_3_buffer_count] = value;
+                s_mic_3_buffer_count++;
+            }
+            break;
+        case 4:
+            if (s_mic_4_buffer_count < MIC_GRAPH_POINTS)
+            {
+                s_mic_4_buffer[s_mic_4_buffer_count] = value;
+                s_mic_4_buffer_count++;
+            }
+            break;
+        default:
+            PRINTF("Error: Invalid mic index: %d.\r\n", mic);
+    }
+
+    taskEXIT_CRITICAL();
+}
+
+/*!
+ * @brief tests the microphone graph.
+ */
+void addMicGraphTestData(void)
+{
+    int i;
+
+    ///// TEST DATA
+
+    static int current1 = 20;
+    static int current2 = 40;
+    static bool inc2 = false;
+    static int current3 = 50;
+    static int current4 = 0;
+    static bool inc4 = true;
+
+    for (i = 0; i < 30; i++)
+    {
+        AddMicData(1, current1);
+        
+        current1 = ((current1 - 19) % 50) + 20;
+    }
+
+    for (i = 0; i < 20; i++)
+    {
+        AddMicData(2, current2);
+        
+        if (inc2)
+        {
+            current2 = current2 + 2;
+
+            if (current2 >= 90)
+            {
+                inc2 = false;
+            }
+        }
+        else
+        {
+            current2 = current2 - 2;
+
+            if (current2 <= 40)
+            {
+                inc2 = true;
+            }
+        }
+    }
+
+    for (i = 0; i < 45; i++)
+    {
+        AddMicData(3, current3);
+        
+        current3 = ((current3 - 47) % 50) + 50;
+    }
+
+    for (i = 0; i < 20; i++)
+    {
+        AddMicData(4, current4);
+        
+        if (inc4)
+        {
+            current4 = current4 + 5;
+
+            if (current4 >= 60)
+            {
+                inc4 = false;
+            }
+        }
+        else
+        {
+            current4 = current4 - 5;
+
+            if (current4 <= 0)
+            {
+                inc4 = true;
+            }
+        }
+    }
+
+    ///// END TEST DATA
+}
+
+/*!
+ * @brief refreshes the microphone graph.
+ */
+void refreshMicGraph(void)
+{
+    int i;
+
+    ///// TEST DATA
+
+    addMicGraphTestData();
+
+    ///// END TEST DATA
+
+    taskENTER_CRITICAL();
+
+    // update mic 1 graph
+    for (i = 0; i < s_mic_1_buffer_count; i++)
+    {
+        lv_chart_set_next(guider_ui.screen4_AV_mic_chart, s_mic_1_series, s_mic_1_buffer[i]);
+    }
+    s_mic_1_buffer_count = 0;
+
+    // update mic 2 graph
+    for (i = 0; i < s_mic_2_buffer_count; i++)
+    {
+        lv_chart_set_next(guider_ui.screen4_AV_mic_chart, s_mic_2_series, s_mic_2_buffer[i]);
+    }
+    s_mic_2_buffer_count = 0;
+
+    // update mic 3 graph
+    for (i = 0; i < s_mic_3_buffer_count; i++)
+    {
+        lv_chart_set_next(guider_ui.screen4_AV_mic_chart, s_mic_3_series, s_mic_3_buffer[i]);
+    }
+    s_mic_3_buffer_count = 0;
+
+    // update mic 4 graph
+    for (i = 0; i < s_mic_4_buffer_count; i++)
+    {
+        lv_chart_set_next(guider_ui.screen4_AV_mic_chart, s_mic_4_series, s_mic_4_buffer[i]);
+    }
+    s_mic_4_buffer_count = 0;
+
+    taskEXIT_CRITICAL();
+    
+    lv_chart_refresh(guider_ui.screen4_AV_mic_chart);
+}
+
+/*!
+ * @brief refreshes the A/V page.
+ */
+void refreshAVPage(void)
+{
+    refreshMicGraph();
+}
+
+/*!
 * @brief Opens the A/V screen
 */
 void openAVScreen()
@@ -453,6 +676,10 @@ void openAVScreen()
     s_active_page = PAGE_AV;
 
     initDefaultPageInteractions();
+
+    initMicGraph();
+
+    s_page_refresh = &refreshAVPage;
 }
 
 /*!
