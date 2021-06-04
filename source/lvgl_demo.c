@@ -73,6 +73,8 @@ static bool s_mic_2_series_visible = false;
 static bool s_mic_3_series_visible = false;
 static bool s_mic_4_series_visible = false;
 
+static int s_enabled_mic_count = 0;
+
 /*******************************************************************************
  * Functions
  ******************************************************************************/
@@ -482,7 +484,68 @@ void initMicGraph()
     s_mic_3_series_visible = false;
     s_mic_4_series_visible = false;
 
+    s_enabled_mic_count = 0;
+
     lv_chart_refresh(guider_ui.screen4_AV_mic_chart);
+}
+
+/*!
+ * @brief enable or disable inactive mic checkboxes.
+ */
+void enableInactiveMicCheckboxes(bool state)
+{
+    if (s_active_page != PAGE_AV)
+    {
+        return;
+    }
+    
+    if (!s_mic_1_series_visible)
+    {
+        if (state)
+        {
+            lv_obj_clear_state(guider_ui.screen4_AV_mic1_cb, LV_STATE_DISABLED);
+        }
+        else
+        {
+            lv_checkbox_set_state(guider_ui.screen4_AV_mic1_cb, LV_BTN_STATE_DISABLED);
+        }
+    }
+    
+    if (!s_mic_2_series_visible)
+    {
+        if (state)
+        {
+            lv_obj_clear_state(guider_ui.screen4_AV_mic2_cb, LV_STATE_DISABLED);
+        }
+        else
+        {
+            lv_checkbox_set_state(guider_ui.screen4_AV_mic2_cb, LV_BTN_STATE_DISABLED);
+        }
+    }
+    
+    if (!s_mic_3_series_visible)
+    {
+        if (state)
+        {
+            lv_obj_clear_state(guider_ui.screen4_AV_mic3_cb, LV_STATE_DISABLED);
+        }
+        else
+        {
+            lv_checkbox_set_state(guider_ui.screen4_AV_mic3_cb, LV_BTN_STATE_DISABLED);
+        }
+    }
+    
+    if (!s_mic_4_series_visible)
+    {
+        if (state)
+        {
+            lv_obj_clear_state(guider_ui.screen4_AV_mic4_cb, LV_STATE_DISABLED);
+        }
+        else
+        {
+            lv_checkbox_set_state(guider_ui.screen4_AV_mic4_cb, LV_BTN_STATE_DISABLED);
+        }
+    }
 }
 
 /*!
@@ -495,8 +558,6 @@ void enableMic(int mic, bool state)
         return;
     }
 
-    taskENTER_CRITICAL();
-
     switch (mic)
     {
         case 1:
@@ -507,10 +568,14 @@ void enableMic(int mic, bool state)
                 s_mic_1_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_RED);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_1_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_1_buffer_count = 0;
+
+                s_enabled_mic_count++;
             }
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_1_series);
+
+                s_enabled_mic_count--;
             }
 
             break;
@@ -522,10 +587,14 @@ void enableMic(int mic, bool state)
                 s_mic_2_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_GREEN);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_2_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_2_buffer_count = 0;
+
+                s_enabled_mic_count++;
             }
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_2_series);
+
+                s_enabled_mic_count--;
             }
 
             break;
@@ -537,10 +606,14 @@ void enableMic(int mic, bool state)
                 s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_3_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_3_buffer_count = 0;
+
+                s_enabled_mic_count++;
             }
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_3_series);
+
+                s_enabled_mic_count--;
             }
 
             break;
@@ -552,10 +625,14 @@ void enableMic(int mic, bool state)
                 s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_TEAL);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_4_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_4_buffer_count = 0;
+
+                s_enabled_mic_count++;
             }
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_4_series);
+
+                s_enabled_mic_count--;
             }
 
             break;
@@ -563,7 +640,7 @@ void enableMic(int mic, bool state)
             PRINTF("Error: Invalid mic index: %d.\r\n", mic);
     }
 
-    taskEXIT_CRITICAL();
+    enableInactiveMicCheckboxes(s_enabled_mic_count < 2);
 }
 
 /*!
