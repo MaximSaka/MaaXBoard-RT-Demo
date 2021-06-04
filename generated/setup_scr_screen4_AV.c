@@ -331,7 +331,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 0);
-	lv_style_set_text_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
 	lv_style_set_text_font(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic1_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic1_cb_bg);
@@ -365,7 +365,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 0);
-	lv_style_set_text_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
 	lv_style_set_text_font(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic2_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic2_cb_bg);
@@ -399,7 +399,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 0);
-	lv_style_set_text_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
 	lv_style_set_text_font(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic3_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic3_cb_bg);
@@ -433,7 +433,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 0);
-	lv_style_set_text_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
+	lv_style_set_text_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
 	lv_style_set_text_font(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic4_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic4_cb_bg);

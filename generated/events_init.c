@@ -448,11 +448,71 @@ static void screen4_AV_home_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	}
 }
 
+static void screen4_AV_mic1_cbevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_VALUE_CHANGED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic1_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen4_AV_mic2_cbevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_VALUE_CHANGED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic2_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen4_AV_mic3_cbevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_VALUE_CHANGED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic3_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
+static void screen4_AV_mic4_cbevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_VALUE_CHANGED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen4_AV_mic4_cb, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 void events_init_screen4_AV(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen4_AV_left_btn, screen4_AV_left_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen4_AV_right_btn, screen4_AV_right_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen4_AV_home_btn, screen4_AV_home_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen4_AV_mic1_cb, screen4_AV_mic1_cbevent_handler);
+	lv_obj_set_event_cb(ui->screen4_AV_mic2_cb, screen4_AV_mic2_cbevent_handler);
+	lv_obj_set_event_cb(ui->screen4_AV_mic3_cb, screen4_AV_mic3_cbevent_handler);
+	lv_obj_set_event_cb(ui->screen4_AV_mic4_cb, screen4_AV_mic4_cbevent_handler);
 }
 
 static void screen5_SYSTEM_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
