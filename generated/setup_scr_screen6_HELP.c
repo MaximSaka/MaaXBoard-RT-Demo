@@ -214,7 +214,7 @@ void setup_scr_screen6_HELP(lv_ui *ui){
 
 	//Write codes screen6_HELP_label_1
 	ui->screen6_HELP_label_1 = lv_label_create(ui->screen6_HELP, NULL);
-	lv_label_set_text(ui->screen6_HELP_label_1, "This application provides a subset of board tests that can be excersized:");
+	lv_label_set_text(ui->screen6_HELP_label_1, "This application provides a subset of board tests that can be exercised:");
 	lv_label_set_long_mode(ui->screen6_HELP_label_1, LV_LABEL_LONG_BREAK);
 	lv_label_set_align(ui->screen6_HELP_label_1, LV_LABEL_ALIGN_LEFT);
 
