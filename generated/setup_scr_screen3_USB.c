@@ -565,8 +565,8 @@ void setup_scr_screen3_USB(lv_ui *ui){
 
 	//Write codes screen3_USB_i2c_ddlist
 	ui->screen3_USB_i2c_ddlist = lv_dropdown_create(ui->screen3_USB, NULL);
-	lv_dropdown_set_options(ui->screen3_USB_i2c_ddlist, "I2C\nI3C\nI4C\nI5C\nI6C");
-	lv_dropdown_set_max_height(ui->screen3_USB_i2c_ddlist, 90);
+	lv_dropdown_set_options(ui->screen3_USB_i2c_ddlist, "I2C2\nI2C3\nI2C5\nI2C6");
+	lv_dropdown_set_max_height(ui->screen3_USB_i2c_ddlist, 270);
 
 	//Write style LV_DROPDOWN_PART_MAIN for screen3_USB_i2c_ddlist
 	static lv_style_t style_screen3_USB_i2c_ddlist_main;
