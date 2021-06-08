@@ -93,7 +93,7 @@ outputs:
 - {id: CSI2_UI_CLK_ROOT.outFreq, value: 24 MHz}
 - {id: CSI_CLK_ROOT.outFreq, value: 24 MHz}
 - {id: CSSYS_CLK_ROOT.outFreq, value: 24 MHz}
-- {id: CSTRACE_CLK_ROOT.outFreq, value: 24 MHz}
+- {id: CSTRACE_CLK_ROOT.outFreq, value: 132 MHz}
 - {id: ELCDIF_CLK_ROOT.outFreq, value: 24 MHz}
 - {id: EMV1_CLK_ROOT.outFreq, value: 24 MHz}
 - {id: EMV2_CLK_ROOT.outFreq, value: 24 MHz}
@@ -227,6 +227,8 @@ settings:
 - {id: CCM.CLOCK_ROOT3.MUX.sel, value: ANADIG_PLL.SYS_PLL3_CLK}
 - {id: CCM.CLOCK_ROOT4.DIV.scale, value: '3'}
 - {id: CCM.CLOCK_ROOT4.MUX.sel, value: ANADIG_PLL.SYS_PLL2_PFD1_CLK}
+- {id: CCM.CLOCK_ROOT6.DIV.scale, value: '4'}
+- {id: CCM.CLOCK_ROOT6.MUX.sel, value: ANADIG_PLL.SYS_PLL2_CLK}
 - {id: CCM.CLOCK_ROOT68.DIV.scale, value: '2'}
 - {id: CCM.CLOCK_ROOT68.MUX.sel, value: ANADIG_PLL.PLL_VIDEO_CLK}
 - {id: CCM.CLOCK_ROOT8.DIV.scale, value: '240'}
@@ -447,9 +449,9 @@ void BOARD_BootClockRUN(void)
     rootCfg.div = 1;
     CLOCK_SetRootClock(kCLOCK_Root_Cssys, &rootCfg);
 
-    /* Configure CSTRACE using OSC_RC_48M_DIV2 */
-    rootCfg.mux = kCLOCK_CSTRACE_ClockRoot_MuxOscRc48MDiv2;
-    rootCfg.div = 1;
+    /* Configure CSTRACE using SYS_PLL2_CLK */
+    rootCfg.mux = kCLOCK_CSTRACE_ClockRoot_MuxSysPll2Out;
+    rootCfg.div = 4;
     CLOCK_SetRootClock(kCLOCK_Root_Cstrace, &rootCfg);
 
     /* Configure M4_SYSTICK using OSC_RC_48M_DIV2 */

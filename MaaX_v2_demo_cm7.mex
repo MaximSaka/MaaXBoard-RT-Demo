@@ -32,6 +32,7 @@
                <pin_label pin_num="K4" pin_signal="GPIO_EMC_B2_01" label="LPI2C2_SDA" identifier="LPI2C2_SDA"/>
                <pin_label pin_num="N12" pin_signal="GPIO_AD_00" label=""/>
                <pin_label pin_num="R14" pin_signal="GPIO_AD_01" label=""/>
+               <pin_label pin_num="R5" pin_signal="GPIO_LPSR_10" label="JTAG_nTRST/J1[3]/LPSPI6_SCK /J26[9]/DMIC_DATA1" identifier="DMIC_DATA1"/>
                <pin_label pin_num="A4" pin_signal="GPIO_DISP_B2_15" label="WDOG_B/LCM_PWR_EN/J48[32]" identifier="DSI_EN"/>
                <pin_label pin_num="P13" pin_signal="GPIO_AD_05" label="DSI_TS_RST" identifier="DSI_TS_RST"/>
                <pin_label pin_num="R15" pin_signal="GPIO_AD_08" label="USER_RED" identifier="USER_RED"/>
@@ -271,6 +272,81 @@
                   </pin>
                </pins>
             </function>
+            <function name="BOARD_InitPins_Pdm">
+               <description>Configures pin routing and optionally pin electrical features.</description>
+               <options>
+                  <callFromInitBoot>false</callFromInitBoot>
+                  <coreID>cm7</coreID>
+                  <enableClock>true</enableClock>
+               </options>
+               <dependencies>
+                  <dependency resourceType="Peripheral" resourceId="MIC" description="Peripheral MIC is not initialized" problem_level="1" source="Pins:BOARD_InitPins_Pdm">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins_Pdm">
+                     <feature name="enabled" evaluation="equal" configuration="cm7">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.iomuxc" description="Pins initialization requires the IOMUXC Driver in the project." problem_level="2" source="Pins:BOARD_InitPins_Pdm">
+                     <feature name="enabled" evaluation="equal" configuration="cm7">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+               </dependencies>
+               <pins>
+                  <pin peripheral="MIC" signal="mic_bitstream, 00" pin_num="P5" pin_signal="GPIO_LPSR_09">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="MIC" signal="mic_bitstream, 01" pin_num="R5" pin_signal="GPIO_LPSR_10">
+                     <pin_features>
+                        <pin_feature name="pull_up_down_config" value="Pull_Down"/>
+                        <pin_feature name="pull_keeper_select" value="Keeper"/>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="MIC" signal="CLK" pin_num="U8" pin_signal="GPIO_LPSR_08">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="Fast"/>
+                     </pin_features>
+                  </pin>
+               </pins>
+            </function>
+            <function name="BOARD_InitPins_Sai">
+               <description>Configures pin routing and optionally pin electrical features.</description>
+               <options>
+                  <callFromInitBoot>false</callFromInitBoot>
+                  <coreID>cm7</coreID>
+                  <enableClock>true</enableClock>
+               </options>
+               <dependencies>
+                  <dependency resourceType="Peripheral" resourceId="SAI2" description="Peripheral SAI2 is not initialized" problem_level="1" source="Pins:BOARD_InitPins_Sai">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins_Sai">
+                     <feature name="enabled" evaluation="equal" configuration="cm7">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.iomuxc" description="Pins initialization requires the IOMUXC Driver in the project." problem_level="2" source="Pins:BOARD_InitPins_Sai">
+                     <feature name="enabled" evaluation="equal" configuration="cm7">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+               </dependencies>
+               <pins>
+                  <pin peripheral="SAI2" signal="sai_mclk" pin_num="M1" pin_signal="GPIO_EMC_B2_04"/>
+                  <pin peripheral="SAI2" signal="sai_tx_data" pin_num="P1" pin_signal="GPIO_EMC_B2_08"/>
+                  <pin peripheral="SAI2" signal="sai_tx_sync" pin_num="R2" pin_signal="GPIO_EMC_B2_10"/>
+                  <pin peripheral="SAI2" signal="sai_tx_bclk" pin_num="N2" pin_signal="GPIO_EMC_B2_09"/>
+               </pins>
+            </function>
          </functions_list>
       </pins>
       <clocks name="Clocks" version="7.0" enabled="true" update_project_code="true">
@@ -398,7 +474,7 @@
                   <clock_output id="CSI2_UI_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
                   <clock_output id="CSI_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
                   <clock_output id="CSSYS_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
-                  <clock_output id="CSTRACE_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
+                  <clock_output id="CSTRACE_CLK_ROOT.outFreq" value="132 MHz" locked="false" accuracy=""/>
                   <clock_output id="ELCDIF_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
                   <clock_output id="EMV1_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
                   <clock_output id="EMV2_CLK_ROOT.outFreq" value="24 MHz" locked="false" accuracy=""/>
@@ -533,6 +609,8 @@
                   <setting id="CCM.CLOCK_ROOT3.MUX.sel" value="ANADIG_PLL.SYS_PLL3_CLK" locked="false"/>
                   <setting id="CCM.CLOCK_ROOT4.DIV.scale" value="3" locked="false"/>
                   <setting id="CCM.CLOCK_ROOT4.MUX.sel" value="ANADIG_PLL.SYS_PLL2_PFD1_CLK" locked="false"/>
+                  <setting id="CCM.CLOCK_ROOT6.DIV.scale" value="4" locked="false"/>
+                  <setting id="CCM.CLOCK_ROOT6.MUX.sel" value="ANADIG_PLL.SYS_PLL2_CLK" locked="false"/>
                   <setting id="CCM.CLOCK_ROOT68.DIV.scale" value="2" locked="false"/>
                   <setting id="CCM.CLOCK_ROOT68.MUX.sel" value="ANADIG_PLL.PLL_VIDEO_CLK" locked="false"/>
                   <setting id="CCM.CLOCK_ROOT8.DIV.scale" value="240" locked="false"/>

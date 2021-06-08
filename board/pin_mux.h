@@ -232,6 +232,57 @@ void BOARD_InitPins(void);                    /* Function assigned for the Corte
  */
 void BOARD_InitMipiPanelPins(void);           /* Function assigned for the Cortex-M7F */
 
+/* GPIO_LPSR_09 (coord P5), DMIC_DATA0/U41[5]/J50[20]/LPSPI6_CS0/J26[11] */
+/* Routed pin properties */
+#define BOARD_INITPINS_PDM_DMIC_DATA0_PERIPHERAL                             MIC   /*!< Peripheral name */
+#define BOARD_INITPINS_PDM_DMIC_DATA0_SIGNAL                       mic_bitstream   /*!< Signal name */
+#define BOARD_INITPINS_PDM_DMIC_DATA0_CHANNEL                                 0U   /*!< Signal channel */
+
+/* GPIO_LPSR_10 (coord R5), JTAG_nTRST/J1[3]/LPSPI6_SCK /J26[9]/DMIC_DATA1 */
+/* Routed pin properties */
+#define BOARD_INITPINS_PDM_DMIC_DATA1_PERIPHERAL                             MIC   /*!< Peripheral name */
+#define BOARD_INITPINS_PDM_DMIC_DATA1_SIGNAL                       mic_bitstream   /*!< Signal name */
+#define BOARD_INITPINS_PDM_DMIC_DATA1_CHANNEL                                 1U   /*!< Signal channel */
+
+/* GPIO_LPSR_08 (coord U8), DMIC_CLK/U41[1]/U44[1]/J50[18] */
+/* Routed pin properties */
+#define BOARD_INITPINS_PDM_DMIC_CLK_PERIPHERAL                               MIC   /*!< Peripheral name */
+#define BOARD_INITPINS_PDM_DMIC_CLK_SIGNAL                                   CLK   /*!< Signal name */
+
+/*!
+ * @brief Configures pin routing and optionally pin electrical features.
+ *
+ */
+void BOARD_InitPins_Pdm(void);                /* Function assigned for the Cortex-M7F */
+
+/* GPIO_EMC_B2_04 (coord M1), SEMC_D20/U25[8] */
+/* Routed pin properties */
+#define BOARD_INITPINS_SAI_SEMC_D20_PERIPHERAL                              SAI2   /*!< Peripheral name */
+#define BOARD_INITPINS_SAI_SEMC_D20_SIGNAL                              sai_mclk   /*!< Signal name */
+
+/* GPIO_EMC_B2_08 (coord P1), SEMC_DM2/U25[15] */
+/* Routed pin properties */
+#define BOARD_INITPINS_SAI_SEMC_DM2_PERIPHERAL                              SAI2   /*!< Peripheral name */
+#define BOARD_INITPINS_SAI_SEMC_DM2_SIGNAL                           sai_tx_data   /*!< Signal name */
+
+/* GPIO_EMC_B2_10 (coord R2), SEMC_D25/U25[44] */
+/* Routed pin properties */
+#define BOARD_INITPINS_SAI_SEMC_D25_PERIPHERAL                              SAI2   /*!< Peripheral name */
+#define BOARD_INITPINS_SAI_SEMC_D25_SIGNAL                           sai_tx_sync   /*!< Signal name */
+
+/* GPIO_EMC_B2_09 (coord N2), SEMC_D24/U25[42] */
+/* Routed pin properties */
+#define BOARD_INITPINS_SAI_SEMC_D24_PERIPHERAL                              SAI2   /*!< Peripheral name */
+#define BOARD_INITPINS_SAI_SEMC_D24_SIGNAL                           sai_tx_bclk   /*!< Signal name */
+
+/*!
+ * @brief Configures pin routing and optionally pin electrical features.
+ *
+ */
+void BOARD_InitPins_Sai(void);                /* Function assigned for the Cortex-M7F */
+
+void BOARD_InitPins_I2C(void);
+
 #if defined(__cplusplus)
 }
 #endif

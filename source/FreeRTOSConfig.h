@@ -79,7 +79,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      0
 
 /* Run time and task stats gathering related definitions. */
-#define configGENERATE_RUN_TIME_STATS           0
+#define configGENERATE_RUN_TIME_STATS           1
 #define configUSE_TRACE_FACILITY                1
 #define configUSE_STATS_FORMATTING_FUNCTIONS    1
 
@@ -164,7 +164,7 @@ standard names. */
 /* Definition for FreeRTOS CLI output buffer size */
 #define configCOMMAND_INT_MAX_OUTPUT_SIZE  128
 
-// #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() AppConfigureTimerForRuntimeStats()
-// #define portGET_RUN_TIME_COUNTER_VALUE()         AppGetRuntimeCounterValueFromISR()
+ #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() AppConfigureTimerForRuntimeStats()
+ #define portGET_RUN_TIME_COUNTER_VALUE()         AppGetRuntimeCounterValueFromISR()
 
 #endif /* FREERTOS_CONFIG_H */
