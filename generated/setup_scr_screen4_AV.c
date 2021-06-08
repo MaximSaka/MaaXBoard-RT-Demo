@@ -332,7 +332,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_style_set_text_color(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
-	lv_style_set_text_font(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_font(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_36);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic1_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic1_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic1_cb_bg);
 
@@ -349,7 +349,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_border_color(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
 	lv_style_set_border_width(&style_screen4_AV_mic1_cb_bullet, LV_STATE_DEFAULT, 1);
 	lv_obj_add_style(ui->screen4_AV_mic1_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic1_cb_bullet);
-	lv_obj_set_pos(ui->screen4_AV_mic1_cb, 620, 460);
+	lv_obj_set_pos(ui->screen4_AV_mic1_cb, 50, 830);
 
 	//Write codes screen4_AV_mic2_cb
 	ui->screen4_AV_mic2_cb = lv_checkbox_create(ui->screen4_AV, NULL);
@@ -366,7 +366,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_style_set_text_color(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
-	lv_style_set_text_font(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_font(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_36);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic2_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic2_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic2_cb_bg);
 
@@ -383,7 +383,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_border_color(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
 	lv_style_set_border_width(&style_screen4_AV_mic2_cb_bullet, LV_STATE_DEFAULT, 1);
 	lv_obj_add_style(ui->screen4_AV_mic2_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic2_cb_bullet);
-	lv_obj_set_pos(ui->screen4_AV_mic2_cb, 620, 495);
+	lv_obj_set_pos(ui->screen4_AV_mic2_cb, 210, 830);
 
 	//Write codes screen4_AV_mic3_cb
 	ui->screen4_AV_mic3_cb = lv_checkbox_create(ui->screen4_AV, NULL);
@@ -400,7 +400,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_style_set_text_color(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
-	lv_style_set_text_font(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_font(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_36);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic3_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic3_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic3_cb_bg);
 
@@ -417,7 +417,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_border_color(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
 	lv_style_set_border_width(&style_screen4_AV_mic3_cb_bullet, LV_STATE_DEFAULT, 1);
 	lv_obj_add_style(ui->screen4_AV_mic3_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic3_cb_bullet);
-	lv_obj_set_pos(ui->screen4_AV_mic3_cb, 620, 530);
+	lv_obj_set_pos(ui->screen4_AV_mic3_cb, 370, 830);
 
 	//Write codes screen4_AV_mic4_cb
 	ui->screen4_AV_mic4_cb = lv_checkbox_create(ui->screen4_AV, NULL);
@@ -434,7 +434,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_bg_grad_dir(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_style_set_text_color(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
-	lv_style_set_text_font(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_16);
+	lv_style_set_text_font(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_36);
 	lv_style_set_text_letter_space(&style_screen4_AV_mic4_cb_bg, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen4_AV_mic4_cb, LV_CHECKBOX_PART_BG, &style_screen4_AV_mic4_cb_bg);
 
@@ -451,7 +451,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_border_color(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, lv_color_make(0x02, 0xa2, 0xb1));
 	lv_style_set_border_width(&style_screen4_AV_mic4_cb_bullet, LV_STATE_DEFAULT, 1);
 	lv_obj_add_style(ui->screen4_AV_mic4_cb, LV_CHECKBOX_PART_BULLET, &style_screen4_AV_mic4_cb_bullet);
-	lv_obj_set_pos(ui->screen4_AV_mic4_cb, 620, 565);
+	lv_obj_set_pos(ui->screen4_AV_mic4_cb, 530, 830);
 
 	//Write codes screen4_AV_mic_chart
 	ui->screen4_AV_mic_chart = lv_chart_create(ui->screen4_AV, NULL);
@@ -481,7 +481,7 @@ void setup_scr_screen4_AV(lv_ui *ui){
 	lv_style_set_line_opa(&style_screen4_AV_mic_chart_series_bg, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen4_AV_mic_chart, LV_CHART_PART_SERIES_BG, &style_screen4_AV_mic_chart_series_bg);
 	lv_obj_set_pos(ui->screen4_AV_mic_chart, 30, 454);
-	lv_obj_set_size(ui->screen4_AV_mic_chart, 560, 250);
+	lv_obj_set_size(ui->screen4_AV_mic_chart, 660, 350);
 	lv_chart_set_type(ui->screen4_AV_mic_chart,LV_CHART_TYPE_LINE);
 	lv_chart_set_range(ui->screen4_AV_mic_chart,0,100);
 	lv_chart_set_div_line_count(ui->screen4_AV_mic_chart, 3, 5);
