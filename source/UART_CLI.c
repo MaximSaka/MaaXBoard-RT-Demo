@@ -75,6 +75,7 @@ const char *TEXT_LIST_USB			= "\r\nList of USB devices:\r\n";
 const char *TEXT_MOUSE_DEMO		    = "\r\nMove the mouse:\r\n";
 const char *TEXT_KBOARD_DEMO		= "\r\nType Keyboard:\r\n";
 const char *TEXT_LED_ERROR			= "\r\nParam error: Eg: led 101\r\n";
+const char *TEXT_I2C_ERROR			= "\r\nParam error: Eg: i2c 1-4\r\n";
 const char *TEXT_CMD_ERROR			= "\r\nCommand Error\r\n";
 const char *TEXT_FREETOS_STATS		= "\r\nTask                    Abs Time        %Time\r\n"
 										   "____________________________________________\r\n";
@@ -190,7 +191,7 @@ BaseType_t scanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *
     	if (x == 0 || x > 4)
     	{
     		// Only allowed to write up top xWriteBufferLen bytes ...
-    		strncpy(pcWriteBuffer,TEXT_LED_ERROR,xWriteBufferLen-1);
+    		strncpy(pcWriteBuffer,TEXT_I2C_ERROR,xWriteBufferLen-1);
     		pcWriteBuffer[xWriteBufferLen-1]=0;
 
     		return pdFALSE;
