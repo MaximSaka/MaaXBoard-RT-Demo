@@ -792,7 +792,7 @@ void refreshMicGraph(void)
 
     ///// TEST DATA
 
-    addMicGraphTestData();
+    //addMicGraphTestData();
 
     ///// END TEST DATA
 

@@ -15,6 +15,7 @@
 #include "board.h"
 #include "fsl_pdm.h"
 #include "fsl_debug_console.h"
+#include "lvgl_demo.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -135,7 +136,7 @@ void PDM_EVENT_IRQHandler(void)
 //    }
     for (i = 0U; i < DEMO_PDM_FIFO_WATERMARK; i++)
     {
-    	for (int ch = 0; ch < 4; ch++)
+    	for (int ch = 0; ch < 2; ch++)
     	{
     		if (s_readIndex < SAMPLE_COUNT)
 			{
@@ -172,6 +173,12 @@ void PDM_EVENT_IRQHandler(void)
     __DSB();
 }
 
+static int32_t map_range(int32_t in_val, int32_t in_start, int32_t in_end, int32_t out_start, int32_t out_end)
+{
+	int32_t output;
+	output = out_start + (int32_t)(((float)(out_end - out_start) /(float)(in_end - in_start)) * (float)(in_val - in_start));
+	return output;
+}
 
 static void audio_task(void *pvParameters)
 {
@@ -179,6 +186,8 @@ static void audio_task(void *pvParameters)
     int32_t channel_1;
     int32_t channel_2;
     int32_t channel_3;
+    int32_t mapped_ch0;
+    int32_t mapped_ch1;
     int cnt = 0;
     while(1)
     {
@@ -187,14 +196,17 @@ static void audio_task(void *pvParameters)
     	{
     		s_dataReadFinishedFlag = false;
     		cnt++;
-    		if (cnt > 10)
+    		if (cnt > 2)
     		{
     			cnt = 0;
     			channel_0 = (int32_t)((txBuff[0]&(0x000000FF) << 24) | (txBuff[0]&(0x0000FF00) << 8) | (txBuff[0]&(0x00FF0000) >> 8))>>8;
     			channel_1 = (int32_t)((txBuff[1]&(0x000000FF) << 24) | (txBuff[1]&(0x0000FF00) << 8) | (txBuff[1]&(0x00FF0000) >> 8))>>8;
 //    			channel_2 = (int32_t)((txBuff[2]&(0x000000FF) << 24) | (txBuff[2]&(0x0000FF00) << 8) | (txBuff[2]&(0x00FF0000) >> 8))>>8;
 //    			channel_3 = (int32_t)((txBuff[3]&(0x000000FF) << 24) | (txBuff[3]&(0x0000FF00) << 8) | (txBuff[3]&(0x00FF0000) >> 8))>>8;
-        		PRINTF("%d %d %d %d\n", channel_0>>8, channel_1>>8, 0>>8, 0>>8);
+    			mapped_ch0 = map_range(channel_0>>8, -32768, 32767, 0, 100);
+    			mapped_ch1 = map_range(channel_1>>8, -32768, 32767, 0, 100);
+    			addMicData(1, mapped_ch0);
+        		//PRINTF("%d %d %d %d\n", mapped_ch0, mapped_ch1, 0>>8, 0>>8);
     		}
 
     	}
