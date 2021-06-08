@@ -402,7 +402,25 @@ static void screen3_USB_i2c_ddlistevent_handler(lv_obj_t * obj, lv_event_t event
 	{
 	case LV_EVENT_VALUE_CHANGED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen3_USB_i2c_ddlist, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		int ddIndex = lv_dropdown_get_selected(obj);
+
+		switch (ddIndex)
+		{
+		case 0:
+			setI2cBus(I2C2);
+			break;
+		case 1:
+			setI2cBus(I2C3);
+			break;
+		case 2:
+			setI2cBus(I2C5);
+			break;
+		case 3:
+			setI2cBus(I2C6);
+			break;
+		default:
+			break;
+		}
 	}
 		break;
 	default:

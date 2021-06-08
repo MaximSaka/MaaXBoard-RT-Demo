@@ -3,6 +3,20 @@
 #define _LVGL_DEMO_H_
 
 /*******************************************************************************
+ * Definitions
+ ******************************************************************************/
+
+typedef enum _i2cBus
+{
+    I2C1 = 1,
+    I2C2 = 2,
+    I2C3 = 3,
+    I2C4 = 4,
+    I2C5 = 5,
+    I2C6 = 6
+} i2cBus;
+
+/*******************************************************************************
  * Functions
  ******************************************************************************/
 
@@ -27,6 +41,7 @@ void setLedBlueImgState(bool state);
 
 void setHIDsRefreshed(void);
 
+void setI2cBus(i2cBus bus);
 void scani2cBusAndDisplay(void);
 void writeToHIDInputTextArea(const char* text);
 bool capturingMouseInputOnTA(void);

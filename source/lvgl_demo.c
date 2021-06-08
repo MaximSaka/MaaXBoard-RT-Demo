@@ -44,6 +44,8 @@ static void (*s_page_refresh)(void) = NULL;
 
 static bool s_hid_list_refresh_required = true;
 
+static i2cBus s_i2c_bus = I2C2;
+static LPI2C_Type *s_i2c_bus_type = NULL;
 static uint8_t s_i2c_scanned_nodes[16];
 
 static char s_text_area_buffer[100];
@@ -101,6 +103,35 @@ void addItemToList(lv_obj_t * obj, const char * text)
 }
 
 /*!
+ * @brief set i2c bus to scan
+ */
+void setI2cBus(i2cBus bus)
+{
+    s_i2c_bus = bus;
+
+    switch (s_i2c_bus)
+    {
+    case I2C2:
+        s_i2c_bus_type = (LPI2C_Type *)LPI2C2_BASE;
+        break;
+    case I2C3:
+        s_i2c_bus_type = (LPI2C_Type *)LPI2C3_BASE;
+        break;
+    case I2C5:
+        s_i2c_bus_type = (LPI2C_Type *)LPI2C5_BASE;
+        break;
+    case I2C6:
+        s_i2c_bus_type = (LPI2C_Type *)LPI2C6_BASE;
+        break;
+    default:
+        PRINTF("Unsupported bus selection: %d", s_i2c_bus);
+        break;
+    }
+
+    scani2cBusAndDisplay();
+}
+
+/*!
  * @brief add scanned i2c nodes to table
  */
 void scani2cBusAndDisplay(void)
@@ -112,7 +143,7 @@ void scani2cBusAndDisplay(void)
         return;
     }
 
-    scan_i2c_bus(IO_EXP_I2C_MASTER_2, s_i2c_scanned_nodes);
+    scan_i2c_bus(s_i2c_bus_type, s_i2c_scanned_nodes);
 
     for (uint16_t row = 1; row < 9; row++)
     {

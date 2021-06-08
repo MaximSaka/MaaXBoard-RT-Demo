@@ -21,7 +21,8 @@ void init_expansion_i2c(LPI2C_Type *base) {
 
 /*****************************************************************************\
  * Function:    scan_i2c_bus
- * Input:       uint8_t *buff - expecting 16 byte buffer
+ * Inputs:      LPI2C_Type *base - i2c bus base address
+ * 				uint8_t *buff - expecting 16 byte buffer
  * Returns:     void
  * Description:
  *     This function checks all nodes 0 - 0x80 addresses. Store the address
