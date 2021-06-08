@@ -90,6 +90,8 @@ char *FreeRTOS_CLIGetOutputBuffer( void );
  */
 const char *FreeRTOS_CLIGetParameter( const char *pcCommandString, UBaseType_t uxWantedParameter, BaseType_t *pxParameterStringLength );
 
+BaseType_t prvHelpCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+
 #endif /* COMMAND_INTERPRETER_H */
 
 

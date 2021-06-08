@@ -1,5 +1,3 @@
-
-
 /*
  * UART_CLI.c
  *
@@ -171,8 +169,35 @@ BaseType_t scanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *
     // first time calling this function
     if (processed==0)
     {
+    	int8_t *pcParameter1;
+    	BaseType_t xParameter1StringLength;
+
+    	pcParameter1 = (int8_t *)FreeRTOS_CLIGetParameter
+    					   (
+    						 /* The command string itself. */
+    						 pcCommandString,
+    						 /* Return the first parameter. */
+    						 1,
+    						 /* Store the parameter string length. */
+    						 &xParameter1StringLength
+    					   );
+    	/* Terminate parameter. */
+    	pcParameter1[ xParameter1StringLength ] = 0x00;
+
+    	uint8_t validInput = 1;
+    	int x = atoi(pcParameter1);
+    	/* input parameter validation */
+    	if (x == 0 || x > 4)
+    	{
+    		// Only allowed to write up top xWriteBufferLen bytes ...
+    		strncpy(pcWriteBuffer,TEXT_LED_ERROR,xWriteBufferLen-1);
+    		pcWriteBuffer[xWriteBufferLen-1]=0;
+
+    		return pdFALSE;
+    	}
+
+    	scan_i2c_bus(select_i2c_bus(x), i2cScannedNodes);
     	// i2cScannedNodes stores the all the discovered address info.
-    	scan_i2c_bus(i2cScannedNodes);
         const char *text = TEXT_SCAN_I2C;
         // Only allowed to write up top xWriteBufferLen bytes ...
         strncpy(pcWriteBuffer,&text[0],xWriteBufferLen-1);
@@ -400,20 +425,21 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
 {
     (void)pcCommandString;
     static int processed = 0;
+    static int ssid_cnt = 0;
+    int length = 0;
     BaseType_t xReturn;
     uint8_t dummy_byte;
     const EventBits_t xBitsToWaitFor = WIFI_CONSOLE_NDATA;
     char *text;
+    struct wlan_scan_result *ssid_entry;
     if (processed == 0)	// initial call
     {
     	wifi_cmd_toSend.cmd_type = WIFI_SCAN;
 		wifi_cmd_toSend.task_name = CONSOLE_TASK;
 		wifi_cmd_toSend.payload = NULL;
 		xQueueSend(*wifi_cmd_queue, (void *) &wifi_cmd_toSend, 10);
-		text = "\r\nScanning Wifi\r\n";
+		length += sprintf(pcWriteBuffer+length, "\r\nScanning wifi ...\r\n");
 		// Only allowed to write up top xWriteBufferLen bytes ...
-		strncpy(pcWriteBuffer,&text[0],xWriteBufferLen-1);
-		pcWriteBuffer[xWriteBufferLen-1]=0;
 		processed++;
 		xReturn = pdTRUE;
     }
@@ -426,46 +452,83 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
     	//if (xQueueReceive(*wifi_response_queue, &(dummy_byte), 15000 / portTICK_RATE_MS) != pdTRUE)
 		{
     		//no event arrived
-    		text = "\r\n Wifi not working\r\n";
-			strncpy(pcWriteBuffer,text,xWriteBufferLen-1);
-			pcWriteBuffer[xWriteBufferLen-1]=0;
+			length = sprintf(pcWriteBuffer+length, "\r\n Wifi not working\r\n");
 			processed = 0;
 			xReturn = pdFALSE;
 		}
     	else
     	{
     		//event arrived
-			text = "\r\nScan ended\r\n";
-			// Only allowed to write up top xWriteBufferLen bytes ...
-			strncpy(pcWriteBuffer,&text[0],xWriteBufferLen-1);
-			sprintf(pcWriteBuffer+strlen(pcWriteBuffer),"ssid cnt=%d\r\n", shared_buff[2]);
-			pcWriteBuffer[xWriteBufferLen-1]=0;
-			processed = 0;
-			xReturn = pdFALSE;
+    		ssid_cnt = shared_buff[2];
+			length += sprintf(pcWriteBuffer+length,"\r\n%d network%s found:\r\n\n", ssid_cnt, ssid_cnt == 1 ? "" : "s");
+
+			//allocate memory for storage
+			ptr_temp = pvPortMalloc(sizeof(struct wlan_scan_result)*ssid_cnt);
+			ptr_aux = ptr_temp; //ptr_temp will be later used for freeing memory.
+			memcpy(ptr_temp,&shared_buff[3],sizeof(struct wlan_scan_result)*shared_buff[2]);
+			processed++;
+			xReturn = pdTRUE;
+    	}
+    }
+    else
+    {
+    	//print the ssid one by one
+    	if (processed - 2 < ssid_cnt)
+    	{
+    		ssid_entry = (struct wlan_scan_result *)(ptr_aux + (processed-2)*sizeof(struct wlan_scan_result));
+    		length += sprintf(pcWriteBuffer+length, "%02X:%02X:%02X:%02X:%02X:%02X ", ssid_entry->bssid[0],
+    				ssid_entry->bssid[1], ssid_entry->bssid[2],
+					ssid_entry->bssid[3], ssid_entry->bssid[4],
+					ssid_entry->bssid[5]);
+			if (ssid_entry->ssid[0])
+			{
+				length += sprintf(pcWriteBuffer+length, "\"%s\"\r\n", ssid_entry->ssid);
+			}
+			else
+			{
+				length += sprintf(pcWriteBuffer+length, "(hidden)\r\n");
+			}
+			length += sprintf(pcWriteBuffer+length, "\tchannel: %d", ssid_entry->channel);
+			length += sprintf(pcWriteBuffer+length, "\trssi: -%d dBm", ssid_entry->rssi);
+			length += sprintf(pcWriteBuffer+length, "\tsecurity: ");
+
+			if (ssid_entry->wep)
+			{
+				length += sprintf(pcWriteBuffer+length, "WEP ");
+			}
+
+			if (ssid_entry->wpa && ssid_entry->wpa2)
+			{
+				length += sprintf(pcWriteBuffer+length, "WPA/WPA2 Mixed ");
+			}
+			else
+			{
+				if (ssid_entry->wpa)
+					length += sprintf(pcWriteBuffer+length, "WPA ");
+				if (ssid_entry->wpa2)
+					length += sprintf(pcWriteBuffer+length, "WPA2 ");
+				if (ssid_entry->wpa3_sae)
+					length += sprintf(pcWriteBuffer+length, "WPA3 SAE ");
+				if (ssid_entry->wpa2_entp)
+					length += sprintf(pcWriteBuffer+length, "WPA2 Enterprise");
+			}
+			if (!(ssid_entry->wep || ssid_entry->wpa || ssid_entry->wpa2 || ssid_entry->wpa3_sae || ssid_entry->wpa2_entp))
+				length += sprintf(pcWriteBuffer+length, "OPEN ");
+			length += sprintf(pcWriteBuffer+length, "\tWMM: %s\r\n", ssid_entry->wmm ? "YES" : "NO");
+			processed++;
+			xReturn = pdTRUE;
+    	}
+    	else
+    	{
+    		processed = 0;
+    		pcWriteBuffer[0];
+    		vPortFree(ptr_temp);	// free memory
+    		xReturn = pdFALSE;
     	}
 
-
-//    	if (bits&WIFI_CONSOLE_NDATA)
-//    	{
-//    		//event arrived
-//    		text = "\r\nScan ended\r\n";
-//			// Only allowed to write up top xWriteBufferLen bytes ...
-//			strncpy(pcWriteBuffer,&text[0],xWriteBufferLen-1);
-//			sprintf(pcWriteBuffer+strlen(pcWriteBuffer),"ssid cnt=%d\r\n", shared_buff[2]);
-//			pcWriteBuffer[xWriteBufferLen-1]=0;
-//			processed = 0;
-//			xReturn = pdFALSE;
-//    	}
-//    	else
-//    	{
-//    		//no event arrived
-//    		text = "\r\n Wifi not working\r\n";
-//			strncpy(pcWriteBuffer,text,xWriteBufferLen-1);
-//			pcWriteBuffer[xWriteBufferLen-1]=0;
-//			processed = 0;
-//			xReturn = pdFALSE;
-//    	}
     }
+    // safe to put terminator at the end of buffer,
+    pcWriteBuffer[xWriteBufferLen-1]=0;
     return xReturn;
 }
 
@@ -682,100 +745,111 @@ static int print_address(struct wlan_ip_config *addr, enum wlan_bss_role role, u
     return length;
 }
 
-
-
 /* Console command structs */
-
-static const CLI_Command_Definition_t clearCommandStruct =
-{
-    "clr",
-    " clr      : Clear Screen \r\n",
-    clearCommand,
-    0
-};
-
-static const CLI_Command_Definition_t i2cScanCommandStruct =
-{
-    "s",
-    " s        : Scan I2C bus \r\n",
-	scanCommand,
-    0
-};
-
-static const CLI_Command_Definition_t listUSBCommandStruct =
-{
-    "l",
-    " l        : List USB devices \r\n",
-	listUSBCommand,
-    0
-};
-
+/***************** PERIPHERALS COMMANDS ************************/
 static const CLI_Command_Definition_t controlLedCommandStruct =
 {
     "led",
-    " led ***  : on/off leds \r\n",
+    "--------- PERIPHERALS ---------\r\n"
+    " led ***    : Set LEDs on/off \r\n",
 	controlLedCommand,
     1
 };
 
-static const CLI_Command_Definition_t enableMouseCommandStruct =
+static const CLI_Command_Definition_t i2cScanCommandStruct =
 {
-    "m",
-    " m        : mouse DEMO \r\n",
-	mouseCommand,
-    0
+    "i2c",
+    " i2c x      : I2C Bus# Scan \r\n",
+	scanCommand,
+    1
 };
 
-static const CLI_Command_Definition_t enableKeyboardCommandStruct =
-{
-    "k",
-    " k        : keyboard DEMO \r\n",
-	keyboardCommand,
-    0
-};
-
-static const CLI_Command_Definition_t exitCommandStruct =
-{
-    "q",
-    " q/ctrl+c : Abort command \r\n",
-	exitCommand,
-    0
-};
-
-#if configGENERATE_RUN_TIME_STATS
-static const CLI_Command_Definition_t taskStatsCommandStruct =
-{
-    "stats",
-    " stats    : List of tasks stats \r\n",
-	taskStatsCommand,
-    0
-};
-#endif
-
+/***************** WIFI & LAN COMMANDS *************************/
 static const CLI_Command_Definition_t scanWifiCommandStruct =
 {
-    "wscan",
-    " wscan    : scan wifi \r\n",
+    "ws",
+    "--------- WIFI & LAN ----------\r\n"
+    " ws         : Wifi Scan \r\n",
 	wifiScanCommand,
     0
 };
 
 static const CLI_Command_Definition_t connectWifiCommandStruct =
 {
-    "c",
-    " c        : connect wifi \r\n",
+    "wc",
+    " wc         : Wifi Connect \r\n",
 	connectApCommand,
     0
 };
 
 static const CLI_Command_Definition_t printIpCommandStruct =
 {
-    "p",
-    " p        : show wlan info \r\n",
+    "wi",
+    " wi         : Wifi info \r\n",
 	printIpCommand,
     0
 };
 
+/***************** USB HOST & DEV ******************************/
+static const CLI_Command_Definition_t listUSBCommandStruct =
+{
+    "ul",
+    " -------- USB HOST & DEV ------\r\n"
+    " ul         : List USB devices \r\n",
+	listUSBCommand,
+    0
+};
+
+static const CLI_Command_Definition_t enableMouseCommandStruct =
+{
+    "um",
+    " um         : mouse DEMO \r\n",
+	mouseCommand,
+    0
+};
+
+static const CLI_Command_Definition_t enableKeyboardCommandStruct =
+{
+    "uk",
+    " uk         : keyboard DEMO \r\n",
+	keyboardCommand,
+    0
+};
+
+/***************** UTILITY COMMANDS ****************************/
+#if configGENERATE_RUN_TIME_STATS
+static const CLI_Command_Definition_t taskStatsCommandStruct =
+{
+    "stats",
+    "--------- UTILITY -------------\r\n"
+    " stats      : RTOS statistics \r\n",
+	taskStatsCommand,
+    0
+};
+#endif
+static const CLI_Command_Definition_t clearCommandStruct =
+{
+    "clr",
+    " clr        : Clear the screen \r\n",
+    clearCommand,
+    0
+};
+
+static const CLI_Command_Definition_t exitCommandStruct =
+{
+    "q",
+    " q/ctrl+c   : Abort command \r\n",
+	exitCommand,
+    0
+};
+
+static const CLI_Command_Definition_t helpCommandStruct =
+{
+    "h",
+    " ? / h      : Menu Help \r\n===============================\r\n",
+	prvHelpCommand,
+    0
+};
 
 /*!
  * @brief Task responsible for loopback.
@@ -796,7 +870,10 @@ void console_task(void *pvParameters)
     size_t n = 0;
 
     /* Initialize i2c peripheral */
-    init_expansion_i2c();
+    //init_expansion_i2c(((LPI2C_Type *)(LPI2C2_BASE)));
+    init_expansion_i2c(((LPI2C_Type *)(LPI2C3_BASE)));
+    init_expansion_i2c(((LPI2C_Type *)(LPI2C5_BASE)));
+    init_expansion_i2c(((LPI2C_Type *)(LPI2C6_BASE)));
 
 //    if (kStatus_Success != LPUART_RTOS_Init(&handle, &t_handle, &lpuart_config))
 //    {
@@ -810,19 +887,28 @@ void console_task(void *pvParameters)
     }
 
     /* Registering cli commands*/
-    FreeRTOS_CLIRegisterCommand( &clearCommandStruct );
+    /***************** PERIPHERALS COMMANDS ************************/
     FreeRTOS_CLIRegisterCommand( &controlLedCommandStruct );
     FreeRTOS_CLIRegisterCommand( &i2cScanCommandStruct );
-    FreeRTOS_CLIRegisterCommand( &listUSBCommandStruct );
-    FreeRTOS_CLIRegisterCommand( &enableMouseCommandStruct );
-    FreeRTOS_CLIRegisterCommand( &enableKeyboardCommandStruct );
-#if configGENERATE_RUN_TIME_STATS
-    FreeRTOS_CLIRegisterCommand( &taskStatsCommandStruct );
-#endif
+
+    /***************** WIFI & LAN COMMANDS *************************/
     FreeRTOS_CLIRegisterCommand( &scanWifiCommandStruct );
     FreeRTOS_CLIRegisterCommand( &connectWifiCommandStruct );
     FreeRTOS_CLIRegisterCommand( &printIpCommandStruct );
+
+    /***************** USB HOST & DEV ******************************/
+    FreeRTOS_CLIRegisterCommand( &listUSBCommandStruct );
+    FreeRTOS_CLIRegisterCommand( &enableKeyboardCommandStruct );
+    FreeRTOS_CLIRegisterCommand( &enableMouseCommandStruct );
+
+    /***************** UTILITY COMMANDS ****************************/
+#if configGENERATE_RUN_TIME_STATS
+    FreeRTOS_CLIRegisterCommand( &taskStatsCommandStruct );
+#endif
+    FreeRTOS_CLIRegisterCommand( &clearCommandStruct );
     FreeRTOS_CLIRegisterCommand( &exitCommandStruct );
+    FreeRTOS_CLIRegisterCommand( &helpCommandStruct );
+
 
     /* Receive user input and send it back to terminal. */
 

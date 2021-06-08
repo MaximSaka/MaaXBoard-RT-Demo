@@ -73,6 +73,16 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="Peripheral" resourceId="LPI2C5" description="Peripheral LPI2C5 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="Peripheral" resourceId="LPI2C6" description="Peripheral LPI2C6 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="cm7">
                         <data>true</data>
@@ -189,6 +199,38 @@
                   </pin>
                   <pin peripheral="LPUART6" signal="RXD" pin_num="L1" pin_signal="GPIO_EMC_B1_41"/>
                   <pin peripheral="LPUART6" signal="TXD" pin_num="K1" pin_signal="GPIO_EMC_B1_40"/>
+                  <pin peripheral="LPI2C5" signal="SCL" pin_num="N8" pin_signal="GPIO_LPSR_05">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="open_drain" value="Enable"/>
+                        <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPI2C5" signal="SDA" pin_num="N7" pin_signal="GPIO_LPSR_04">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="open_drain" value="Enable"/>
+                        <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPI2C6" signal="SCL" pin_num="R8" pin_signal="GPIO_LPSR_07">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="open_drain" value="Enable"/>
+                        <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPI2C6" signal="SDA" pin_num="P8" pin_signal="GPIO_LPSR_06">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="pull_keeper_select" value="Pull"/>
+                        <pin_feature name="open_drain" value="Enable"/>
+                        <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
             <function name="BOARD_InitMipiPanelPins">

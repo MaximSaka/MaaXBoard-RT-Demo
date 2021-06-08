@@ -56,7 +56,7 @@ typedef struct xCOMMAND_INPUT_LIST
  * The callback function that is executed when "help" is entered.  This is the
  * only default command that is always present.
  */
-static BaseType_t prvHelpCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+BaseType_t prvHelpCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
 
 /*
  * Return the number of parameters that follow the command name.
@@ -280,7 +280,7 @@ const char *pcReturn = NULL;
 }
 /*-----------------------------------------------------------*/
 
-static BaseType_t prvHelpCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+BaseType_t prvHelpCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
 static const CLI_Definition_List_Item_t * pxCommand = NULL;
 BaseType_t xReturn;

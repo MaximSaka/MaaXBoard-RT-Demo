@@ -112,7 +112,7 @@ void scani2cBusAndDisplay(void)
         return;
     }
 
-    scan_i2c_bus(s_i2c_scanned_nodes);
+    scan_i2c_bus(IO_EXP_I2C_MASTER_2, s_i2c_scanned_nodes);
 
     for (uint16_t row = 1; row < 9; row++)
     {

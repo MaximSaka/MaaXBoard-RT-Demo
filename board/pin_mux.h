@@ -155,6 +155,26 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_SEMC_RDY_PERIPHERAL                               LPUART6   /*!< Peripheral name */
 #define BOARD_INITPINS_SEMC_RDY_SIGNAL                                       TXD   /*!< Signal name */
 
+/* GPIO_LPSR_05 (coord N8), I2C5_SCL/J48[27]/U32[17]/U34[4]/J10[20] */
+/* Routed pin properties */
+#define BOARD_INITPINS_I2C5_SCL_PERIPHERAL                                LPI2C5   /*!< Peripheral name */
+#define BOARD_INITPINS_I2C5_SCL_SIGNAL                                       SCL   /*!< Signal name */
+
+/* GPIO_LPSR_04 (coord N7), I2C5_SDA/J48[26]/U32[18]/U34[6]/J10[18] */
+/* Routed pin properties */
+#define BOARD_INITPINS_I2C5_SDA_PERIPHERAL                                LPI2C5   /*!< Peripheral name */
+#define BOARD_INITPINS_I2C5_SDA_SIGNAL                                       SDA   /*!< Signal name */
+
+/* GPIO_LPSR_07 (coord R8), I2C6_SCL/J50[12] */
+/* Routed pin properties */
+#define BOARD_INITPINS_I2C6_SCL_PERIPHERAL                                LPI2C6   /*!< Peripheral name */
+#define BOARD_INITPINS_I2C6_SCL_SIGNAL                                       SCL   /*!< Signal name */
+
+/* GPIO_LPSR_06 (coord P8), I2C6_SDA/J50[11] */
+/* Routed pin properties */
+#define BOARD_INITPINS_I2C6_SDA_PERIPHERAL                                LPI2C6   /*!< Peripheral name */
+#define BOARD_INITPINS_I2C6_SDA_SIGNAL                                       SDA   /*!< Signal name */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
@@ -280,8 +300,6 @@ void BOARD_InitPins_Pdm(void);                /* Function assigned for the Corte
  *
  */
 void BOARD_InitPins_Sai(void);                /* Function assigned for the Cortex-M7F */
-
-void BOARD_InitPins_I2C(void);
 
 #if defined(__cplusplus)
 }

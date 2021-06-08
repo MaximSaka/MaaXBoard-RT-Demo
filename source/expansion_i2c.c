@@ -8,8 +8,8 @@
 #include "board.h"
 #include "expansion_i2c.h"
 
-void init_expansion_i2c() {
-	BOARD_LPI2C_Init(IO_EXP_I2C_MASTER, LPI2C_MASTER_CLOCK_FREQUENCY);
+void init_expansion_i2c(LPI2C_Type *base) {
+	BOARD_LPI2C_Init(base, LPI2C_MASTER_CLOCK_FREQUENCY);
 }
 
 /*****************************************************************************\
@@ -22,7 +22,7 @@ void init_expansion_i2c() {
  *     16 = 128/8. Each bit represents the node.
 \*****************************************************************************/
 
-void scan_i2c_bus(uint8_t *buff)
+void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff)
 {
 	uint8_t rxBuff;	// dummy byte
 	uint8_t index = 0;
@@ -33,10 +33,36 @@ void scan_i2c_bus(uint8_t *buff)
 	{
 		index = i2caddress/8;
 		bit_pos = 7-(i2caddress%8);
-		if (BOARD_LPI2C_Receive(IO_EXP_I2C_MASTER, i2caddress, 0x00, 1, &rxBuff, 1) == kStatus_LPI2C_Nak) {
+		if (BOARD_LPI2C_Receive(base, i2caddress, 0x00, 1, &rxBuff, 1) == kStatus_LPI2C_Nak) {
 			buff[index] &= ~(1<<bit_pos);
 		} else {
 			buff[index] |= (1<<bit_pos);
 		}
 	}
 }
+
+LPI2C_Type *select_i2c_bus(uint8_t index)
+{
+	LPI2C_Type *i2c_periph;
+	switch(index)
+	{
+	case 1:
+		i2c_periph = ((LPI2C_Type *)(LPI2C2_BASE));
+		break;
+	case 2:
+		i2c_periph = ((LPI2C_Type *)(LPI2C3_BASE));
+		break;
+	case 3:
+		i2c_periph = ((LPI2C_Type *)(LPI2C5_BASE));
+		break;
+	case 4:
+		i2c_periph = ((LPI2C_Type *)(LPI2C6_BASE));
+		break;
+	default:
+		i2c_periph = ((LPI2C_Type *)(LPI2C3_BASE));
+		break;
+	}
+	return i2c_periph;
+}
+
+
