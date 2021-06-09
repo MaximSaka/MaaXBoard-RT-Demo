@@ -247,13 +247,24 @@ void setup_scr_screen5_SYSTEM(lv_ui *ui){
 
 	//Write codes screen5_SYSTEM_custom_imgbtn
 	ui->screen5_SYSTEM_custom_imgbtn = lv_imgbtn_create(ui->screen5_SYSTEM, NULL);
+
+	//Write style LV_IMGBTN_PART_MAIN for screen5_SYSTEM_custom_imgbtn
+	static lv_style_t style_screen5_SYSTEM_custom_imgbtn_main;
+	lv_style_init(&style_screen5_SYSTEM_custom_imgbtn_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen5_SYSTEM_custom_imgbtn_main
+	lv_style_set_text_color(&style_screen5_SYSTEM_custom_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0x00, 0x00, 0x00));
+	lv_style_set_text_font(&style_screen5_SYSTEM_custom_imgbtn_main, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_36);
+	lv_style_set_image_recolor(&style_screen5_SYSTEM_custom_imgbtn_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen5_SYSTEM_custom_imgbtn_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen5_SYSTEM_custom_imgbtn_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen5_SYSTEM_custom_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen5_SYSTEM_custom_imgbtn_main);
 	lv_obj_set_pos(ui->screen5_SYSTEM_custom_imgbtn, 505, 158);
 	lv_obj_set_size(ui->screen5_SYSTEM_custom_imgbtn, 190, 80);
 	lv_imgbtn_set_src(ui->screen5_SYSTEM_custom_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_190x80);
 	lv_imgbtn_set_src(ui->screen5_SYSTEM_custom_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_190x80);
 	lv_imgbtn_set_src(ui->screen5_SYSTEM_custom_imgbtn,LV_BTN_STATE_CHECKED_RELEASED,&_button_on_alpha_190x80);
 	lv_imgbtn_set_src(ui->screen5_SYSTEM_custom_imgbtn,LV_BTN_STATE_CHECKED_PRESSED,&_button_alpha_190x80);
-	lv_imgbtn_set_checkable(ui->screen5_SYSTEM_custom_imgbtn, true);
 	ui->screen5_SYSTEM_custom_imgbtn_label = lv_label_create(ui->screen5_SYSTEM_custom_imgbtn, NULL);
 	lv_label_set_text(ui->screen5_SYSTEM_custom_imgbtn_label, "connect");
 

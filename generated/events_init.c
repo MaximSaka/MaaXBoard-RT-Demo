@@ -618,11 +618,26 @@ static void screen5_SYSTEM_home_btnevent_handler(lv_obj_t * obj, lv_event_t even
 	}
 }
 
+static void screen5_SYSTEM_custom_imgbtnevent_handler(lv_obj_t * obj, lv_event_t event)
+{
+	switch (event)
+	{
+	case LV_EVENT_RELEASED:
+	{
+		lv_obj_set_style_local_bg_color(guider_ui.screen5_SYSTEM_custom_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	}
+		break;
+	default:
+		break;
+	}
+}
+
 void events_init_screen5_SYSTEM(lv_ui *ui)
 {
 	lv_obj_set_event_cb(ui->screen5_SYSTEM_left_btn, screen5_SYSTEM_left_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen5_SYSTEM_right_btn, screen5_SYSTEM_right_btnevent_handler);
 	lv_obj_set_event_cb(ui->screen5_SYSTEM_home_btn, screen5_SYSTEM_home_btnevent_handler);
+	lv_obj_set_event_cb(ui->screen5_SYSTEM_custom_imgbtn, screen5_SYSTEM_custom_imgbtnevent_handler);
 }
 
 static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
