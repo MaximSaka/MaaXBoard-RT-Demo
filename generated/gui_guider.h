@@ -138,6 +138,10 @@ typedef struct
 	lv_obj_t *screen5_SYSTEM_home_btn;
 	lv_obj_t *screen5_SYSTEM_home_btn_label;
 	lv_obj_t *screen5_SYSTEM_page_label;
+	lv_obj_t *screen5_SYSTEM_custom_chart;
+	lv_obj_t *screen5_SYSTEM_custom_label;
+	lv_obj_t *screen5_SYSTEM_custom_imgbtn;
+	lv_obj_t *screen5_SYSTEM_custom_imgbtn_label;
 	lv_obj_t *screen6_HELP;
 	lv_obj_t *screen6_HELP_canvas_white;
 	lv_obj_t *screen6_HELP_left_btn;
