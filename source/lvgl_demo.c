@@ -22,12 +22,16 @@ typedef enum _activePage
     PAGE_NETWORK    = 2,
     PAGE_USB        = 3,
     PAGE_AV         = 4,
-    PAGE_SYSTEM     = 5,
+    PAGE_CUSTOM     = 5,
     PAGE_HELP       = 6,
 } activePage;
 
 #define MIC_GRAPH_POINTS 50
 #define MIC_GRAPH_MIDDLE_POINT 50
+
+#define CUSTOM_GRAPH_POINTS 50
+#define CUSTOM_GRAPH_BASE_POINT 0
+#define CUSTOM_GRAPH_REFRESH_INTERVAL 10
 
 /*******************************************************************************
  * Variables
@@ -76,6 +80,9 @@ static bool s_mic_3_series_visible = false;
 static bool s_mic_4_series_visible = false;
 
 static int s_enabled_mic_count = 0;
+
+static lv_chart_series_t *s_custom_series = NULL;
+static int s_custom_graph_refresh_count = 0;
 
 /*******************************************************************************
  * Functions
@@ -521,6 +528,19 @@ void initMicGraph()
 }
 
 /*!
+* @brief Initializes custom graph 
+*/
+void initCustomGraph()
+{
+    lv_chart_set_point_count(guider_ui.screen5_SYSTEM_custom_chart, CUSTOM_GRAPH_POINTS);
+
+    s_custom_series = lv_chart_add_series(guider_ui.screen5_SYSTEM_custom_chart, LV_COLOR_RED);
+    lv_chart_init_points(guider_ui.screen5_SYSTEM_custom_chart, s_custom_series, CUSTOM_GRAPH_BASE_POINT);
+
+    lv_chart_refresh(guider_ui.screen5_SYSTEM_custom_chart);
+}
+
+/*!
  * @brief enable or disable inactive mic checkboxes.
  */
 void enableInactiveMicCheckboxes(bool state)
@@ -729,87 +749,6 @@ void addMicData(int mic, int16_t value)
 }
 
 /*!
- * @brief tests the microphone graph.
- */
-void addMicGraphTestData(void)
-{
-    int i;
-
-    ///// TEST DATA
-
-    static int current1 = 20;
-    static int current2 = 40;
-    static bool inc2 = false;
-    static int current3 = 50;
-    static int current4 = 0;
-    static bool inc4 = true;
-
-    for (i = 0; i < 30; i++)
-    {
-        addMicData(1, current1);
-        
-        current1 = ((current1 - 19) % 50) + 20;
-    }
-
-    for (i = 0; i < 20; i++)
-    {
-        addMicData(2, current2);
-        
-        if (inc2)
-        {
-            current2 = current2 + 2;
-
-            if (current2 >= 90)
-            {
-                inc2 = false;
-            }
-        }
-        else
-        {
-            current2 = current2 - 2;
-
-            if (current2 <= 40)
-            {
-                inc2 = true;
-            }
-        }
-    }
-
-    for (i = 0; i < 45; i++)
-    {
-        addMicData(3, current3);
-        
-        current3 = ((current3 - 47) % 50) + 50;
-    }
-
-    for (i = 0; i < 20; i++)
-    {
-        addMicData(4, current4);
-        
-        if (inc4)
-        {
-            current4 = current4 + 5;
-
-            if (current4 >= 60)
-            {
-                inc4 = false;
-            }
-        }
-        else
-        {
-            current4 = current4 - 5;
-
-            if (current4 <= 0)
-            {
-                inc4 = true;
-            }
-        }
-    }
-
-    ///// END TEST DATA
-}
-
-/*!
  * @brief refreshes the microphone graph.
  */
 void refreshMicGraph(void)
@@ -820,12 +759,6 @@ void refreshMicGraph(void)
     {
         return;
     }
-
-    ///// TEST DATA
-
-    //addMicGraphTestData();
-
-    ///// END TEST DATA
 
     taskENTER_CRITICAL();
 
@@ -863,6 +796,44 @@ void refreshMicGraph(void)
 }
 
 /*!
+ * @brief connect to selected AP.
+ */
+void connectToSelectedAP(void)
+{
+    connectToAP();
+}
+
+/*!
+ * @brief refreshes the custom graph.
+ */
+void refreshCustomGraph(void)
+{
+    if (s_active_page != PAGE_CUSTOM)
+    {
+        return;
+    }
+
+    if (s_custom_graph_refresh_count == 0)
+    {
+        short rssi = getCurrentSignalStrength();
+
+        int value = 100 + rssi;
+
+        if (value > 100) value = 100;
+        else if (value < 0) value = 0;
+
+        // PRINTF("RSSI: %d scaled: %d\r\n", rssi, value);
+
+        lv_chart_set_next(guider_ui.screen5_SYSTEM_custom_chart, s_custom_series, value);
+    }
+
+    s_custom_graph_refresh_count = 
+        (++s_custom_graph_refresh_count) % CUSTOM_GRAPH_REFRESH_INTERVAL;
+    
+    lv_chart_refresh(guider_ui.screen5_SYSTEM_custom_chart);
+}
+
+/*!
  * @brief refreshes the A/V page.
  */
 void refreshAVPage(void)
@@ -888,16 +859,28 @@ void openAVScreen()
 }
 
 /*!
+ * @brief refreshes the System page.
+ */
+void refreshCustomPage(void)
+{
+    refreshCustomGraph();
+}
+
+/*!
 * @brief Opens the System screen
 */
-void openSystemScreen()
+void openCustomScreen()
 {
     setup_scr_screen5_SYSTEM(&guider_ui);
     lv_scr_load_anim(guider_ui.screen5_SYSTEM, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
-    s_active_page = PAGE_SYSTEM;
+    s_active_page = PAGE_CUSTOM;
 
     initDefaultPageInteractions();
+
+    initCustomGraph();
+
+    s_page_refresh = &refreshCustomPage;
 }
 
 /*!
@@ -985,10 +968,10 @@ void lvgl_task(void *param)
                     break;
                 
                 case PAGE_AV:
-                    openSystemScreen();
+                    openCustomScreen();
                     break;
                 
-                case PAGE_SYSTEM:
+                case PAGE_CUSTOM:
                     openHelpScreen();
                     break;
 

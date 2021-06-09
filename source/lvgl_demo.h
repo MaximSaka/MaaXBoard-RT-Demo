@@ -32,7 +32,7 @@ void openMenuScreen();
 void openLEDScreen();
 void openUSBScreen();
 void openAVScreen();
-void openSystemScreen();
+void openCustomScreen();
 void openHelpScreen();
 
 void setLedRedImgState(bool state);
@@ -53,5 +53,7 @@ void startSSIDScan();
 
 void enableMic(int mic, bool state);
 void addMicData(int mic, int16_t value);
+
+void connectToSelectedAP(void);
 
 #endif //_LVGL_DEMO_H_

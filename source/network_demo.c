@@ -196,7 +196,7 @@ void ssidScan(void)
         PRINTF("Scan scheduled...\r\n");
 }
 
-static int connectToAP(void)
+int connectToAP(void)
 {
     int ret;
 
@@ -211,6 +211,23 @@ static int connectToAP(void)
     return ret;
 }
 
+short getCurrentSignalStrength(void)
+{
+    int ret;
+
+    // PRINTF("Getting RSSI for %s .....\r\n", sta_network.ssid);
+
+    short rssi = 0;
+    int snr = 0;
+    ret = wlan_get_current_signal_strength(&rssi, &snr);
+
+    if (ret != WM_SUCCESS)
+    {
+        PRINTF("Failed to get RSSI: %d\r\n", ret);
+    }
+
+    return rssi;
+}
 
 static const char *print_role(enum wlan_bss_role role)
 {

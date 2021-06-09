@@ -9,7 +9,9 @@
  ******************************************************************************/
 
 void ssidScan(void);
+int connectToAP(void);
 uint8_t printWlanInfo(void);
+short getCurrentSignalStrength(void);
 
 bool isWifiReady(void);
 

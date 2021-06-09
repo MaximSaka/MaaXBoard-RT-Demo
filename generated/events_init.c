@@ -61,7 +61,7 @@ static void screen0_MENU_imgbtn_4event_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openSystemScreen();
+		openCustomScreen();
 	}
 		break;
 	default:
@@ -459,7 +459,7 @@ static void screen4_AV_right_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openSystemScreen();
+		openCustomScreen();
 	}
 		break;
 	default:
@@ -624,7 +624,7 @@ static void screen5_SYSTEM_custom_imgbtnevent_handler(lv_obj_t * obj, lv_event_t
 	{
 	case LV_EVENT_RELEASED:
 	{
-		lv_obj_set_style_local_bg_color(guider_ui.screen5_SYSTEM_custom_imgbtn, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+		connectToSelectedAP();
 	}
 		break;
 	default:
@@ -646,7 +646,7 @@ static void screen6_HELP_left_btnevent_handler(lv_obj_t * obj, lv_event_t event)
 	{
 	case LV_EVENT_RELEASED:
 	{
-		openSystemScreen();
+		openCustomScreen();
 	}
 		break;
 	default:
