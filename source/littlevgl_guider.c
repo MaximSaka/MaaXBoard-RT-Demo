@@ -265,10 +265,21 @@ int main(void)
 		while (1);
 	}
 
-
 	/* Note: when ethernet task starts, it hangs the program until network cable is connected.
 	 	 if network interface is not connected, must comment below task */
-
+	/*
+	 * Note:
+	 * order of wifi, ethernet initialization is
+	 * 1. wifi
+	 * 2. ethernet_100mb
+	 * 3. ethernet_1g
+	 * Reason is: There is one lwip thread is used. Inside wifi tcpip_init() is called.
+	 * 			  ethernet_100mb, ethernet_1g assumes tcpip_init() is called.
+	 * Freertos eventgroup (event_group_demo) is used for ensuring the correct order of execution.
+	 *
+	 * when ethernet task starts, it hangs the program until network cable is connected.
+	 * so if network interface is not used, must comment below task.
+	 *  */
 	// eth100 task
 	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
 	{
