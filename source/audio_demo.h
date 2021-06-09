@@ -8,6 +8,6 @@
 #ifndef AUDIO_DEMO_H_
 #define AUDIO_TEST_H_
 
-void audio_test123();
+void audio_task_init();
 
 #endif /* AUDIO_DEMO_H_ */

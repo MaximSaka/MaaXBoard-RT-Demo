@@ -167,7 +167,6 @@ static void audio_task(void *pvParameters)
     {
     	if (xSemaphoreTake( xBinarySemaphore, portMAX_DELAY ) == pdTRUE)
     	{
-    		s_dataReadFinishedFlag = false;
     		cnt++;
     		if (cnt > 2)
     		{
@@ -191,7 +190,7 @@ static void audio_task(void *pvParameters)
 
 
 
-void audio_test123()
+void audio_task_init()
 {
 	uint32_t i = 0U, j = 0U;
 	BOARD_InitPins_Pdm();
