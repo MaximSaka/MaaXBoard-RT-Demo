@@ -265,6 +265,10 @@ int main(void)
 		while (1);
 	}
 
+
+	/* Note: when ethernet task starts, it hangs the program until network cable is connected.
+	 	 if network interface is not connected, must comment below task */
+
 	// eth100 task
 	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
 	{

@@ -720,6 +720,7 @@ static BaseType_t ethernetScanCommand( char *pcWriteBuffer,size_t xWriteBufferLe
 	uint8_t validInput = 1;
 	int input = atoi(pcParameter1);
 
+	// there are only 2 ethernet interfaces available.
 	if (input < 0 || input > 1)
 	{
 		// Only allowed to write up top xWriteBufferLen bytes ...

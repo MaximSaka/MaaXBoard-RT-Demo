@@ -90,6 +90,7 @@ static phy_handle_t phyHandle_1g   = {.phyAddr = PHY_ADDRESS_1G, .mdioHandle = &
 
 static struct netif netif_100m;
 static struct netif netif_1g;
+// global variables for storing ethernet interfaces state
 ip_ro_t eth_100mb_addr;
 ip_ro_t eth_1g_addr;
 
