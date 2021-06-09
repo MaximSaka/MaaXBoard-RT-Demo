@@ -380,6 +380,7 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
     {
         case WLAN_REASON_INITIALIZED:
             PRINTF("app_cb: WLAN initialized\r\n");
+            xEventGroupSetBits(*event_group_wifi, WIFI_RDY );
             int ret;
 
             printSeparator();

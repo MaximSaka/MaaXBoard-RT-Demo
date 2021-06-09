@@ -28,7 +28,7 @@
 #include "network_demo.h"
 #include "usb_peripherals.h"
 #include "UART_CLI.h"
-
+#include "ether_if.h"
 
 /*******************************************************************************
  * Definitions

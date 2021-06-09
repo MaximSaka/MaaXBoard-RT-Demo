@@ -118,8 +118,10 @@ struct t_user_wifi_command
 	void *payload;		/* could be data about external AP info*/
 };
 
-#define WIFI_GUI_NDATA	(1UL<<0UL)
+#define WIFI_GUI_NDATA		(1UL<<0UL)
 #define WIFI_CONSOLE_NDATA	(1UL<<1UL)
+#define WIFI_RDY			(1UL<<2UL)
+#define ETH_100m_RDY		(1UL<<3UL)
 
 extern uint8_t shared_buff[2048];
 #endif /* GLOBALS_H_ */
