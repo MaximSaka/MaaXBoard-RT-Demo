@@ -231,6 +231,7 @@
                         <pin_feature name="drive_strength" value="Normal"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="GPIO8" signal="gpio_io, 21" pin_num="L4" pin_signal="GPIO_EMC_B2_11"/>
                </pins>
             </function>
             <function name="BOARD_InitMipiPanelPins">
@@ -430,7 +431,6 @@
                   <pin peripheral="ENET" signal="enet_rdata, 01" pin_num="D6" pin_signal="GPIO_DISP_B2_07"/>
                   <pin peripheral="ENET" signal="enet_rx_en" pin_num="B5" pin_signal="GPIO_DISP_B2_08"/>
                   <pin peripheral="ENET" signal="enet_rx_er" pin_num="D8" pin_signal="GPIO_DISP_B2_09"/>
-                  <pin peripheral="GPIO8" signal="gpio_io, 21" pin_num="L4" pin_signal="GPIO_EMC_B2_11"/>
                </pins>
             </function>
             <function name="BOARD_InitEnet1GPins">
@@ -470,7 +470,6 @@
                   <pin peripheral="ENET_1G" signal="enet_tdata, 00" pin_num="C13" pin_signal="GPIO_DISP_B1_09"/>
                   <pin peripheral="ENET_1G" signal="enet_tx_en" pin_num="B14" pin_signal="GPIO_DISP_B1_10"/>
                   <pin peripheral="ENET_1G" signal="enet_tx_clk_io" pin_num="A14" pin_signal="GPIO_DISP_B1_11"/>
-                  <pin peripheral="GPIO11" signal="gpio_io, 14" pin_num="A5" pin_signal="GPIO_DISP_B2_13"/>
                   <pin peripheral="ENET_1G" signal="enet_mdc" pin_num="U2" pin_signal="GPIO_EMC_B2_19"/>
                   <pin peripheral="ENET_1G" signal="enet_mdio" pin_num="R3" pin_signal="GPIO_EMC_B2_20"/>
                </pins>

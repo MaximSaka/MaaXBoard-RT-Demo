@@ -50,6 +50,11 @@ static QueueHandle_t *wifi_cmd_queue;
 static QueueHandle_t *wifi_response_queue;
 static EventGroupHandle_t *event_group_wifi;
 
+//ethernet
+extern ip_ro_t eth_100mb_addr;
+extern ip_ro_t eth_1g_addr;
+ip_ro_t *eth_instance;
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -76,6 +81,7 @@ const char *TEXT_MOUSE_DEMO		    = "\r\nMove the mouse:\r\n";
 const char *TEXT_KBOARD_DEMO		= "\r\nType Keyboard:\r\n";
 const char *TEXT_LED_ERROR			= "\r\nParam error: Eg: led 101\r\n";
 const char *TEXT_I2C_ERROR			= "\r\nParam error: Eg: i2c 1-4\r\n";
+const char *TEXT_ETH_ERROR			= "\r\nParam error: Eg: eth 0,1\r\n";
 const char *TEXT_CMD_ERROR			= "\r\nCommand Error\r\n";
 const char *TEXT_FREETOS_STATS		= "\r\nTask                    Abs Time        %Time\r\n"
 										   "____________________________________________\r\n";
@@ -91,6 +97,7 @@ static char *ptr_aux = NULL;
 static volatile EventBits_t bits;
 static struct t_user_wifi_command wifi_cmd_toSend;
 static struct wlan_network network;
+
 /*!
  * @brief Application entry point.
  */
@@ -108,7 +115,7 @@ static int print_address(struct wlan_ip_config *addr, enum wlan_bss_role role, u
  * Description:
  *     This function clears the screen. It is run by the CLI interpreter
 \*****************************************************************************/
-BaseType_t clearCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t clearCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -133,7 +140,7 @@ BaseType_t clearCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char 
  * Description:
  *     This function prints lists all the USB hid devices on the console.
 \*****************************************************************************/
-BaseType_t listUSBCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t listUSBCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -161,7 +168,7 @@ BaseType_t listUSBCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const cha
  * Description:
  *     This function prints discovered i2c nodes on the console.
 \*****************************************************************************/
-BaseType_t scanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t scanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -248,7 +255,7 @@ BaseType_t scanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *
  * Description:
  *     This function enables printing mouse coordinates on the console.
 \*****************************************************************************/
-BaseType_t mouseCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t mouseCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -269,7 +276,7 @@ BaseType_t mouseCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char 
  * Description:
  *     This function enables printing keyboard keys on the console.
 \*****************************************************************************/
-BaseType_t keyboardCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t keyboardCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -290,7 +297,7 @@ BaseType_t keyboardCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
  * Description:
  *     This function controls individual leds. E.g. led 101 -> red on, green off, blue on
 \*****************************************************************************/
-BaseType_t controlLedCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t controlLedCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     /* Expecting one parameter */
@@ -341,7 +348,7 @@ BaseType_t controlLedCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const 
  * Description:
  *     This function disables printing mouse, keyboard data on the console.
 \*****************************************************************************/
-BaseType_t exitCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t exitCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -363,7 +370,7 @@ BaseType_t exitCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *
  * Description:
  *     This function returns list of tasks.
 \*****************************************************************************/
-BaseType_t taskStatsCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t taskStatsCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -422,7 +429,7 @@ BaseType_t taskStatsCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const c
  * Description:
  *     This function initiates wifi scan, prints discovered networks on the console.
 \*****************************************************************************/
-BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -541,7 +548,7 @@ BaseType_t wifiScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const ch
  * Description:
  *     This function connects to the External AP defined in the network_demo.c .
 \*****************************************************************************/
-BaseType_t connectApCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t connectApCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -585,7 +592,7 @@ BaseType_t connectApCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const c
  * Description:
  *     This function prints the IP address.
 \*****************************************************************************/
-BaseType_t printIpCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+static BaseType_t printIpCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
     (void)pcCommandString;
     static int processed = 0;
@@ -684,6 +691,73 @@ BaseType_t printIpCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const cha
     return xReturn;
 }
 
+/*****************************************************************************\
+ * Function:    ethernetScanCommand
+ * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
+ * Returns:     BaseType_t
+ * Description:
+ *     This function prints the IP address.
+\*****************************************************************************/
+static BaseType_t ethernetScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+{
+	(void)pcCommandString;
+	int length = 0;
+	int8_t *pcParameter1;
+	BaseType_t xParameter1StringLength;
+
+	pcParameter1 = (int8_t *)FreeRTOS_CLIGetParameter
+					   (
+						 /* The command string itself. */
+						 pcCommandString,
+						 /* Return the first parameter. */
+						 1,
+						 /* Store the parameter string length. */
+						 &xParameter1StringLength
+					   );
+	/* Terminate parameter. */
+	pcParameter1[ xParameter1StringLength ] = 0x00;
+
+	uint8_t validInput = 1;
+	int input = atoi(pcParameter1);
+
+	if (input < 0 || input > 1)
+	{
+		// Only allowed to write up top xWriteBufferLen bytes ...
+		strncpy(pcWriteBuffer,TEXT_ETH_ERROR,xWriteBufferLen-1);
+		pcWriteBuffer[xWriteBufferLen-1]=0;
+		return pdFALSE;
+	}
+
+	if (input == 0)
+	{
+		eth_instance = &eth_100mb_addr;
+	}
+	else
+	{
+		eth_instance = &eth_1g_addr;
+	}
+
+	if (eth_instance->connected)
+	{
+		length += sprintf(pcWriteBuffer+length, "\r\nEth_%s connected\r\n", input==0?"100mb":"1g");
+		length += sprintf(pcWriteBuffer+length, "IPv4 Address   : %d.%d.%d.%d\r\n",
+				(uint8_t)((eth_instance->ip)), (uint8_t)((eth_instance->ip)>>8),
+				(uint8_t)((eth_instance->ip)>>16), (uint8_t)((eth_instance->ip)>>24));
+		length += sprintf(pcWriteBuffer+length, "IPv4 Subnet    : %d.%d.%d.%d\r\n",
+				(uint8_t)((eth_instance->sub)), (uint8_t)((eth_instance->sub)>>8),
+				(uint8_t)((eth_instance->sub)>>16), (uint8_t)((eth_instance->sub)>>24));
+		length += sprintf(pcWriteBuffer+length, "IPv4 Gateway   : %d.%d.%d.%d\r\n",
+				(uint8_t)((eth_instance->gw)), (uint8_t)((eth_instance->gw)>>8),
+				(uint8_t)((eth_instance->gw)>>16), (uint8_t)((eth_instance->gw)>>24));
+	}else
+	{
+		length += sprintf(pcWriteBuffer+length, "\r\nEth_%s not connected\r\n", input==0?"100mb":"1g");
+	}
+	pcWriteBuffer[xWriteBufferLen-1]=0;
+	return pdFALSE;
+}
+
+
 /* Utility functions */
 
 /*****************************************************************************\
@@ -760,7 +834,7 @@ static const CLI_Command_Definition_t controlLedCommandStruct =
 static const CLI_Command_Definition_t i2cScanCommandStruct =
 {
     "i2c",
-    " i2c x      : I2C Bus# Scan \r\n",
+    " i2c #      : I2C Bus# Scan \r\n",
 	scanCommand,
     1
 };
@@ -789,6 +863,14 @@ static const CLI_Command_Definition_t printIpCommandStruct =
     " wi         : Wifi info \r\n",
 	printIpCommand,
     0
+};
+
+static const CLI_Command_Definition_t ethernetScanCommandStruct =
+{
+    "es",
+    " es #       : Ethernet Scan # \r\n",
+	ethernetScanCommand,
+    1
 };
 
 /***************** USB HOST & DEV ******************************/
@@ -896,6 +978,7 @@ void console_task(void *pvParameters)
     FreeRTOS_CLIRegisterCommand( &scanWifiCommandStruct );
     FreeRTOS_CLIRegisterCommand( &connectWifiCommandStruct );
     FreeRTOS_CLIRegisterCommand( &printIpCommandStruct );
+    FreeRTOS_CLIRegisterCommand( &ethernetScanCommandStruct );
 
     /***************** USB HOST & DEV ******************************/
     FreeRTOS_CLIRegisterCommand( &listUSBCommandStruct );

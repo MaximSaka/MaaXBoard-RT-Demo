@@ -90,10 +90,13 @@ static phy_handle_t phyHandle_1g   = {.phyAddr = PHY_ADDRESS_1G, .mdioHandle = &
 
 static struct netif netif_100m;
 static struct netif netif_1g;
+ip_ro_t eth_100mb_addr;
+ip_ro_t eth_1g_addr;
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
-void BOARD_InitModuleClock(void)
+static void BOARD_InitModuleClock(void)
 {
     const clock_sys_pll1_config_t sysPll1Config = {
         .pllDiv2En = true,
@@ -115,7 +118,7 @@ void BOARD_InitModuleClock(void)
     CLOCK_SetRootClock(kCLOCK_Root_Bus, &rootCfg); /* Generate 198M bus clock. */
 }
 
-void IOMUXC_SelectENETClock(void)
+static void IOMUXC_SelectENETClock(void)
 {
 #ifdef EXAMPLE_USE_100M_ENET_PORT
     IOMUXC_GPR->GPR4 |= 0x3; /* 50M ENET_REF_CLOCK output to PHY and ENET module. */
@@ -148,7 +151,7 @@ void BOARD_ENETFlexibleConfigure(enet_config_t *config)
  *
  * @param arg pointer to network interface structure
  */
-static void print_dhcp_state(void *arg)
+static void print_dhcp_state(void *arg, uint8_t index)
 {
     struct netif *netif = (struct netif *)arg;
     struct dhcp *dhcp;
@@ -212,19 +215,32 @@ static void print_dhcp_state(void *arg)
 
             if (dhcp_last_state == DHCP_STATE_BOUND)
             {
+            	if (index == 0)
+            	{
+            		eth_100mb_addr.connected = true;
+					eth_100mb_addr.ip = (netif->ip_addr).addr;
+					eth_100mb_addr.sub = (netif->netmask).addr;
+					eth_100mb_addr.gw = (netif->gw).addr;
+            	}
+            	else
+            	{
+            		eth_1g_addr.connected = true;
+					eth_1g_addr.ip = (netif->ip_addr).addr;
+					eth_1g_addr.sub = (netif->netmask).addr;
+					eth_1g_addr.gw = (netif->gw).addr;
+            	}
                 PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
                 PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
                 PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
             }
         }
         vTaskDelay(20);
-        //sys_msleep(20U);
     }
     PRINTF("\r\n DHCP Task is deleted\r\n");
     vTaskDelete(NULL);
 }
 
-static void init_ENET_100mb_test(EventGroupHandle_t *temp_event_group)
+static void init_ENET_100mb(EventGroupHandle_t *temp_event_group)
 {
 	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
 	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
@@ -274,122 +290,10 @@ static void init_ENET_100mb_test(EventGroupHandle_t *temp_event_group)
 	    PRINTF("************************************************\r\n");
 
 	    xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
-	    print_dhcp_state(&netif_100m);
+	    print_dhcp_state(&netif_100m, 0);
 }
 
-
-
-void init_ENET_100mb()
-{
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    ip4_addr_t netif_ipaddr, netif_netmask, netif_gw;
-	    ethernetif_config_t enet_config = {
-	        .phyHandle  = &phyHandle_100m,
-	        .macAddress = configMAC_ADDR_100M,
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	        .non_dma_memory = non_dma_memory,
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    };
-
-	    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
-
-	    BOARD_InitModuleClock();
-
-	    IOMUXC_SelectENETClock();
-
-	    BOARD_InitEnetPins();
-	    GPIO_PinInit(GPIO9, 11, &gpio_config);
-	    GPIO_PinInit(GPIO8, 21, &gpio_config);
-	    /* Pull up the ENET_INT before RESET. */
-	    GPIO_WritePinOutput(GPIO9, 11, 1);
-	    GPIO_WritePinOutput(GPIO8, 21, 0);
-	    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
-	    GPIO_WritePinOutput(GPIO8, 21, 1);
-	    SDK_DelayAtLeastUs(6, CLOCK_GetFreq(kCLOCK_CpuClk));
-
-	    mdioHandle.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
-
-	    IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
-
-	    tcpip_init(NULL, NULL);
-
-	    netifapi_netif_add(&netif_100m, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_100M,
-	                       tcpip_input);
-	    netifapi_netif_set_default(&netif_100m);
-	    netifapi_netif_set_up(&netif_100m);
-
-	    netifapi_dhcp_start(&netif_100m);
-
-	    PRINTF("\r\n************************************************\r\n");
-	    PRINTF(" 100Mb DHCP example\r\n");
-	    PRINTF("************************************************\r\n");
-
-	    if (sys_thread_new("100mb_dhcp", print_dhcp_state, &netif_100m, PRINT_THREAD_STACKSIZE, PRINT_THREAD_PRIO) == NULL)
-	    {
-	        LWIP_ASSERT("stack_init(): Task creation failed.", 0);
-	    }
-}
-
-void init_ENET_1g() // must be called after 100m
-{
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    ip4_addr_t netif_ipaddr, netif_netmask, netif_gw;
-	    ethernetif_config_t enet_config = {
-	        .phyHandle  = &phyHandle_1g,
-	        .macAddress = configMAC_ADDR_1G,
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	        .non_dma_memory = non_dma_memory,
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    };
-
-	    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
-
-	    //BOARD_InitModuleClock();
-	    //IOMUXC_SelectENETClock();
-
-	    BOARD_InitEnet1GPins();
-//	    GPIO_PinInit(GPIO8, 21, &gpio_config);
-//	    /* For a complete PHY reset of RTL8211FDI-CG, this pin must be asserted low for at least 10ms. And
-//		 * wait for a further 30ms(for internal circuits settling time) before accessing the PHY register */
-//	    GPIO_WritePinOutput(GPIO8, 21, 0);
-//	    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
-//	    GPIO_WritePinOutput(GPIO8, 21, 1);
-//	    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
-	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
-	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
-
-	    mdioHandle.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
-
-	    IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
-
-	    //tcpip_init(NULL, NULL);
-
-	    netifapi_netif_add(&netif_1g, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_1G,
-	                       tcpip_input);
-	    netifapi_netif_set_default(&netif_1g);
-	    netifapi_netif_set_up(&netif_1g);
-
-	    netifapi_dhcp_start(&netif_1g);
-
-	    PRINTF("\r\n************************************************\r\n");
-	    PRINTF(" DHCP example\r\n");
-	    PRINTF("************************************************\r\n");
-
-	    if (sys_thread_new("1G_dhcp", print_dhcp_state, &netif_1g, PRINT_THREAD_STACKSIZE, PRINT_THREAD_PRIO) == NULL)
-	    {
-	        LWIP_ASSERT("stack_init(): Task creation failed.", 0);
-	    }
-}
-
-static void init_ENET_1g_test() // must be called after 100m
+static void init_ENET_1g() // must be called after 100m
 {
 	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
 	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
@@ -438,12 +342,7 @@ static void init_ENET_1g_test() // must be called after 100m
 	    PRINTF(" DHCP 1G example\r\n");
 	    PRINTF("************************************************\r\n");
 
-	    print_dhcp_state(&netif_1g);
-
-//	    if (sys_thread_new("1G_dhcp", print_dhcp_state, &netif_1g, PRINT_THREAD_STACKSIZE, PRINT_THREAD_PRIO) == NULL)
-//	    {
-//	        LWIP_ASSERT("stack_init(): Task creation failed.", 0);
-//	    }
+	    print_dhcp_state(&netif_1g, 1);
 }
 
 void eth_100m_task(void *pvParameters)
@@ -453,7 +352,7 @@ void eth_100m_task(void *pvParameters)
 	EventBits_t bits;
 	// used for waiting wifi, wifi should initialize lwip thread.
 	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, 10000 / portTICK_RATE_MS);
-	init_ENET_100mb_test(temp_event_group);
+	init_ENET_100mb(temp_event_group);
 }
 
 void eth_1g_task(void *pvParameters)
@@ -462,7 +361,7 @@ void eth_1g_task(void *pvParameters)
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
 	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY|ETH_100m_RDY, pdFALSE, pdTRUE, 10000 / portTICK_RATE_MS);
-	init_ENET_1g_test();
+	init_ENET_1g();
 }
 
 #endif

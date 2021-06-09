@@ -264,6 +264,14 @@ int main(void)
 		PRINTF("Failed to create console task\r\n");
 		while (1);
 	}
+
+	// eth100 task
+	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
+	{
+		PRINTF("Failed to create console task\r\n");
+		while (1);
+	}
+
 	// audio task init
     audio_task_init();
     // Init scheduler

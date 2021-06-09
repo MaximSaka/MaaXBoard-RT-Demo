@@ -191,7 +191,7 @@ size_t xCommandStringLength;
 	{
 		/* The command was found, but the number of parameters with the command
 		was incorrect. */
-		strncpy( pcWriteBuffer, "Incorrect command parameter(s).  Enter \"help\" to view a list of available commands.\r\n\r\n", xWriteBufferLen );
+		strncpy( pcWriteBuffer, "Incorrect command parameter(s).  Enter \"h or ?\" to view a list of available commands.\r\n\r\n", xWriteBufferLen );
 		pxCommand = NULL;
 	}
 	else if( pxCommand != NULL )

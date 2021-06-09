@@ -56,7 +56,7 @@
 
 #define TCPIP_THREAD_NAME      "tcp/ip"
 #define TCPIP_THREAD_STACKSIZE 768
-#define TCPIP_THREAD_PRIO      2
+#define TCPIP_THREAD_PRIO      4
 #ifdef CONFIG_NETWORK_HIGH_PERF
 #define TCPIP_MBOX_SIZE 64
 #else

@@ -175,6 +175,17 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_I2C6_SDA_PERIPHERAL                                LPI2C6   /*!< Peripheral name */
 #define BOARD_INITPINS_I2C6_SDA_SIGNAL                                       SDA   /*!< Signal name */
 
+/* GPIO_EMC_B2_11 (coord L4), SEMC_D26/U25[45] */
+/* Routed pin properties */
+#define BOARD_INITPINS_SEMC_D26_PERIPHERAL                                 GPIO8   /*!< Peripheral name */
+#define BOARD_INITPINS_SEMC_D26_SIGNAL                                   gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_SEMC_D26_CHANNEL                                      21U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_SEMC_D26_GPIO                                       GPIO8   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_SEMC_D26_GPIO_PIN                                     21U   /*!< GPIO pin number */
+#define BOARD_INITPINS_SEMC_D26_GPIO_PIN_MASK                        (1U << 21U)   /*!< GPIO pin mask */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
@@ -355,17 +366,6 @@ void BOARD_InitPins_Sai(void);                /* Function assigned for the Corte
 #define BOARD_INITENETPINS_ENET_RXER_PERIPHERAL                             ENET   /*!< Peripheral name */
 #define BOARD_INITENETPINS_ENET_RXER_SIGNAL                           enet_rx_er   /*!< Signal name */
 
-/* GPIO_EMC_B2_11 (coord L4), SEMC_D26/U25[45] */
-/* Routed pin properties */
-#define BOARD_INITENETPINS_SEMC_D26_PERIPHERAL                             GPIO8   /*!< Peripheral name */
-#define BOARD_INITENETPINS_SEMC_D26_SIGNAL                               gpio_io   /*!< Signal name */
-#define BOARD_INITENETPINS_SEMC_D26_CHANNEL                                  21U   /*!< Signal channel */
-
-/* Symbols to be used with GPIO driver */
-#define BOARD_INITENETPINS_SEMC_D26_GPIO                                   GPIO8   /*!< GPIO peripheral base pointer */
-#define BOARD_INITENETPINS_SEMC_D26_GPIO_PIN                                 21U   /*!< GPIO pin number */
-#define BOARD_INITENETPINS_SEMC_D26_GPIO_PIN_MASK                    (1U << 21U)   /*!< GPIO pin mask */
-
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
@@ -439,17 +439,6 @@ void BOARD_InitEnetPins(void);                /* Function assigned for the Corte
 /* Routed pin properties */
 #define BOARD_INITENET1GPINS_ENET_RGMII_TXC_PERIPHERAL                   ENET_1G   /*!< Peripheral name */
 #define BOARD_INITENET1GPINS_ENET_RGMII_TXC_SIGNAL                enet_tx_clk_io   /*!< Signal name */
-
-/* GPIO_DISP_B2_13 (coord A5), INT1_COMBO/BT_UART_RTS/U16[4]/U354[5]/ETHPHY_RST_B/U10[12] */
-/* Routed pin properties */
-#define BOARD_INITENET1GPINS_BT_UART_RTS_PERIPHERAL                       GPIO11   /*!< Peripheral name */
-#define BOARD_INITENET1GPINS_BT_UART_RTS_SIGNAL                          gpio_io   /*!< Signal name */
-#define BOARD_INITENET1GPINS_BT_UART_RTS_CHANNEL                             14U   /*!< Signal channel */
-
-/* Symbols to be used with GPIO driver */
-#define BOARD_INITENET1GPINS_BT_UART_RTS_GPIO                             GPIO11   /*!< GPIO peripheral base pointer */
-#define BOARD_INITENET1GPINS_BT_UART_RTS_GPIO_PIN                            14U   /*!< GPIO pin number */
-#define BOARD_INITENET1GPINS_BT_UART_RTS_GPIO_PIN_MASK               (1U << 14U)   /*!< GPIO pin mask */
 
 /* GPIO_EMC_B2_19 (coord U2), ENET_RGMII_MDC */
 /* Routed pin properties */

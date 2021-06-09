@@ -124,4 +124,14 @@ struct t_user_wifi_command
 #define ETH_100m_RDY		(1UL<<3UL)
 
 extern uint8_t shared_buff[2048];
+
+// ipv4 type for storing ip address
+typedef struct
+{
+	uint32_t ip;
+	uint32_t sub;
+	uint32_t gw;
+	bool connected;
+}ip_ro_t;
+
 #endif /* GLOBALS_H_ */
