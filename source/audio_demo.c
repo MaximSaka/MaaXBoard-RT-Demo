@@ -216,7 +216,7 @@ void audio_task_init()
 	if (PDM_SetSampleRateConfig(DEMO_PDM, DEMO_PDM_CLK_FREQ, DEMO_AUDIO_SAMPLE_RATE) != kStatus_Success)
 	{
 		PRINTF("PDM configure sample rate failed.\r\n");
-		return -1;
+		return;
 	}
 
 	//	NVIC priority is necessary for FREERTOS tasks. It should be higher than other tasks.
@@ -242,5 +242,4 @@ void audio_task_init()
 		PRINTF("Failed to create console task\r\n");
 		while (1);
 	}
-
 }
