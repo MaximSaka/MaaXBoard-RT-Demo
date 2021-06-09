@@ -8,6 +8,13 @@
 #include "board.h"
 #include "expansion_i2c.h"
 
+/*****************************************************************************\
+ * Function:    init_expansion_i2c
+ * Input:       LPI2C_Type *base - base memory address of the LPI2C peripheral
+ * Returns:     void
+ * Description:
+ *     Configures the LPI2C with 100Khz master device
+\*****************************************************************************/
 void init_expansion_i2c(LPI2C_Type *base) {
 	BOARD_LPI2C_Init(base, LPI2C_MASTER_CLOCK_FREQUENCY);
 }
@@ -41,6 +48,13 @@ void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff)
 	}
 }
 
+/*****************************************************************************\
+ * Function:    select_i2c_bus
+ * Input:       uint8_t index - index for i2c peripherals (1-4)
+ * Returns:     void
+ * Description:
+ *     returns the LPI2C base address based on the 1-4 indexing.
+\*****************************************************************************/
 LPI2C_Type *select_i2c_bus(uint8_t index)
 {
 	LPI2C_Type *i2c_periph;

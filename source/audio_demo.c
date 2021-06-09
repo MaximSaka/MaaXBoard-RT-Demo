@@ -40,7 +40,6 @@ void BOARD_InitDebugConsole(void);
 SDK_ALIGN(static uint32_t txBuff[SAMPLE_COUNT], 4);
 static volatile bool s_lowFreqFlag          = false;
 static volatile bool s_fifoErrorFlag        = false;
-static volatile bool s_dataReadFinishedFlag = false;
 static volatile uint32_t s_readIndex        = 0U;
 static const pdm_config_t pdmConfig         = {
     .enableDoze        = false,
@@ -110,33 +109,13 @@ void PDM_ERROR_IRQHandler(void)
 void PDM_EVENT_IRQHandler(void)
 {
     uint32_t i = 0U, status = PDM_GetStatus(DEMO_PDM);
-    /* recieve data */
-//    if ((1U << DEMO_PDM_ENABLE_CHANNEL_LEFT) & status)
-//    {
-//        for (i = 0U; i < DEMO_PDM_FIFO_WATERMARK; i++)
-//        {
-//            if (s_readIndex < SAMPLE_COUNT)
-//            {
-//                txBuff[s_readIndex] = PDM_ReadData(DEMO_PDM, DEMO_PDM_ENABLE_CHANNEL_LEFT);
-//                s_readIndex++;
-//            }
-//        }
-//    }
-//
-//    if ((1U << DEMO_PDM_ENABLE_CHANNEL_RIGHT) & status)
-//    {
-//        for (i = 0U; i < DEMO_PDM_FIFO_WATERMARK; i++)
-//        {
-//            if (s_readIndex < SAMPLE_COUNT)
-//            {
-//                txBuff[s_readIndex] = PDM_ReadData(DEMO_PDM, DEMO_PDM_ENABLE_CHANNEL_RIGHT);
-//                s_readIndex++;
-//            }
-//        }
-//    }
+    /* receive data */
+    //    PDM channels are read one after another.
+    //    E.g: ch1 , ch2, ch1, ch2. if all channels enabled.
+    //    E.g ch1, ch2, ch3, ch4, ch1,
     for (i = 0U; i < DEMO_PDM_FIFO_WATERMARK; i++)
     {
-    	for (int ch = 0; ch < 2; ch++)
+    	for (int ch = 0; ch < 2; ch++)	// hardcoded channel value. ch
     	{
     		if (s_readIndex < SAMPLE_COUNT)
 			{
@@ -145,8 +124,6 @@ void PDM_EVENT_IRQHandler(void)
 			}
     	}
     }
-
-
     /* handle PDM error status */
 #if (defined FSL_FEATURE_PDM_HAS_NO_INDEPENDENT_ERROR_IRQ && FSL_FEATURE_PDM_HAS_NO_INDEPENDENT_ERROR_IRQ)
     pdm_error_irqHandler();
@@ -155,8 +132,8 @@ void PDM_EVENT_IRQHandler(void)
     PDM_ClearStatus(DEMO_PDM, status);
     if (s_readIndex >= SAMPLE_COUNT)
     {
+    	//buffer is SAMPLE_COUNT=128 long. once full, process it.
     	s_readIndex = 0;
-        s_dataReadFinishedFlag = true;
         BaseType_t xHigherPriorityTaskWoken, xResult;
 		/* The xHigherPriorityTaskWoken parameter must be initialized to pdFALSE as
 		it will get set to pdTRUE inside the interrupt safe API function if a
@@ -166,9 +143,6 @@ void PDM_EVENT_IRQHandler(void)
 		xHigherPriorityTaskWoken as the interrupt safe API function's
 		pxHigherPriorityTaskWoken parameter. */
 		xResult = xSemaphoreGiveFromISR( xBinarySemaphore, &xHigherPriorityTaskWoken);
-
-
-        //PDM_Enable(DEMO_PDM, false);
     }
     __DSB();
 }
@@ -192,7 +166,6 @@ static void audio_task(void *pvParameters)
     while(1)
     {
     	if (xSemaphoreTake( xBinarySemaphore, portMAX_DELAY ) == pdTRUE)
-//    	if (s_dataReadFinishedFlag)
     	{
     		s_dataReadFinishedFlag = false;
     		cnt++;
@@ -247,6 +220,8 @@ void audio_test123()
 		return -1;
 	}
 
+	//	NVIC priority is necessary for FREERTOS tasks. It should be higher than other tasks.
+	//  If not defined, interrupt will have default 0 priority(lowest in Freertos)
 	NVIC_SetPriority(PDM_EVENT_IRQn, 5);
 	PDM_EnableInterrupts(DEMO_PDM, kPDM_ErrorInterruptEnable | kPDM_FIFOInterruptEnable);
 

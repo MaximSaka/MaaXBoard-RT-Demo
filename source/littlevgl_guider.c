@@ -1,3 +1,4 @@
+#include <audio_demo.h>
 /*
  * Copyright 2020 NXP
  * All rights reserved.
@@ -28,7 +29,6 @@
 #include "usb_peripherals.h"
 #include "UART_CLI.h"
 
-#include "audio_test.h"
 
 /*******************************************************************************
  * Definitions
