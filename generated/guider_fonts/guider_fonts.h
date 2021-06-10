@@ -21,6 +21,7 @@ LV_FONT_DECLARE(lv_font_OpenSans_Regular_16)
 LV_FONT_DECLARE(lv_font_OpenSans_Regular_24)
 LV_FONT_DECLARE(lv_font_OpenSans_Light_28)
 LV_FONT_DECLARE(lv_font_inconsolata_light_18)
+LV_FONT_DECLARE(lv_font_OpenSans_Regular_28)
 
     
     #ifdef __cplusplus
