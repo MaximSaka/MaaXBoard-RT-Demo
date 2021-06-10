@@ -50,8 +50,8 @@ static void timer_poll_udp_client(TimerHandle_t timer);
 
 // Hardwired SSID, passphrase of AP to connect to
 // Change this to fit your AP
-#define EXT_AP_SSID       "Home-5G"
-#define EXT_AP_PASSPHRASE "ulaanbaatarchuud"
+#define EXT_AP_SSID       "max123"
+#define EXT_AP_PASSPHRASE "1qaz2wsx"
 
 #ifndef IPERF_SERVER_ADDRESS
 #define IPERF_SERVER_ADDRESS "10.0.0.1"
