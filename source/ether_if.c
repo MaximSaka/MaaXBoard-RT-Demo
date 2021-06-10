@@ -310,10 +310,19 @@ static void init_ENET_1g() // must be called after 100m
 
 	    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
 
+
+	    /*
+	     * Following 2 lines must be uncommented when running ethernet 1G alone without 100mb
+	     */
 	    //BOARD_InitModuleClock();
 	    //IOMUXC_SelectENETClock();
 
 	    BOARD_InitEnet1GPins();
+
+	    /*
+	     *  So does the following 4 lines, This below code reset the phy.
+	     *  ethernet 100mb, ethernet 1g share same reset.
+	     */
 //	    GPIO_PinInit(GPIO8, 21, &gpio_config);
 //	    /* For a complete PHY reset of RTL8211FDI-CG, this pin must be asserted low for at least 10ms. And
 //		 * wait for a further 30ms(for internal circuits settling time) before accessing the PHY register */
@@ -330,6 +339,7 @@ static void init_ENET_1g() // must be called after 100m
 	    IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
 	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
 
+	    /* tcpip_init must be uncommented, if there is no wifi or ethernet100mb task*/
 	    //tcpip_init(NULL, NULL);
 
 	    netifapi_netif_add(&netif_1g, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_1G,
