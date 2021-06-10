@@ -55,5 +55,6 @@ void enableMic(int mic, bool state);
 void addMicData(int mic, int16_t value);
 
 void connectToSelectedAP(void);
+void notifyConnectedToAP(void);
 
 #endif //_LVGL_DEMO_H_

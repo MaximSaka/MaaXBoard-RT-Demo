@@ -624,7 +624,10 @@ static void screen5_SYSTEM_custom_imgbtnevent_handler(lv_obj_t * obj, lv_event_t
 	{
 	case LV_EVENT_RELEASED:
 	{
-		connectToSelectedAP();
+		if (lv_btn_get_state(obj) & LV_STATE_CHECKED)
+		{
+			connectToSelectedAP();
+		}
 	}
 		break;
 	default:

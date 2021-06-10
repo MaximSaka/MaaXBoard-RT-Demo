@@ -106,6 +106,11 @@ static volatile uint32_t wifi_status = 0;
  * Functions
  ******************************************************************************/
 
+void getTargetSSID(char* nameBuffer, int bufLen)
+{
+    strncpy(nameBuffer, EXT_AP_SSID, bufLen);
+}
+
 int __scan_cb(unsigned int count)
 {
     struct wlan_scan_result res;
@@ -511,6 +516,9 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
             PRINTF("SSID = [%s], IP = [%s]\r\n", sta_network.ssid, ip);
             wifi_status |= (1<<BIT_CONN_RDY); //flag used for notifying other freertos tasks
             auth_fail = 0;
+
+            notifyConnectedToAP();
+
             break;
         case WLAN_REASON_CONNECT_FAILED:
             PRINTF("app_cb: WLAN: connect failed\r\n");

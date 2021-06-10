@@ -801,6 +801,34 @@ void refreshMicGraph(void)
 void connectToSelectedAP(void)
 {
     connectToAP();
+    
+    taskENTER_CRITICAL();
+
+    lv_label_set_text(guider_ui.screen5_SYSTEM_instructions_label, "Connecting...");
+
+    taskEXIT_CRITICAL();
+}
+
+/*!
+ * @brief handles a succesful connection to an AP.
+ */
+void notifyConnectedToAP(void)
+{
+    if (s_active_page != PAGE_CUSTOM)
+    {
+        return;
+    }
+
+    char ssid[80];
+    getTargetSSID(ssid, 80);
+    
+    taskENTER_CRITICAL();
+
+    char labelText[180];
+    sprintf(labelText, "Connected to '%s'.", ssid);
+    lv_label_set_text(guider_ui.screen5_SYSTEM_instructions_label, labelText);
+
+    taskEXIT_CRITICAL();
 }
 
 /*!
@@ -877,6 +905,17 @@ void openCustomScreen()
     s_active_page = PAGE_CUSTOM;
 
     initDefaultPageInteractions();
+
+    char ssid[80];
+    getTargetSSID(ssid, 80);
+    
+    taskENTER_CRITICAL();
+
+    char labelText[180];
+    sprintf(labelText, "Click 'connect' to connect to '%s' and measure it's RSSI.", ssid);
+    lv_label_set_text(guider_ui.screen5_SYSTEM_instructions_label, labelText);
+
+    taskEXIT_CRITICAL();
 
     initCustomGraph();
 
