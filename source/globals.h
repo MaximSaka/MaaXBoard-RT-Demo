@@ -134,4 +134,12 @@ typedef struct
 	bool connected;
 }ip_ro_t;
 
+// mouse type
+typedef struct
+{
+	int16_t x;
+	int16_t y;
+	uint8_t btn;
+}mouse_t;
+
 #endif /* GLOBALS_H_ */

@@ -26,6 +26,7 @@
 
 static QueueHandle_t *hid_devices_queue;
 /*! Global variables for storing x,y coordinates of display, can be removed*/
+static uint8_t mouse_btn = 0;;
 int x_coordinate = 0;
 int y_coordinate = 0;
 extern volatile uint32_t cmdEnable;
@@ -34,7 +35,7 @@ struct hid_peripheral usb_devices[2] = {
 		{0,0,0,0},	// mouse
 		{0,0,0,0}	// keyboard
 };
-
+static mouse_t mouse_instance_t;
 /*!
  * @brief host callback function.
  *
@@ -226,6 +227,14 @@ void USB_HostApplicationKeyboardTask(void *param)
     }
 }
 
+void read_mouseState(mouse_t *mouse_i)
+{
+	mouse_i->x = x_coordinate;
+	mouse_i->y = y_coordinate;
+	mouse_i->btn = mouse_btn;
+	mouse_btn = 0;
+}
+
 /*!
  * @brief log freertos task.
  *
@@ -245,6 +254,7 @@ void USB_logTask(void *param)
             //PRINTF("Failed to receive queue.\r\n");
         } else {
         	if (usb_hid_received.dev_type == MOUSE_DEVICE) {
+        		mouse_btn = usb_hid_received.dev_btn;
         		int8_t x_val = (int8_t)usb_hid_received.x_motion;
 				int8_t y_val = (int8_t)usb_hid_received.y_motion;
 

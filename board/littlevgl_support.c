@@ -12,7 +12,6 @@
 #include "semphr.h"
 #endif
 #include "board.h"
-
 #include "fsl_gpio.h"
 #include "fsl_cache.h"
 #include "fsl_debug_console.h"
@@ -26,6 +25,9 @@
 #include "src/lv_gpu/lv_gpu_nxp_pxp_osa.h"
 #endif
 
+//user added
+#include "globals.h"
+#include "usb_peripherals.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -61,6 +63,7 @@ static void DEMO_FlushDisplay(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv
 
 static void DEMO_InitTouch(void);
 
+static bool DEMO_ReadMouse(lv_indev_drv_t *drv, lv_indev_data_t *data);
 static bool DEMO_ReadTouch(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
 static void DEMO_BufferSwitchOffCallback(void *param, void *switchOffBuffer);
@@ -259,6 +262,19 @@ void lv_port_indev_init(void)
     indev_drv.type    = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = DEMO_ReadTouch;
     lv_indev_drv_register(&indev_drv);
+
+    //testing mouse
+    lv_indev_drv_t indev_drv_test;
+    lv_indev_drv_init(&indev_drv_test);
+    indev_drv_test.type    = LV_INDEV_TYPE_POINTER;
+    indev_drv_test.read_cb = DEMO_ReadMouse;
+    lv_indev_t * mouse_indev = lv_indev_drv_register(&indev_drv_test);
+
+    LV_IMG_DECLARE(_mouse_alpha_45x45);                          /*Declare the image file.*/
+    lv_obj_t * cursor_obj =  lv_img_create(lv_scr_act(), NULL); /*Create an image object for the cursor */
+    lv_img_set_src(cursor_obj, &_mouse_alpha_45x45);             /*Set the image source*/
+    lv_indev_set_cursor(mouse_indev, cursor_obj);
+
 }
 
 static void BOARD_PullMIPIPanelTouchResetPin(bool pullUp)
@@ -324,6 +340,29 @@ static void DEMO_InitTouch(void)
 }
 
 /* Will be called by the library to read the touchpad */
+static bool DEMO_ReadMouse(lv_indev_drv_t *drv, lv_indev_data_t *data)
+{
+	int x, y;
+	mouse_t mouse_instance;
+
+	read_mouseState(&mouse_instance);
+    /*Set the last pressed coordinates*/
+    data->point.x = mouse_instance.x;
+    data->point.y = mouse_instance.y;
+    if (mouse_instance.btn&(1<<0)) // left btn clicked
+    {
+    	data->state = LV_INDEV_STATE_PR;
+    }
+    else
+    {
+    	data->state = LV_INDEV_STATE_REL;
+    }
+    /*Return `false` because we are not buffering and no more data to read*/
+    return false;
+}
+
+
+/* Will be called by the library to read the touchpad */
 static bool DEMO_ReadTouch(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
 	static touch_event_t touch_event;
@@ -337,20 +376,20 @@ static bool DEMO_ReadTouch(lv_indev_drv_t *drv, lv_indev_data_t *data)
         {
             data->state = LV_INDEV_STATE_PR;
 
-            // PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_PR x:%d y:%d\r\n", touch_x, touch_y);
+            //PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_PR x:%d y:%d\r\n", touch_x, touch_y);
         }
         else
         {
             data->state = LV_INDEV_STATE_REL;
             
-            // PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_REL x:%d y:%d\r\n", touch_x, touch_y);
+            //PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_REL x:%d y:%d\r\n", touch_x, touch_y);
         }
     }
     else
     {
         data->state = LV_INDEV_STATE_REL;
         
-        // PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_REL x:%d y:%d\r\n", touch_x, touch_y);
+        //PRINTF("DEBUG DEMO_ReadTouch: LV_INDEV_STATE_REL x:%d y:%d\r\n", touch_x, touch_y);
     }
 
     /*Set the last pressed coordinates*/

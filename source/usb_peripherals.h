@@ -12,7 +12,7 @@
 #include "usb_host.h"
 #include "fsl_device_registers.h"
 #include "fsl_lpuart_freertos.h"
-
+#include "globals.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -75,8 +75,8 @@ struct hid_device
 #define Y_MAX	1280
 #define Y_MIN	0
 
-#define x_sensitivity 0.3
-#define y_sensitivity 0.3
+#define x_sensitivity 0.6
+#define y_sensitivity 0.6
 
 /* comment below line if want to remove log task */
 #define ENABLED_LOG_TASK	1
@@ -87,5 +87,6 @@ void USB_logTask(void *param);
 void USB_HostApplicationKeyboardTask(void *param);
 void USB_HostApplicationMouseTask(void *param);
 void USB_HostTask(void *param);
+void read_mouseState(mouse_t *mouse_i);
 
 #endif /* USB_PERIPHERALS_H_ */
