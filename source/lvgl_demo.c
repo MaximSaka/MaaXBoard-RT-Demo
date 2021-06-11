@@ -5,6 +5,7 @@
 #include "events_init.h"
 
 #include "demo_common.h"
+#include "audio_demo.h"
 #include "lvgl_demo.h"
 #include "network_demo.h"
 #include "usb_peripherals.h"
@@ -628,6 +629,8 @@ void enableMic(int mic, bool state)
 
                 s_enabled_mic_count--;
             }
+            
+            enableMicChannel(0, state);
 
             break;
         case 2:
@@ -647,6 +650,8 @@ void enableMic(int mic, bool state)
 
                 s_enabled_mic_count--;
             }
+            
+            enableMicChannel(1, state);
 
             break;
         case 3:
@@ -666,6 +671,8 @@ void enableMic(int mic, bool state)
 
                 s_enabled_mic_count--;
             }
+            
+            enableMicChannel(2, state);
 
             break;
         case 4:
@@ -685,6 +692,8 @@ void enableMic(int mic, bool state)
 
                 s_enabled_mic_count--;
             }
+            
+            enableMicChannel(3, state);
 
             break;
         default:

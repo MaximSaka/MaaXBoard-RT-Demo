@@ -52,6 +52,11 @@ static pdm_channel_config_t channelConfig = {
     .gain       = kPDM_DfOutputGain7,
 };
 
+static volatile bool s_channel0Enabled = false;
+static volatile bool s_channel1Enabled = false;
+static volatile bool s_channel2Enabled = false;
+static volatile bool s_channel3Enabled = false;
+
 static SemaphoreHandle_t xBinarySemaphore = NULL;
 /*******************************************************************************
  * Code
@@ -154,6 +159,28 @@ static int32_t map_range(int32_t in_val, int32_t in_start, int32_t in_end, int32
 	return output;
 }
 
+void enableMicChannel(int id, bool state)
+{
+    switch (id)
+    {
+    case 0:
+        s_channel0Enabled = state;
+        break;
+    case 1:
+        s_channel1Enabled = state;
+        break;
+    case 2:
+        s_channel2Enabled = state;
+        break;
+    case 3:
+        s_channel3Enabled = state;
+        break;
+    default:
+        PRINTF("Invalid mic channel: %d\r\n", id);
+        break;
+    }
+}
+
 static void audio_task(void *pvParameters)
 {
     int32_t channel_0;
@@ -162,6 +189,8 @@ static void audio_task(void *pvParameters)
     int32_t channel_3;
     int32_t mapped_ch0;
     int32_t mapped_ch1;
+    int32_t mapped_ch2;
+    int32_t mapped_ch3;
     int cnt = 0;
     while(1)
     {
@@ -171,14 +200,34 @@ static void audio_task(void *pvParameters)
     		if (cnt > 2)
     		{
     			cnt = 0;
-    			channel_0 = (int32_t)((txBuff[0]&(0x000000FF) << 24) | (txBuff[0]&(0x0000FF00) << 8) | (txBuff[0]&(0x00FF0000) >> 8))>>8;
-    			channel_1 = (int32_t)((txBuff[1]&(0x000000FF) << 24) | (txBuff[1]&(0x0000FF00) << 8) | (txBuff[1]&(0x00FF0000) >> 8))>>8;
-//    			channel_2 = (int32_t)((txBuff[2]&(0x000000FF) << 24) | (txBuff[2]&(0x0000FF00) << 8) | (txBuff[2]&(0x00FF0000) >> 8))>>8;
-//    			channel_3 = (int32_t)((txBuff[3]&(0x000000FF) << 24) | (txBuff[3]&(0x0000FF00) << 8) | (txBuff[3]&(0x00FF0000) >> 8))>>8;
-    			mapped_ch0 = map_range(channel_0>>8, -32768, 32767, 0, 100);
-    			mapped_ch1 = map_range(channel_1>>8, -32768, 32767, 0, 100);
-    			addMicData(1, mapped_ch0);
-        		//PRINTF("%d %d %d %d\n", mapped_ch0, mapped_ch1, 0>>8, 0>>8);
+
+                if (s_channel0Enabled)
+                {
+    			    channel_0 = (int32_t)((txBuff[0]&(0x000000FF) << 24) | (txBuff[0]&(0x0000FF00) << 8) | (txBuff[0]&(0x00FF0000) >> 8))>>8;
+    			    mapped_ch0 = map_range(channel_0>>8, -32768, 32767, 0, 100);
+    			    addMicData(1, mapped_ch0);
+                }
+
+                if (s_channel1Enabled)
+                {
+                    channel_1 = (int32_t)((txBuff[1]&(0x000000FF) << 24) | (txBuff[1]&(0x0000FF00) << 8) | (txBuff[1]&(0x00FF0000) >> 8))>>8;
+    			    mapped_ch1 = map_range(channel_1>>8, -32768, 32767, 0, 100);
+    			    addMicData(2, mapped_ch1);
+                }
+
+                if (s_channel2Enabled)
+                {
+                    channel_2 = (int32_t)((txBuff[2]&(0x000000FF) << 24) | (txBuff[2]&(0x0000FF00) << 8) | (txBuff[2]&(0x00FF0000) >> 8))>>8;
+    			    mapped_ch2 = map_range(channel_2>>8, -32768, 32767, 0, 100);
+    			    addMicData(3, mapped_ch2);
+                }
+
+                if (s_channel3Enabled)
+                {
+                    channel_3 = (int32_t)((txBuff[3]&(0x000000FF) << 24) | (txBuff[3]&(0x0000FF00) << 8) | (txBuff[3]&(0x00FF0000) >> 8))>>8;
+    			    mapped_ch3 = map_range(channel_3>>8, -32768, 32767, 0, 100);
+    			    addMicData(4, mapped_ch3);
+                }
     		}
 
     	}

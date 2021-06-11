@@ -8,6 +8,7 @@
 #ifndef AUDIO_DEMO_H_
 #define AUDIO_TEST_H_
 
+void enableMicChannel(int id, bool state);
 void audio_task_init();
 
 #endif /* AUDIO_DEMO_H_ */

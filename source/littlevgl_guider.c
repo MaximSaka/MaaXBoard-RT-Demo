@@ -1,4 +1,3 @@
-#include <audio_demo.h>
 /*
  * Copyright 2020 NXP
  * All rights reserved.
@@ -24,6 +23,7 @@
 #include "fsl_lpuart.h"
 #include "globals.h"
 #include "demo_common.h"
+#include "audio_demo.h"
 #include "lvgl_demo.h"
 #include "network_demo.h"
 #include "usb_peripherals.h"
