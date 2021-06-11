@@ -79,9 +79,9 @@ const char *TEXT_SCAN_I2C			= "\r\nList of i2c addresses:\r\n";
 const char *TEXT_LIST_USB			= "\r\nList of USB devices:\r\n";
 const char *TEXT_MOUSE_DEMO		    = "\r\nMove the mouse:\r\n";
 const char *TEXT_KBOARD_DEMO		= "\r\nType Keyboard:\r\n";
-const char *TEXT_LED_ERROR			= "\r\nParam error: Eg: led 101\r\n";
-const char *TEXT_I2C_ERROR			= "\r\nParam error: Eg: i2c 1-4\r\n";
-const char *TEXT_ETH_ERROR			= "\r\nParam error: Eg: eth 0,1\r\n";
+const char *TEXT_LED_ERROR			= "\r\nParam error: eg: led 101\r\n";
+const char *TEXT_I2C_ERROR			= "\r\nParam error: eg: i2c 3 (allows scan of I2C buses 2,3,5,6)\r\n";
+const char *TEXT_ETH_ERROR			= "\r\nParam error: eg: es 0,1 (to scan 100M or 1G Ethernet port)\r\n";
 const char *TEXT_CMD_ERROR			= "\r\nCommand Error\r\n";
 const char *TEXT_FREETOS_STATS		= "\r\nTask                    Abs Time        %Time\r\n"
 										   "____________________________________________\r\n";
@@ -195,7 +195,7 @@ static BaseType_t scanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const
     	uint8_t validInput = 1;
     	int x = atoi(pcParameter1);
     	/* input parameter validation */
-    	if (x == 0 || x > 4)
+    	if (!valid_i2c_index(x))
     	{
     		// Only allowed to write up top xWriteBufferLen bytes ...
     		strncpy(pcWriteBuffer,TEXT_I2C_ERROR,xWriteBufferLen-1);

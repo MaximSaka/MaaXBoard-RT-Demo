@@ -8,6 +8,12 @@
 #include "board.h"
 #include "expansion_i2c.h"
 
+
+/*******************************************************************************
+ * Definitions
+ ******************************************************************************/
+#define I2C_BUS_SIZE  4
+
 /*****************************************************************************\
  * Function:    init_expansion_i2c
  * Input:       LPI2C_Type *base - base memory address of the LPI2C peripheral
@@ -49,6 +55,28 @@ void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff)
 	}
 }
 
+
+/*****************************************************************************\
+ * Function:    validate_i2c_index
+ * Input:       index for i2c bus
+ * Returns:     uint8_t
+ * Description:
+ *     returns the 1 - valid, 0 - not valid
+\*****************************************************************************/
+uint8_t valid_i2c_index(int index)
+{
+	int validIndexes[I2C_BUS_SIZE] = {2, 3, 5, 6};
+
+	for (int i=0; i < I2C_BUS_SIZE; i++)
+	{
+		if (index == validIndexes[i])
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
 /*****************************************************************************\
  * Function:    select_i2c_bus
  * Input:       uint8_t index - index for i2c peripherals (1-4)
@@ -61,16 +89,16 @@ LPI2C_Type *select_i2c_bus(uint8_t index)
 	LPI2C_Type *i2c_periph;
 	switch(index)
 	{
-	case 1:
+	case 2:
 		i2c_periph = ((LPI2C_Type *)(LPI2C2_BASE));
 		break;
-	case 2:
+	case 3:
 		i2c_periph = ((LPI2C_Type *)(LPI2C3_BASE));
 		break;
-	case 3:
+	case 5:
 		i2c_periph = ((LPI2C_Type *)(LPI2C5_BASE));
 		break;
-	case 4:
+	case 6:
 		i2c_periph = ((LPI2C_Type *)(LPI2C6_BASE));
 		break;
 	default:

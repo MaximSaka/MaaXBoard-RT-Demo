@@ -34,4 +34,5 @@
 void init_expansion_i2c(LPI2C_Type *base);
 void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff);
 LPI2C_Type *select_i2c_bus(uint8_t index);
+uint8_t valid_i2c_index(int index);
 #endif /* EXPANSION_I2C_H_ */
