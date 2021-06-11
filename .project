@@ -66,46 +66,6 @@
 			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/UPGRADING</locationURI>
 		</link>
 		<link>
-			<name>lwip/doc/FILES</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/FILES</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/NO_SYS_SampleCode.c</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/NO_SYS_SampleCode.c</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/ZeroCopyRx.c</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/ZeroCopyRx.c</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/contrib.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/contrib.txt</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/mdns.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/mdns.txt</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/mqtt_client.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/mqtt_client.txt</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/ppp.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/ppp.txt</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/savannah.txt</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/savannah.txt</locationURI>
-		</link>
-		<link>
 			<name>lwip/src/FILES</name>
 			<type>1</type>
 			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/src/FILES</locationURI>
@@ -121,39 +81,9 @@
 			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/sdmmc/sdio/ChangeLogKSDK.txt</locationURI>
 		</link>
 		<link>
-			<name>lwip/doc/doxygen/generate.bat</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/doxygen/generate.bat</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/doxygen/generate.sh</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/doxygen/generate.sh</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/doxygen/lwip.Doxyfile</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/doxygen/lwip.Doxyfile</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/doxygen/lwip.Doxyfile.cmake.in</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/doxygen/lwip.Doxyfile.cmake.in</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/doxygen/main_page.h</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/doxygen/main_page.h</locationURI>
-		</link>
-		<link>
 			<name>lwip/src/netif/FILES</name>
 			<type>1</type>
 			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/src/netif/FILES</locationURI>
-		</link>
-		<link>
-			<name>lwip/doc/doxygen/output/index.html</name>
-			<type>1</type>
-			<locationURI>SDK_2_x_MIMXRT1170_EVK/middleware/lwip/doc/doxygen/output/index.html</locationURI>
 		</link>
 		<link>
 			<name>lwip/src/netif/ppp/PPPD_FOLLOWUP</name>
