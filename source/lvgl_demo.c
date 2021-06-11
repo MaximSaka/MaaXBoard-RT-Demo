@@ -832,6 +832,47 @@ void notifyConnectedToAP(void)
 }
 
 /*!
+ * @brief set the custom value background color.
+ */
+void setCustomValueBgColor(lv_color_t color)
+{
+	//Write style LV_LABEL_PART_MAIN for screen5_SYSTEM_custom_value_label
+	static lv_style_t style_screen5_SYSTEM_custom_value_label_main;
+	lv_style_init(&style_screen5_SYSTEM_custom_value_label_main);
+
+	lv_style_set_bg_color(&style_screen5_SYSTEM_custom_value_label_main, LV_STATE_DEFAULT, color);
+	lv_style_set_bg_grad_color(&style_screen5_SYSTEM_custom_value_label_main, LV_STATE_DEFAULT, color);
+	lv_obj_add_style(guider_ui.screen5_SYSTEM_custom_value_label, LV_LABEL_PART_MAIN, &style_screen5_SYSTEM_custom_value_label_main);
+}
+
+/*!
+ * @brief set the custom value.
+ */
+void setCustomValue(short value)
+{
+    char valueText[180];
+    sprintf(valueText, "%ddBm", value);
+    lv_label_set_text(guider_ui.screen5_SYSTEM_custom_value_label, valueText);
+
+    if (value < -100)
+    {
+        setCustomValueBgColor(lv_color_make(0xff, 0x00, 0x00));
+    }
+    else if (value < -85)
+    {
+        setCustomValueBgColor(lv_color_make(0xff, 0x88, 0x00));
+    }
+    else if (value < -70)
+    {
+        setCustomValueBgColor(lv_color_make(0xff, 0xff, 0x00));
+    }
+    else if (value >= -70)
+    {
+        setCustomValueBgColor(lv_color_make(0x00, 0xff, 0x00));
+    }
+}
+
+/*!
  * @brief refreshes the custom graph.
  */
 void refreshCustomGraph(void)
@@ -853,6 +894,8 @@ void refreshCustomGraph(void)
         // PRINTF("RSSI: %d scaled: %d\r\n", rssi, value);
 
         lv_chart_set_next(guider_ui.screen5_SYSTEM_custom_chart, s_custom_series, value);
+        
+        setCustomValue(rssi);
     }
 
     s_custom_graph_refresh_count = 
