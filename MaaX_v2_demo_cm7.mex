@@ -232,6 +232,12 @@
                      </pin_features>
                   </pin>
                   <pin peripheral="GPIO8" signal="gpio_io, 21" pin_num="L4" pin_signal="GPIO_EMC_B2_11"/>
+                  <pin peripheral="GPIO9" signal="gpio_io, 13" pin_num="N14" pin_signal="GPIO_AD_14">
+                     <pin_features>
+                        <pin_feature name="software_input_on" value="Enable"/>
+                        <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
             <function name="BOARD_InitMipiPanelPins">

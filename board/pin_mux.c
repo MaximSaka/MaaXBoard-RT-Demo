@@ -78,6 +78,7 @@ BOARD_InitPins:
   - {pin_num: R8, peripheral: LPI2C6, signal: SCL, pin_signal: GPIO_LPSR_07, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
   - {pin_num: P8, peripheral: LPI2C6, signal: SDA, pin_signal: GPIO_LPSR_06, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
   - {pin_num: L4, peripheral: GPIO8, signal: 'gpio_io, 21', pin_signal: GPIO_EMC_B2_11}
+  - {pin_num: N14, peripheral: GPIO9, signal: 'gpio_io, 13', pin_signal: GPIO_AD_14, software_input_on: Enable, drive_strength: Normal}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -135,6 +136,9 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_10_GPIO9_IO09,           /* GPIO_AD_10 is configured as GPIO9_IO09 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_14_GPIO9_IO13,           /* GPIO_AD_14 is configured as GPIO9_IO13 */
+      1U);                                    /* Software Input On Field: Force input path of pad GPIO_AD_14 */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_24_LPUART1_TXD,          /* GPIO_AD_24 is configured as LPUART1_TXD */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
@@ -205,6 +209,15 @@ void BOARD_InitPins(void) {
   IOMUXC_SetPinMux(
       IOMUXC_WAKEUP_DIG_GPIO13_IO00,          /* WAKEUP_DIG is configured as GPIO13_IO00 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinConfig(
+      IOMUXC_GPIO_AD_14_GPIO9_IO13,           /* GPIO_AD_14 PAD functional properties : */
+      0x04U);                                 /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: normal drive strength
+                                                 Pull / Keep Select Field: Pull Enable
+                                                 Pull Up / Down Config. Field: Weak pull down
+                                                 Open Drain Field: Disabled
+                                                 Domain write protection: Both cores are allowed
+                                                 Domain write protection lock: Neither of DWP bits is locked */
   IOMUXC_SetPinConfig(
       IOMUXC_GPIO_AD_24_LPUART1_TXD,          /* GPIO_AD_24 PAD functional properties : */
       0x00U);                                 /* Slew Rate Field: Slow Slew Rate

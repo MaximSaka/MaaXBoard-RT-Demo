@@ -625,6 +625,17 @@ static int32_t waitWifiStatus(uint32_t ms, uint32_t statusMask)
 
 void wifi_task(void *param)
 {
+	//  reset pulse to WL_REG_ON, but it seems to be unnecessary
+	gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
+
+    GPIO_PinInit(GPIO9, 13, &gpio_config);
+    GPIO_WritePinOutput(GPIO9, 13, 1);
+    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
+    GPIO_WritePinOutput(GPIO9, 13, 0);
+    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
+    GPIO_WritePinOutput(GPIO9, 13, 1);
+    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
+
 	custom_wifi_instance_t *t_wifi = (custom_wifi_instance_t *)param;
 	wifi_cmd_queue = t_wifi->cmd_queue;
 	wifi_response_queue = t_wifi->wifi_resQ;
