@@ -73,8 +73,10 @@ BOARD_InitPins:
   - {pin_num: A6, peripheral: LPI2C3, signal: SDA, pin_signal: GPIO_DISP_B2_11, software_input_on: Enable, open_drain: Enable, drive_strength: Normal}
   - {pin_num: L1, peripheral: LPUART6, signal: RXD, pin_signal: GPIO_EMC_B1_41}
   - {pin_num: K1, peripheral: LPUART6, signal: TXD, pin_signal: GPIO_EMC_B1_40}
-  - {pin_num: N8, peripheral: LPI2C5, signal: SCL, pin_signal: GPIO_LPSR_05, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
-  - {pin_num: N7, peripheral: LPI2C5, signal: SDA, pin_signal: GPIO_LPSR_04, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
+  - {pin_num: N8, peripheral: LPI2C5, signal: SCL, pin_signal: GPIO_LPSR_05, software_input_on: Enable, pull_up_down_config: Pull_Up, pull_keeper_select: no_init,
+    open_drain: Disable, drive_strength: High}
+  - {pin_num: N7, peripheral: LPI2C5, signal: SDA, pin_signal: GPIO_LPSR_04, software_input_on: Enable, pull_up_down_config: Pull_Up, pull_keeper_select: no_init,
+    open_drain: Disable, drive_strength: High}
   - {pin_num: R8, peripheral: LPI2C6, signal: SCL, pin_signal: GPIO_LPSR_07, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
   - {pin_num: P8, peripheral: LPI2C6, signal: SDA, pin_signal: GPIO_LPSR_06, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
   - {pin_num: L4, peripheral: GPIO8, signal: 'gpio_io, 21', pin_signal: GPIO_EMC_B2_11}
@@ -298,20 +300,20 @@ void BOARD_InitPins(void) {
                                                  Domain write protection lock: Neither of DWP bits is locked */
   IOMUXC_SetPinConfig(
       IOMUXC_GPIO_LPSR_04_LPI2C5_SDA,         /* GPIO_LPSR_04 PAD functional properties : */
-      0x24U);                                 /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: normal driver
-                                                 Pull / Keep Select Field: Pull Enable
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain LPSR Field: Enabled
+      0x0AU);                                 /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: high driver
+                                                 Pull / Keep Select Field: Pull Disable
+                                                 Pull Up / Down Config. Field: Weak pull up
+                                                 Open Drain LPSR Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
   IOMUXC_SetPinConfig(
       IOMUXC_GPIO_LPSR_05_LPI2C5_SCL,         /* GPIO_LPSR_05 PAD functional properties : */
-      0x24U);                                 /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: normal driver
-                                                 Pull / Keep Select Field: Pull Enable
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain LPSR Field: Enabled
+      0x0AU);                                 /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: high driver
+                                                 Pull / Keep Select Field: Pull Disable
+                                                 Pull Up / Down Config. Field: Weak pull up
+                                                 Open Drain LPSR Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
   IOMUXC_SetPinConfig(

@@ -202,17 +202,19 @@
                   <pin peripheral="LPI2C5" signal="SCL" pin_num="N8" pin_signal="GPIO_LPSR_05">
                      <pin_features>
                         <pin_feature name="software_input_on" value="Enable"/>
-                        <pin_feature name="pull_keeper_select" value="Pull"/>
-                        <pin_feature name="open_drain" value="Enable"/>
-                        <pin_feature name="drive_strength" value="Normal"/>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up"/>
+                        <pin_feature name="pull_keeper_select" value="no_init"/>
+                        <pin_feature name="open_drain" value="Disable"/>
+                        <pin_feature name="drive_strength" value="High"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="LPI2C5" signal="SDA" pin_num="N7" pin_signal="GPIO_LPSR_04">
                      <pin_features>
                         <pin_feature name="software_input_on" value="Enable"/>
-                        <pin_feature name="pull_keeper_select" value="Pull"/>
-                        <pin_feature name="open_drain" value="Enable"/>
-                        <pin_feature name="drive_strength" value="Normal"/>
+                        <pin_feature name="pull_up_down_config" value="Pull_Up"/>
+                        <pin_feature name="pull_keeper_select" value="no_init"/>
+                        <pin_feature name="open_drain" value="Disable"/>
+                        <pin_feature name="drive_strength" value="High"/>
                      </pin_features>
                   </pin>
                   <pin peripheral="LPI2C6" signal="SCL" pin_num="R8" pin_signal="GPIO_LPSR_07">
