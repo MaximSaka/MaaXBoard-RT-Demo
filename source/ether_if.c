@@ -94,6 +94,7 @@ static struct netif netif_1g;
 ip_ro_t eth_100mb_addr;
 ip_ro_t eth_1g_addr;
 
+static EventGroupHandle_t *temp_event_group;
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -152,7 +153,7 @@ void BOARD_ENETFlexibleConfigure(enet_config_t *config)
  *
  * @param arg pointer to network interface structure
  */
-static void print_dhcp_state(void *arg, uint8_t index)
+static void print_dhcp_state(void *arg)
 {
     struct netif *netif = (struct netif *)arg;
     struct dhcp *dhcp;
@@ -216,23 +217,14 @@ static void print_dhcp_state(void *arg, uint8_t index)
 
             if (dhcp_last_state == DHCP_STATE_BOUND)
             {
-            	if (index == 0)
-            	{
-            		eth_100mb_addr.connected = true;
-					eth_100mb_addr.ip = (netif->ip_addr).addr;
-					eth_100mb_addr.sub = (netif->netmask).addr;
-					eth_100mb_addr.gw = (netif->gw).addr;
-            	}
-            	else
-            	{
-            		eth_1g_addr.connected = true;
-					eth_1g_addr.ip = (netif->ip_addr).addr;
-					eth_1g_addr.sub = (netif->netmask).addr;
-					eth_1g_addr.gw = (netif->gw).addr;
-            	}
-                PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
-                PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
-                PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
+				eth_100mb_addr.connected = true;
+				eth_100mb_addr.ip = (netif->ip_addr).addr;
+				eth_100mb_addr.sub = (netif->netmask).addr;
+				eth_100mb_addr.gw = (netif->gw).addr;
+				PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
+				PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
+				PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
+				xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
             }
         }
         vTaskDelay(20);
@@ -241,7 +233,87 @@ static void print_dhcp_state(void *arg, uint8_t index)
     vTaskDelete(NULL);
 }
 
-static void init_ENET_100mb(EventGroupHandle_t *temp_event_group)
+static void print_dhcp_state_1g(void *arg)
+{
+    struct netif *netif = (struct netif *)arg;
+    struct dhcp *dhcp;
+    u8_t dhcp_last_state = DHCP_STATE_OFF;
+
+    while (netif_is_up(netif))
+    {
+        dhcp = netif_dhcp_data(netif);
+
+        if (dhcp == NULL)
+        {
+            dhcp_last_state = DHCP_STATE_OFF;
+        }
+        else if (dhcp_last_state != dhcp->state)
+        {
+            dhcp_last_state = dhcp->state;
+
+            PRINTF(" DHCP state       : ");
+            switch (dhcp_last_state)
+            {
+                case DHCP_STATE_OFF:
+                    PRINTF("OFF");
+                    break;
+                case DHCP_STATE_REQUESTING:
+                    PRINTF("REQUESTING");
+                    break;
+                case DHCP_STATE_INIT:
+                    PRINTF("INIT");
+                    break;
+                case DHCP_STATE_REBOOTING:
+                    PRINTF("REBOOTING");
+                    break;
+                case DHCP_STATE_REBINDING:
+                    PRINTF("REBINDING");
+                    break;
+                case DHCP_STATE_RENEWING:
+                    PRINTF("RENEWING");
+                    break;
+                case DHCP_STATE_SELECTING:
+                    PRINTF("SELECTING");
+                    break;
+                case DHCP_STATE_INFORMING:
+                    PRINTF("INFORMING");
+                    break;
+                case DHCP_STATE_CHECKING:
+                    PRINTF("CHECKING");
+                    break;
+                case DHCP_STATE_BOUND:
+                    PRINTF("BOUND");
+                    break;
+                case DHCP_STATE_BACKING_OFF:
+                    PRINTF("BACKING_OFF");
+                    break;
+                default:
+                    PRINTF("%u", dhcp_last_state);
+                    PRINTF("UNKNOWN STATE");
+                    assert(0);
+                    break;
+            }
+            PRINTF("\r\n");
+
+            if (dhcp_last_state == DHCP_STATE_BOUND)
+            {
+				eth_1g_addr.connected = true;
+				eth_1g_addr.ip = (netif->ip_addr).addr;
+				eth_1g_addr.sub = (netif->netmask).addr;
+				eth_1g_addr.gw = (netif->gw).addr;
+				PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
+				PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
+				PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
+            }
+        }
+        vTaskDelay(20);
+    }
+    PRINTF("\r\n DHCP Task is deleted\r\n");
+    vTaskDelete(NULL);
+}
+
+
+static void init_ENET_100mb()
 {
 	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
 	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
@@ -290,8 +362,7 @@ static void init_ENET_100mb(EventGroupHandle_t *temp_event_group)
 	    PRINTF(" 100Mb DHCP example\r\n");
 	    PRINTF("************************************************\r\n");
 
-	    xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
-	    print_dhcp_state(&netif_100m, 0);
+	    print_dhcp_state(&netif_100m);
 }
 
 static void init_ENET_1g() // must be called after 100m
@@ -353,25 +424,23 @@ static void init_ENET_1g() // must be called after 100m
 	    PRINTF(" DHCP 1G example\r\n");
 	    PRINTF("************************************************\r\n");
 
-	    print_dhcp_state(&netif_1g, 1);
+	    print_dhcp_state_1g(&netif_1g);
 }
 
 void eth_100m_task(void *pvParameters)
 {
-	EventGroupHandle_t *temp_event_group;
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
 	// used for waiting wifi, wifi should initialize lwip thread.
 	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, 10000 / portTICK_RATE_MS);
-	init_ENET_100mb(temp_event_group);
+	init_ENET_100mb();
 }
 
 void eth_1g_task(void *pvParameters)
 {
-	EventGroupHandle_t *temp_event_group;
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY|ETH_100m_RDY, pdFALSE, pdTRUE, 10000 / portTICK_RATE_MS);
+	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY|ETH_100m_RDY, pdFALSE, pdTRUE, 30000 / portTICK_RATE_MS);
 	init_ENET_1g();
 }
 
