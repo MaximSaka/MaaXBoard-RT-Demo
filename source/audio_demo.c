@@ -67,41 +67,6 @@
 #endif
 #define BUFF_TIMES	8
 
-//
-//#define DEMO_PDM                      PDM
-//#define DEMO_SAI                      SAI2
-//#define DEMO_SAI_CLK_FREQ             24576000
-//#define DEMO_SAI_CHANNEL              0
-//#define DEMO_SAI_MASTER_SLAVE         kSAI_Master
-//#define DEMO_SAI_TX_SYNC_MODE         kSAI_ModeAsync
-//#define DEMO_SAI_CLOCK_SOURCE         (kSAI_BclkSourceMclkDiv)
-//#define DEMO_PDM_CLK_FREQ             24576000
-//#define DEMO_PDM_FIFO_WATERMARK       (7)
-//#define DEMO_PDM_QUALITY_MODE         kPDM_QualityModeHigh
-//#define DEMO_PDM_CIC_OVERSAMPLE_RATE  (0U)
-//#define DEMO_PDM_ENABLE_CHANNEL_0  (0U)
-//#define DEMO_PDM_ENABLE_CHANNEL_1  (1U)
-//#define DEMO_PDM_ENABLE_CHANNEL_2  (2U)
-//#define DEMO_PDM_ENABLE_CHANNEL_3  (3U)
-//#if 1 // 1:use U11 U2 0:use U1 U10
-//#define DEMO_PDM_ENABLE_CHANNEL_LEFT DEMO_PDM_ENABLE_CHANNEL_0
-//#define DEMO_PDM_ENABLE_CHANNEL_RIGHT DEMO_PDM_ENABLE_CHANNEL_1
-//#else
-//#define DEMO_PDM_ENABLE_CHANNEL_LEFT DEMO_PDM_ENABLE_CHANNEL_2
-//#define DEMO_PDM_ENABLE_CHANNEL_RIGHT DEMO_PDM_ENABLE_CHANNEL_3
-//#endif
-//#define DEMO_PDM_SAMPLE_CLOCK_RATE    (6144000U) /* 6.144MHZ */
-///* demo audio sample rate */
-//#define DEMO_AUDIO_SAMPLE_RATE (kSAI_SampleRate16KHz)
-///* demo audio master clock */
-//#define DEMO_AUDIO_MASTER_CLOCK DEMO_SAI_CLK_FREQ
-///* demo audio data channel */
-//#define DEMO_AUDIO_DATA_CHANNEL (2U)
-///* demo audio bit width */
-//#define DEMO_AUDIO_BIT_WIDTH kSAI_WordWidth32bits
-//#define BUFFER_SIZE   (1024U)
-//#define BUFFER_NUMBER (2U)
-
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
