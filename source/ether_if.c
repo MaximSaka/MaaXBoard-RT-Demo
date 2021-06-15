@@ -82,7 +82,7 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-static uint8_t enet_mode_cnt = 0;
+static uint8_t enet_mode_cnt = 1;
 
 static mdio_handle_t mdioHandle = {.ops = &EXAMPLE_MDIO_OPS};
 static phy_handle_t phyHandle_100m   = {.phyAddr = PHY_ADDRESS_100M, .mdioHandle = &mdioHandle, .ops = &PHY_OPS_100M};
@@ -328,9 +328,7 @@ static void init_ENET_100mb()
 	    };
 
 	    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
-
 	    BOARD_InitModuleClock();
-
 	    IOMUXC_SelectENETClock();
 
 	    BOARD_InitEnetPins();
@@ -380,13 +378,11 @@ static void init_ENET_1g() // must be called after 100m
 	    };
 
 	    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
-
-
 	    /*
 	     * Following 2 lines must be uncommented when running ethernet 1G alone without 100mb
 	     */
-	    //BOARD_InitModuleClock();
-	    //IOMUXC_SelectENETClock();
+	    BOARD_InitModuleClock();
+	    IOMUXC_SelectENETClock();
 
 	    BOARD_InitEnet1GPins();
 
@@ -394,13 +390,14 @@ static void init_ENET_1g() // must be called after 100m
 	     *  So does the following 4 lines, This below code reset the phy.
 	     *  ethernet 100mb, ethernet 1g share same reset.
 	     */
-//	    GPIO_PinInit(GPIO8, 21, &gpio_config);
-//	    /* For a complete PHY reset of RTL8211FDI-CG, this pin must be asserted low for at least 10ms. And
-//		 * wait for a further 30ms(for internal circuits settling time) before accessing the PHY register */
-//	    GPIO_WritePinOutput(GPIO8, 21, 0);
-//	    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
-//	    GPIO_WritePinOutput(GPIO8, 21, 1);
-//	    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
+	    GPIO_PinInit(GPIO8, 21, &gpio_config);
+	    /* For a complete PHY reset of RTL8211FDI-CG, this pin must be asserted low for at least 10ms. And
+		 * wait for a further 30ms(for internal circuits settling time) before accessing the PHY register */
+	    GPIO_WritePinOutput(GPIO8, 21, 0);
+	    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
+	    GPIO_WritePinOutput(GPIO8, 21, 1);
+	    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
+
 	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
 	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
 
@@ -440,7 +437,7 @@ void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY|ETH_100m_RDY, pdFALSE, pdTRUE, 30000 / portTICK_RATE_MS);
+	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, 30000 / portTICK_RATE_MS);
 	init_ENET_1g();
 }
 

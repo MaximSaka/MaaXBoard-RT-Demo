@@ -281,11 +281,11 @@ int main(void)
 	 * so if network interface is not used, must comment below task.
 	 *  */
 	// eth100 task
-	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create console task\r\n");
-		while (1);
-	}
+//	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
+//	{
+//		PRINTF("Failed to create console task\r\n");
+//		while (1);
+//	}
 
 	// eth1G task
 	if (xTaskCreate(eth_1g_task, "eth_1g", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
