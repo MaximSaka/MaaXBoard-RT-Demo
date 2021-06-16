@@ -10,5 +10,5 @@
 
 void eth_100m_task(void *pvParameters);
 void eth_1g_task(void *pvParameters);
-
+void dual_eth_configuration();
 #endif /* ETHER_IF_H_ */
