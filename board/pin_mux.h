@@ -440,15 +440,10 @@ void BOARD_InitEnetPins(void);                /* Function assigned for the Corte
 #define BOARD_INITENET1GPINS_ENET_RGMII_TXC_PERIPHERAL                   ENET_1G   /*!< Peripheral name */
 #define BOARD_INITENET1GPINS_ENET_RGMII_TXC_SIGNAL                enet_tx_clk_io   /*!< Signal name */
 
-/* GPIO_EMC_B2_19 (coord U2), ENET_RGMII_MDC */
+/* GPIO_AD_16 (coord N17), SPDIF_OUT/WIFI_RST_B/U354[3] */
 /* Routed pin properties */
-#define BOARD_INITENET1GPINS_ENET_RGMII_MDC_PERIPHERAL                   ENET_1G   /*!< Peripheral name */
-#define BOARD_INITENET1GPINS_ENET_RGMII_MDC_SIGNAL                      enet_mdc   /*!< Signal name */
-
-/* GPIO_EMC_B2_20 (coord R3), ENET_RGMII_MDIO */
-/* Routed pin properties */
-#define BOARD_INITENET1GPINS_ENET_RGMII_MDIO_PERIPHERAL                  ENET_1G   /*!< Peripheral name */
-#define BOARD_INITENET1GPINS_ENET_RGMII_MDIO_SIGNAL                    enet_mdio   /*!< Signal name */
+#define BOARD_INITENET1GPINS_SPDIF_OUT_PERIPHERAL                        ENET_1G   /*!< Peripheral name */
+#define BOARD_INITENET1GPINS_SPDIF_OUT_SIGNAL                           enet_mdc   /*!< Signal name */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

@@ -282,11 +282,8 @@ int main(void)
 	 *  */
 
 	// dual_eth_configuration() must be called before starting ethernet tasks.
-	//dual_eth_configuration();
-	// eth100 task
-//	BOARD_InitEnetPins();
-//	BOARD_InitEnet1GPins();
 	dual_eth_configuration();
+	// eth100 task
 	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
 	{
 		PRINTF("Failed to create console task\r\n");
@@ -294,11 +291,11 @@ int main(void)
 	}
 
 	// eth1G task
-//	if (xTaskCreate(eth_1g_task, "eth_1g", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
-//	{
-//		PRINTF("Failed to create console task\r\n");
-//		while (1);
-//	}
+	if (xTaskCreate(eth_1g_task, "eth_1g", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
+	{
+		PRINTF("Failed to create console task\r\n");
+		while (1);
+	}
 
 	// audio task init
     audio_task_init();

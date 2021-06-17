@@ -49,7 +49,7 @@
  * Definitions
  ******************************************************************************/
 
-#define ENET_TIMEOUT        (0xFFFU)
+#define ENET_TIMEOUT        (0x3F)
 
 /* ENET IRQ priority. Used in FreeRTOS. */
 /* Interrupt priorities. */
@@ -72,7 +72,7 @@
 /*  Defines Ethernet Autonegotiation Timeout during initialization. 
  *  Set it to 0 to disable the waiting. */ 
 #ifndef ENET_ATONEGOTIATION_TIMEOUT
-    #define ENET_ATONEGOTIATION_TIMEOUT     (0x2FFFFU)
+    #define ENET_ATONEGOTIATION_TIMEOUT     (0)
 #endif
 
 /* Define those to better describe your network interface. */

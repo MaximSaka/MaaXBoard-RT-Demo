@@ -478,8 +478,8 @@
                   <pin peripheral="ENET_1G" signal="enet_tdata, 00" pin_num="C13" pin_signal="GPIO_DISP_B1_09"/>
                   <pin peripheral="ENET_1G" signal="enet_tx_en" pin_num="B14" pin_signal="GPIO_DISP_B1_10"/>
                   <pin peripheral="ENET_1G" signal="enet_tx_clk_io" pin_num="A14" pin_signal="GPIO_DISP_B1_11"/>
-                  <pin peripheral="ENET_1G" signal="enet_mdc" pin_num="U2" pin_signal="GPIO_EMC_B2_19"/>
-                  <pin peripheral="ENET_1G" signal="enet_mdio" pin_num="R3" pin_signal="GPIO_EMC_B2_20"/>
+                  <pin peripheral="ENET_1G" signal="enet_mdc" pin_num="N17" pin_signal="GPIO_AD_16"/>
+                  <pin peripheral="ENET_1G" signal="enet_mdio" pin_num="N15" pin_signal="GPIO_AD_17"/>
                </pins>
             </function>
          </functions_list>

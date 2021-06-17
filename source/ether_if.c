@@ -144,17 +144,32 @@ static void IOMUXC_SelectENETClock(void)
 	                                                                 bit0:GPR_ENET_TX_CLK_SEL(internal or OSC) */
 }
 
-void BOARD_ENETFlexibleConfigure(enet_config_t *config)
+
+static uint8_t compareArrays(uint8_t a[], uint8_t b[], int len)
+{
+	for (int i=0; i<len; i++)
+	{
+		if (a[i] != b[i])
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+
+void BOARD_ENETFlexibleConfigure(enet_config_t *config, uint8_t *hwAddr)
 {
 //#ifdef EXAMPLE_USE_100M_ENET_PORT
 //    config->miiMode = kENET_RmiiMode;
 //#else
 //    config->miiMode = kENET_RgmiiMode;
 //#endif
-	if (enet_mode_cnt == 0)
+
+	uint8_t temp_arr[6] = configMAC_ADDR_100M;
+
+	if (compareArrays(hwAddr, temp_arr, 6))
 	{
 		config->miiMode = kENET_RmiiMode;
-		enet_mode_cnt++;
 	}
 	else
 	{
@@ -347,20 +362,58 @@ static void cbETHNetIFStatus(struct netif *state_netif)
 {
 	char ip[16];
 	char ipgw[16];
+	uint8_t tempArr[6] = configMAC_ADDR_100M;
+	uint8_t eth0_eth1 = 0;
+
+	// check which ethernet interface received event
+	if (compareArrays(state_netif->hwaddr, tempArr, 6))
+	{
+		eth0_eth1 = 0;
+	}
+	else
+	{
+		eth0_eth1 = 1;
+	}
+
 	if (netif_is_up(state_netif))
 	{
-		//strcpy(ip, ip4addr_ntoa(netif_ip4_addr(state_netif)));
-		//strcpy(ipgw, ip4addr_ntoa(netif_ip4_gw(state_netif)));
+		strcpy(ip, ip4addr_ntoa(netif_ip4_addr(state_netif)));
+		strcpy(ipgw, ip4addr_ntoa(netif_ip4_gw(state_netif)));
 		//messageDebug(DBG_INFO, __MODULE__, __LINE__,"cbETHNetIFStatus==UP, local interface IP is %s, GW IP is %s", ip, ipgw);
-		PRINTF("cbETHNetIFStatus==UP\r\n");
+		PRINTF("%s==UP, local interface IP is %s, GW IP is %s", eth0_eth1==0?"eth_100Mb":"eth_1Gb", ip, ipgw);
+		//PRINTF("cbETHNetIFStatus==UP\r\n");
 		if (state_netif->ip_addr.addr)
 		{
 			gConnected=true;
+			if (eth0_eth1==0)
+			{
+				eth_100mb_addr.connected = true;
+				eth_100mb_addr.ip = (state_netif->ip_addr).addr;
+				eth_100mb_addr.sub = (state_netif->netmask).addr;
+				eth_100mb_addr.gw = (state_netif->gw).addr;
+			}
+			else
+			{
+				eth_1g_addr.connected = true;
+				eth_1g_addr.ip = (state_netif->ip_addr).addr;
+				eth_1g_addr.sub = (state_netif->netmask).addr;
+				eth_1g_addr.gw = (state_netif->gw).addr;
+			}
+
 		}
 	}
 	else
 	{
-		PRINTF("cbETHNetIFStatus==DOWN\r\n");
+		if (eth0_eth1==0)
+		{
+			eth_100mb_addr.connected = false;
+		}
+		else
+		{
+			eth_1g_addr.connected = false;
+		}
+
+		PRINTF("%s==DOWN\r\n", eth0_eth1==0?"eth_100Mb":"eth_1Gb");
 		gConnected=false;
 	}
 }
@@ -385,25 +438,28 @@ static void init_ENET_100mb()
 	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
 
 	    //tcpip_init(NULL, NULL);
-
 	    netifapi_netif_add(&netif_100m, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_100M,
 	                       tcpip_input);
 
 	    netif_set_status_callback(&netif_100m, cbETHNetIFStatus);
 	    netif_set_link_callback(&netif_100m, cbETHLinkStatus);
 
-
-	    //netifapi_netif_set_default(&netif_100m);
-	    //netifapi_netif_set_up(&netif_100m);
-
-	    //netifapi_dhcp_start(&netif_100m);
-
 	    sys_unlock_tcpip_core();
-//	    PRINTF("\r\n************************************************\r\n");
-//	    PRINTF(" 100Mb DHCP example\r\n");
-//	    PRINTF("************************************************\r\n");
-//
-//	    print_dhcp_state(&netif_100m);
+
+	    phy_config_t phyConfig;
+	    status_t status;
+
+	    phyConfig.phyAddr = enet_config.phyHandle->phyAddr;
+	    phyConfig.autoNeg = true;
+
+	    status = PHY_Init(enet_config.phyHandle, &phyConfig);
+
+	    if (kStatus_Success != status)
+	    {
+	    	PRINTF("PHY cannot be initialized\r\n");
+	    	while(1);
+	    }
+
 	    bool link;
 	    static bool oldLink=false;
 	    while(1)
@@ -418,7 +474,7 @@ static void init_ENET_100mb()
 	    		   netif_set_up(&netif_100m);
 	    		   dhcp_start(&netif_100m);
 	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("Link is coming up");
+	    		   PRINTF("100Mb Link is coming up");
 	    	   }
 	    	   else
 	    	   {
@@ -426,7 +482,7 @@ static void init_ENET_100mb()
 	    		   dhcp_release_and_stop(&netif_100m);
 	    		   netif_set_down(&netif_100m);
 	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("Link is going down..");
+	    		   PRINTF("100Mb Link is going down..");
 	    	   }
 	    	   oldLink=link;
 	    	}
@@ -453,22 +509,6 @@ static void init_ENET_1g() // must be called after 100m
 	    /*
 	     * Following 2 lines must be uncommented when running ethernet 1G alone without 100mb
 	     */
-	    //BOARD_InitModuleClock();
-	    //IOMUXC_SelectENETClock();
-
-	    BOARD_InitEnet1GPins();
-
-	    /*
-	     *  So does the following 4 lines, This below code reset the phy.
-	     *  ethernet 100mb, ethernet 1g share same reset.
-	     */
-//	    GPIO_PinInit(GPIO8, 21, &gpio_config);
-//	    /* For a complete PHY reset of RTL8211FDI-CG, this pin must be asserted low for at least 10ms. And
-//		 * wait for a further 30ms(for internal circuits settling time) before accessing the PHY register */
-//	    GPIO_WritePinOutput(GPIO8, 21, 0);
-//	    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
-//	    GPIO_WritePinOutput(GPIO8, 21, 1);
-//	    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
 
 	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
 	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
@@ -484,16 +524,55 @@ static void init_ENET_1g() // must be called after 100m
 
 	    netifapi_netif_add(&netif_1g, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_1G,
 	                       tcpip_input);
-	    netifapi_netif_set_default(&netif_1g);
-	    netifapi_netif_set_up(&netif_1g);
 
-	    netifapi_dhcp_start(&netif_1g);
+	    netif_set_status_callback(&netif_1g, cbETHNetIFStatus);
+	    netif_set_link_callback(&netif_1g, cbETHLinkStatus);
 
-	    PRINTF("\r\n************************************************\r\n");
-	    PRINTF(" DHCP 1G example\r\n");
-	    PRINTF("************************************************\r\n");
+	    sys_unlock_tcpip_core();
 
-	    print_dhcp_state_1g(&netif_1g);
+	    phy_config_t phyConfig;
+	    status_t status;
+
+	    phyConfig.phyAddr = enet_config.phyHandle->phyAddr;
+	    phyConfig.autoNeg = true;
+
+	    status = PHY_Init(enet_config.phyHandle, &phyConfig);
+
+	    if (kStatus_Success != status)
+	    {
+	    	PRINTF("PHY cannot be initialized\r\n");
+	    	while(1);
+	    }
+
+
+	    bool link;
+	    static bool oldLink=false;
+	    while(1)
+	    {
+	    	PHY_GetLinkStatus(enet_config.phyHandle, &link);
+
+	    	if (link != oldLink)
+	    	{
+	    	   if (link)
+	    	   {
+	    		   sys_lock_tcpip_core();
+	    		   netif_set_up(&netif_1g);
+	    		   dhcp_start(&netif_1g);
+	    		   sys_unlock_tcpip_core();
+	    		   PRINTF("Link is coming up\r\n");
+	    	   }
+	    	   else
+	    	   {
+	    		   sys_lock_tcpip_core();
+	    		   dhcp_release_and_stop(&netif_1g);
+	    		   netif_set_down(&netif_1g);
+	    		   sys_unlock_tcpip_core();
+	    		   PRINTF("Link is going down..\r\n");
+	    	   }
+	    	   oldLink=link;
+	    	}
+	    	vTaskDelay(10);
+	    }
 }
 
 void dual_eth_configuration()
@@ -501,7 +580,8 @@ void dual_eth_configuration()
     gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
     BOARD_InitModuleClock();
     IOMUXC_SelectENETClock();
-    BOARD_InitEnetPins();
+    BOARD_InitEnetPins(); //100mb
+    BOARD_InitEnet1GPins(); //1gb
     GPIO_PinInit(GPIO9, 11, &gpio_config);
     GPIO_PinInit(GPIO8, 21, &gpio_config);
     /* Pull up the ENET_INT before RESET. */
@@ -529,7 +609,7 @@ void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY|ETH_100m_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
+	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
 	init_ENET_1g();
 }
 

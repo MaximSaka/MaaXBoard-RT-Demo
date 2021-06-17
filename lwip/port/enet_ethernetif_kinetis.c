@@ -312,8 +312,8 @@ void ethernetif_enet_init(struct netif *netif, struct ethernetif *ethernetif,
     ENET_GetDefaultConfig(&config);
     config.ringNum = ENET_RING_NUM;
 #ifdef LWIP_ENET_FLEXIBLE_CONFIGURATION
-    extern void BOARD_ENETFlexibleConfigure(enet_config_t *config);
-    BOARD_ENETFlexibleConfigure(&config);
+    extern void BOARD_ENETFlexibleConfigure(enet_config_t *config, uint8_t *hwAddr);
+    BOARD_ENETFlexibleConfigure(&config, netif->hwaddr);
 #endif
 
     ethernetif_phy_init(ethernetif, ethernetifConfig, &speed, &duplex);
