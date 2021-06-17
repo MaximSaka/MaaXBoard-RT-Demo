@@ -696,40 +696,16 @@ static BaseType_t printIpCommand( char *pcWriteBuffer,size_t xWriteBufferLen, co
  * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
  * Returns:     BaseType_t
  * Description:
- *     This function prints the IP address.
+ *     This function prints the status of both ethernet interfaces
 \*****************************************************************************/
 static BaseType_t ethernetScanCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
 {
 	(void)pcCommandString;
 	int length = 0;
-	int8_t *pcParameter1;
-	BaseType_t xParameter1StringLength;
+	BaseType_t xReturn;
+	static int processed = 0;
 
-	pcParameter1 = (int8_t *)FreeRTOS_CLIGetParameter
-					   (
-						 /* The command string itself. */
-						 pcCommandString,
-						 /* Return the first parameter. */
-						 1,
-						 /* Store the parameter string length. */
-						 &xParameter1StringLength
-					   );
-	/* Terminate parameter. */
-	pcParameter1[ xParameter1StringLength ] = 0x00;
-
-	uint8_t validInput = 1;
-	int input = atoi(pcParameter1);
-
-	// there are only 2 ethernet interfaces available.
-	if (input < 0 || input > 1)
-	{
-		// Only allowed to write up top xWriteBufferLen bytes ...
-		strncpy(pcWriteBuffer,TEXT_ETH_ERROR,xWriteBufferLen-1);
-		pcWriteBuffer[xWriteBufferLen-1]=0;
-		return pdFALSE;
-	}
-
-	if (input == 0)
+	if (processed == 0)
 	{
 		eth_instance = &eth_100mb_addr;
 	}
@@ -740,7 +716,7 @@ static BaseType_t ethernetScanCommand( char *pcWriteBuffer,size_t xWriteBufferLe
 
 	if (eth_instance->connected)
 	{
-		length += sprintf(pcWriteBuffer+length, "\r\nEth_%s connected\r\n", input==0?"100mb":"1g");
+		length += sprintf(pcWriteBuffer+length, "\r\nEth_%s: connected\r\n", processed==0?"100Mb":"1Gb  ");
 		length += sprintf(pcWriteBuffer+length, "IPv4 Address   : %d.%d.%d.%d\r\n",
 				(uint8_t)((eth_instance->ip)), (uint8_t)((eth_instance->ip)>>8),
 				(uint8_t)((eth_instance->ip)>>16), (uint8_t)((eth_instance->ip)>>24));
@@ -752,12 +728,19 @@ static BaseType_t ethernetScanCommand( char *pcWriteBuffer,size_t xWriteBufferLe
 				(uint8_t)((eth_instance->gw)>>16), (uint8_t)((eth_instance->gw)>>24));
 	}else
 	{
-		length += sprintf(pcWriteBuffer+length, "\r\nEth_%s not connected\r\n", input==0?"100mb":"1g");
+		length += sprintf(pcWriteBuffer+length, "\r\nEth_%s: not connected\r\n", processed==0?"100Mb":"1Gb  ");
 	}
+	processed++;
 	pcWriteBuffer[xWriteBufferLen-1]=0;
-	return pdFALSE;
-}
+	xReturn = pdTRUE;
+	if (processed == 2)
+	{
+		processed = 0;
+		xReturn = pdFALSE;
 
+	}
+	return xReturn;
+}
 
 /* Utility functions */
 
@@ -869,9 +852,9 @@ static const CLI_Command_Definition_t printIpCommandStruct =
 static const CLI_Command_Definition_t ethernetScanCommandStruct =
 {
     "es",
-    " es #       : Ethernet Scan # \r\n",
+    " es         : Scan Ethernet \r\n",
 	ethernetScanCommand,
-    1
+    0
 };
 
 /***************** USB HOST & DEV ******************************/

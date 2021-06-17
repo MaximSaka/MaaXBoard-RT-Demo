@@ -456,10 +456,12 @@ static void init_ENET_100mb()
 
 	    if (kStatus_Success != status)
 	    {
-	    	PRINTF("PHY cannot be initialized\r\n");
-	    	while(1);
+	    	PRINTF("PHY 100Mb cannot be initialized\r\n");
+	    	vTaskSuspend(NULL);
+	    	//while(1);
 	    }
 
+	    xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
 	    bool link;
 	    static bool oldLink=false;
 	    while(1)
@@ -540,10 +542,10 @@ static void init_ENET_1g() // must be called after 100m
 
 	    if (kStatus_Success != status)
 	    {
-	    	PRINTF("PHY cannot be initialized\r\n");
-	    	while(1);
+	    	PRINTF("PHY 1G cannot be initialized\r\n");
+	    	vTaskSuspend(NULL);
+	    	//while(1);
 	    }
-
 
 	    bool link;
 	    static bool oldLink=false;
@@ -609,7 +611,7 @@ void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
+	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY | ETH_100m_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
 	init_ENET_1g();
 }
 
