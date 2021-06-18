@@ -33,6 +33,11 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+//#define WIFI_EN		1
+
+#ifdef WIFI_EN
+	#define ETH_100MB_EN	1
+#endif
 
 portSTACK_TYPE *lvgl_task_stack = NULL;
 TaskHandle_t lvgl_task_task_handler;
@@ -202,7 +207,7 @@ int main(void)
    assert(pdPASS == stat);
 
     // Create wifi task
-
+#ifdef WIFI_EN
 	t_wifi_cmd.cmd_queue = &wifi_commands_queue;
 	t_wifi_cmd.event_group_wifi = &event_group_demo;
 	t_wifi_cmd.wifi_resQ = &wifi_response_queue;
@@ -214,7 +219,7 @@ int main(void)
         tskIDLE_PRIORITY + 4,
         &wifi_task_task_handler);
     assert(pdPASS == stat);
-
+#endif
     /* usb host, freertos task initialization */
 	USB_HostApplicationInit(&g_HostHandle);
 	if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 4, NULL) != pdPASS)
@@ -282,6 +287,7 @@ int main(void)
 	 *  */
 
 	// dual_eth_configuration() must be called before starting ethernet tasks.
+#ifdef ETH_100MB_EN
 	dual_eth_configuration();
 	// eth100 task
 	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
@@ -289,7 +295,7 @@ int main(void)
 		PRINTF("Failed to create console task\r\n");
 		while (1);
 	}
-
+#endif;
 	// eth1G task
 //	if (xTaskCreate(eth_1g_task, "eth_1g", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
 //	{

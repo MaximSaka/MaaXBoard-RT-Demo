@@ -75,12 +75,17 @@ static int s_mic_2_buffer_count = 0;
 static int s_mic_3_buffer_count = 0;
 static int s_mic_4_buffer_count = 0;
 
-static bool s_mic_1_series_visible = false;
-static bool s_mic_2_series_visible = false;
+static bool s_mic_1_series_visible = true;
+static bool s_mic_2_series_visible = true;
 static bool s_mic_3_series_visible = false;
 static bool s_mic_4_series_visible = false;
 
-static int s_enabled_mic_count = 0;
+
+static bool *mic_states[4] = {&s_mic_1_series_visible, &s_mic_2_series_visible, &s_mic_3_series_visible, &s_mic_4_series_visible};
+
+
+
+static int s_enabled_mic_count = 2;
 
 static lv_chart_series_t *s_custom_series = NULL;
 static int s_custom_graph_refresh_count = 0;
@@ -517,13 +522,36 @@ void initMicGraph()
     s_mic_2_buffer_count = 0;
     s_mic_3_buffer_count = 0;
     s_mic_4_buffer_count = 0;
-    
-    s_mic_1_series_visible = false;
-    s_mic_2_series_visible = false;
-    s_mic_3_series_visible = false;
-    s_mic_4_series_visible = false;
 
-    s_enabled_mic_count = 0;
+	s_mic_1_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_RED);
+	s_mic_2_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_YELLOW);
+	s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
+	s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_CYAN);
+
+    for (int i=0; i<4; i++)
+    {
+    	enableMic(i+1, *mic_states[i]);
+    	if (*mic_states[i] == true)
+    	{
+    		switch(i)
+    		{
+    		case 0:
+    			lv_checkbox_set_state(guider_ui.screen4_AV_mic1_cb, LV_BTN_STATE_CHECKED_PRESSED);
+    			break;
+    		case 1:
+    			lv_checkbox_set_state(guider_ui.screen4_AV_mic2_cb, LV_BTN_STATE_CHECKED_PRESSED);
+    			break;
+    		case 2:
+    			lv_checkbox_set_state(guider_ui.screen4_AV_mic3_cb, LV_BTN_STATE_CHECKED_PRESSED);
+    			break;
+    		case 3:
+    			lv_checkbox_set_state(guider_ui.screen4_AV_mic4_cb, LV_BTN_STATE_CHECKED_PRESSED);
+    			break;
+    		default:
+    			break;
+    		}
+    	}
+    }
 
     lv_chart_refresh(guider_ui.screen4_AV_mic_chart);
 }
@@ -617,7 +645,6 @@ void enableMic(int mic, bool state)
 
             if (state)
             {
-                s_mic_1_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_RED);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_1_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_1_buffer_count = 0;
 
@@ -626,6 +653,7 @@ void enableMic(int mic, bool state)
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_1_series);
+                s_mic_1_buffer_count = 0;
 
                 s_enabled_mic_count--;
             }
@@ -638,7 +666,6 @@ void enableMic(int mic, bool state)
 
             if (state)
             {
-                s_mic_2_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_GREEN);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_2_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_2_buffer_count = 0;
 
@@ -647,6 +674,7 @@ void enableMic(int mic, bool state)
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_2_series);
+                s_mic_2_buffer_count = 0;
 
                 s_enabled_mic_count--;
             }
@@ -659,7 +687,6 @@ void enableMic(int mic, bool state)
 
             if (state)
             {
-                s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_3_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_3_buffer_count = 0;
 
@@ -668,6 +695,7 @@ void enableMic(int mic, bool state)
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_3_series);
+                s_mic_3_buffer_count = 0;
 
                 s_enabled_mic_count--;
             }
@@ -680,7 +708,6 @@ void enableMic(int mic, bool state)
 
             if (state)
             {
-                s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_TEAL);
                 lv_chart_init_points(guider_ui.screen4_AV_mic_chart, s_mic_4_series, MIC_GRAPH_MIDDLE_POINT);
                 s_mic_4_buffer_count = 0;
 
@@ -689,6 +716,7 @@ void enableMic(int mic, bool state)
             else
             {
                 lv_chart_clear_series(guider_ui.screen4_AV_mic_chart, s_mic_4_series);
+                s_mic_4_buffer_count = 0;
 
                 s_enabled_mic_count--;
             }

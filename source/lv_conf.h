@@ -74,7 +74,7 @@ typedef void * lv_group_user_data_t;
 #define LV_USE_GPU 1
 #define LV_USE_GPU_NXP_PXP 0
 #define LV_USE_GPU_NXP_PXP_AUTO_INIT 0
-#define LV_USE_GPU_NXP_VG_LITE 1
+#define LV_USE_GPU_NXP_VG_LITE 0
 #define LV_USE_FILESYSTEM 1
 
 #if LV_USE_FILESYSTEM

@@ -33,6 +33,7 @@ typedef struct {
     uint16_t scale_angle; /*Angle of the scale in deg. (0..360)*/
     uint16_t angle_ofs;
     uint16_t line_cnt;     /*Count of lines */
+    int16_t lvl_ofs;
     int32_t cur_value;
     int32_t min_value;
     int32_t max_value;
@@ -146,7 +147,6 @@ uint16_t lv_linemeter_get_scale_angle(const lv_obj_t * lmeter);
  * @return angle offset (0..360)
  */
 uint16_t lv_linemeter_get_angle_offset(lv_obj_t * lmeter);
-
 
 void lv_linemeter_draw_scale(lv_obj_t * lmeter, const lv_area_t * clip_area, uint8_t part);
 
