@@ -67,6 +67,10 @@
 #endif
 #define BUFF_TIMES	8
 
+#define CH1_EN	(1<<0)
+#define CH2_EN	(1<<1)
+#define CH3_EN	(1<<2)
+#define CH4_EN	(1<<3)
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -74,11 +78,6 @@ static void saiCallback(I2S_Type *base, sai_handle_t *handle, status_t status, v
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-static int32_t channel_0;
-static int32_t channel_1;
-static int32_t channel_2;
-static int32_t channel_3;
-
 static sai_transfer_t xfer;
 static sai_transceiver_t config;
 
@@ -123,6 +122,14 @@ static volatile bool s_channel0Enabled = false;
 static volatile bool s_channel1Enabled = false;
 static volatile bool s_channel2Enabled = false;
 static volatile bool s_channel3Enabled = false;
+
+static uint8_t s_channels = 0;
+
+uint8_t audio_jack[2] = {0,0};
+static int32_t channel_0;
+static int32_t channel_1;
+static int32_t channel_2;
+static int32_t channel_3;
 
 static SemaphoreHandle_t xBinarySemaphore = NULL;
 
@@ -203,16 +210,61 @@ void PDM_ERROR_IRQHandler(void)
 }
 #endif
 
+//static void four_two_conv(uint8_t *src_buff, uint8_t *dest_buff)
+//{
+//    memset(dest_buff, 0x00, BUFFER_SIZE);
+//    int offset = 0;
+//    if (s_channels)	// if no mic is enabled, set the buffer to 0x00
+//	{
+//		// otherwise only up to 2 mic will be outputted to audio jack
+//		uint8_t mic_mask = 0x01;
+//        uint8_t count_enabled_mic = 0;
+//		for (int i=0; i<4; i++)
+//		{
+//			if (s_channels & mic_mask)
+//			{
+//				offset = 0;
+//				for (int j=0; j<BUFFER_SIZE/2/4; j++)
+//				{
+//					memcpy(dest_buff+j*8+count_enabled_mic*4, src_buff+i*4+offset, 4);
+//					offset = offset + 16;		// ch1(4) + ch2(4) + ch3(4) + ch4(4)
+//												// next sample is 16 bytes away
+//				}
+//                count_enabled_mic++;
+//			}
+//            if (count_enabled_mic==2)
+//            {
+//                // only up to 2 mics should be enabled.
+//                break;
+//            }
+//			mic_mask = mic_mask << 1;
+//		}
+//	}
+//}
+
 static void four_two_conv(uint8_t *src_buff, uint8_t *dest_buff)
 {
-	int offset = 0;
-	for (int i=0; i<BUFFER_SIZE/2/4; i++)
-	{
-		memcpy(dest_buff+i*8, src_buff+offset, 8);
-		offset = offset + 16;
-	}
-}
+    memset(dest_buff, 0x00, BUFFER_SIZE);
+    int offset = 0;
 
+    // otherwise only up to 2 mic will be outputted to audio jack
+    uint8_t mic_mask = 0x01;
+    uint8_t count_enabled_mic = 0;
+    for (int i=0; i<2; i++)
+    {
+        if (audio_jack[i])
+        {
+            offset = 0;
+            for (int j=0; j<BUFFER_SIZE/2/4; j++)
+            {
+                memcpy(dest_buff+j*8+i*4, src_buff+(audio_jack[i]-1)*4+offset, 4);
+                offset = offset + 16;		// ch1(4) + ch2(4) + ch3(4) + ch4(4)
+                                            // next sample is 16 bytes away
+            }
+            count_enabled_mic++;
+        }
+    }
+}
 
 void PDM_EVENT_IRQHandler(void)
 {
@@ -283,6 +335,33 @@ void enableMicChannel(int id, bool state)
         PRINTF("Invalid mic channel: %d\r\n", id);
         break;
     }
+
+    if ((id>=0 && id<4))
+    {
+    	if (state == false)
+    	{
+    		for (int i=0; i<2; i++)
+    		{
+    			if (audio_jack[i]==(id+1))
+    			{
+    				audio_jack[i] = 0;
+    				break;
+    			}
+    		}
+    	}
+    	else
+    	{
+    		for (int i=0; i<2; i++)
+    		{
+    			if (audio_jack[i]==0)
+    			{
+    				audio_jack[i] = id+1;
+    				break;
+    			}
+    		}
+    	}
+    }
+
 }
 
 static void audio_task(void *pvParameters)
