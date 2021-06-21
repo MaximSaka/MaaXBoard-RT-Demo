@@ -160,7 +160,7 @@ void setup_scr_screen5_SYSTEM(lv_ui *ui){
 
 	//Write codes screen5_SYSTEM_page_label
 	ui->screen5_SYSTEM_page_label = lv_label_create(ui->screen5_SYSTEM, NULL);
-	lv_label_set_text(ui->screen5_SYSTEM_page_label, "Custom Examples");
+	lv_label_set_text(ui->screen5_SYSTEM_page_label, "Custom Functions");
 	lv_label_set_long_mode(ui->screen5_SYSTEM_page_label, LV_LABEL_LONG_BREAK);
 	lv_label_set_align(ui->screen5_SYSTEM_page_label, LV_LABEL_ALIGN_CENTER);
 

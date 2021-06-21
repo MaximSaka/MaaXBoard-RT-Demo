@@ -15,6 +15,7 @@ extern "C" {
 typedef struct
 {
 	lv_obj_t *screen0_MENU;
+	lv_obj_t *screen0_MENU_cursor_img;
 	lv_obj_t *screen0_MENU_canvas_white;
 	lv_obj_t *screen0_MENU_avlogoimg0;
 	lv_obj_t *screen0_MENU_board_img;
@@ -73,10 +74,10 @@ typedef struct
 	lv_obj_t *screen2_WIFI_ssid_label;
 	lv_obj_t *screen2_WIFI_ip_addr_label;
 	lv_obj_t *screen2_WIFI_font_label;
-	lv_obj_t *screen2_WIFI_ip_addr_edit_label;
 	lv_obj_t *screen2_WIFI_ssid_refresh_imgbtn;
 	lv_obj_t *screen2_WIFI_ssid_refresh_imgbtn_label;
 	lv_obj_t *screen2_WIFI_ssid_scan_label;
+	lv_obj_t *screen2_WIFI_eth_list;
 	lv_obj_t *screen3_USB;
 	lv_obj_t *screen3_USB_canvas_white;
 	lv_obj_t *screen3_USB_left_btn;
@@ -118,8 +119,6 @@ typedef struct
 	lv_obj_t *screen4_AV_camera_label;
 	lv_obj_t *screen4_AV_camera_state_label;
 	lv_obj_t *screen4_AV_playback_label;
-	lv_obj_t *screen4_AV_audio_test_imgbtn;
-	lv_obj_t *screen4_AV_audio_test_imgbtn_label;
 	lv_obj_t *screen4_AV_mic_label;
 	lv_obj_t *screen4_AV_mic1_cb;
 	lv_obj_t *screen4_AV_mic2_cb;
@@ -182,16 +181,18 @@ void setup_scr_screen5_SYSTEM(lv_ui *ui);
 void setup_scr_screen6_HELP(lv_ui *ui);
 LV_IMG_DECLARE(_led_blue_off_alpha_110x110);
 LV_IMG_DECLARE(_button_alpha_320x106);
+LV_IMG_DECLARE(_mouse_alpha_45x45);
 LV_IMG_DECLARE(_led_red_on_alpha_110x110);
 LV_IMG_DECLARE(_button_alpha_160x50);
+LV_IMG_DECLARE(_eth_disconnect_40x40);
 LV_IMG_DECLARE(_button_on_alpha_220x80);
 LV_IMG_DECLARE(_home_icon_alpha_132x132);
 LV_IMG_DECLARE(_led_green_off_alpha_110x110);
+LV_IMG_DECLARE(_eth_connect_40x40);
 LV_IMG_DECLARE(_led_green_on_alpha_110x110);
 LV_IMG_DECLARE(_left_icon_alpha_132x132);
 LV_IMG_DECLARE(_SBC_Help_Image_alpha_424x645);
 LV_IMG_DECLARE(_button_alpha_220x80);
-LV_IMG_DECLARE(_button_on_alpha_190x80);
 LV_IMG_DECLARE(_IoT_Smart_Asset_Monitoring_G_600ppi_alpha_500x500);
 LV_IMG_DECLARE(_button_on_alpha_320x106);
 LV_IMG_DECLARE(_button_on_alpha_160x50);
@@ -201,7 +202,6 @@ LV_IMG_DECLARE(_right_icon_alpha_132x132);
 LV_IMG_DECLARE(_button_alpha_190x106);
 LV_IMG_DECLARE(_button_on_alpha_190x106);
 LV_IMG_DECLARE(_led_blue_on_alpha_110x110);
-LV_IMG_DECLARE(_button_alpha_190x80);
 
 #ifdef __cplusplus
 }

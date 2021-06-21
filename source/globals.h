@@ -132,6 +132,7 @@ typedef struct
 	uint32_t sub;
 	uint32_t gw;
 	bool connected;
+	uint8_t eth;
 }ip_ro_t;
 
 // mouse type

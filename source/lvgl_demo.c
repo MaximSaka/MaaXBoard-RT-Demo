@@ -10,7 +10,7 @@
 #include "network_demo.h"
 #include "usb_peripherals.h"
 #include "expansion_i2c.h"
-
+#include "globals.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -89,6 +89,15 @@ static int s_enabled_mic_count = 2;
 
 static lv_chart_series_t *s_custom_series = NULL;
 static int s_custom_graph_refresh_count = 0;
+
+//ethernet
+extern ip_ro_t eth_100mb_addr;
+extern ip_ro_t eth_1g_addr;
+
+/*******************************************************************************
+ * Prototypes
+ ******************************************************************************/
+static void ethernet_change_state_gui(ip_ro_t *eth_instance, lv_obj_t *screen2_WIFI_eth_item);
 
 /*******************************************************************************
  * Functions
@@ -447,6 +456,71 @@ void startSSIDScan()
     ssidScan();
 }
 
+static void ethernet_change_state_gui(ip_ro_t *eth_instance, lv_obj_t *screen2_WIFI_eth_item)
+{
+	uint8_t temp_buff[128];
+	int length = 0;
+	length = sprintf(temp_buff+length, "Eth %s : %s", eth_instance->eth==0?"100Mb":"1Gb", eth_instance->connected==true?"Connected, ":"Disconnected ");
+
+	if (eth_instance->connected)
+	{
+		length += sprintf(temp_buff+length, "ip : %d.%d.%d.%d ",
+					(uint8_t)((eth_instance->ip)), (uint8_t)((eth_instance->ip)>>8),
+					(uint8_t)((eth_instance->ip)>>16), (uint8_t)((eth_instance->ip)>>24));
+		length += sprintf(temp_buff+length, "sub : %d.%d.%d.%d ",
+				(uint8_t)((eth_instance->sub)), (uint8_t)((eth_instance->sub)>>8),
+				(uint8_t)((eth_instance->sub)>>16), (uint8_t)((eth_instance->sub)>>24));
+		length += sprintf(temp_buff+length, "gw : %d.%d.%d.%d",
+				(uint8_t)((eth_instance->gw)), (uint8_t)((eth_instance->gw)>>8),
+				(uint8_t)((eth_instance->gw)>>16), (uint8_t)((eth_instance->gw)>>24));
+	}
+
+	if (screen2_WIFI_eth_item!=NULL)
+	{
+		if (eth_instance->connected)
+		{
+			lv_img_set_src(lv_list_get_btn_img(screen2_WIFI_eth_item), &_eth_connect_40x40);
+		}
+		else
+		{
+			lv_img_set_src(lv_list_get_btn_img(screen2_WIFI_eth_item), &_eth_disconnect_40x40);
+		}
+		lv_label_set_text(lv_list_get_btn_label(screen2_WIFI_eth_item), temp_buff);
+	}
+}
+
+/*!
+* @brief detects ethernet interface UP/DOWN event.
+*/
+static void refreshNetworkPage()
+{
+	static bool eth_100mb_last = false;
+	static bool eth_1Gb_last = false;
+	lv_obj_t *screen2_WIFI_list_1_btn;
+    if (s_active_page != PAGE_NETWORK)
+    {
+        return;
+    }
+
+    if (eth_100mb_last != eth_100mb_addr.connected)
+    {
+    	screen2_WIFI_list_1_btn = lv_list_get_next_btn(guider_ui.screen2_WIFI_eth_list, NULL);
+		ethernet_change_state_gui(&eth_100mb_addr, screen2_WIFI_list_1_btn);
+		eth_100mb_last = eth_100mb_addr.connected;
+    }
+
+    if (eth_1Gb_last != eth_1g_addr.connected)
+    {
+    	screen2_WIFI_list_1_btn = lv_list_get_next_btn(guider_ui.screen2_WIFI_eth_list, NULL);
+    	if (screen2_WIFI_list_1_btn)
+    	{
+    		screen2_WIFI_list_1_btn = lv_list_get_next_btn(guider_ui.screen2_WIFI_eth_list, screen2_WIFI_list_1_btn);
+    		ethernet_change_state_gui(&eth_1g_addr, screen2_WIFI_list_1_btn);
+    		eth_1Gb_last = eth_1g_addr.connected;
+    	}
+    }
+}
+
 /*!
 * @brief Opens the network screen
 */
@@ -456,9 +530,21 @@ void openNetworkScreen()
     lv_scr_load_anim(guider_ui.screen2_WIFI, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 
     s_active_page = PAGE_NETWORK;
-
     initDefaultPageInteractions();
 
+    // load the ethernet status information first time when page loaded
+	lv_obj_t *screen2_WIFI_list_1_btn;
+	screen2_WIFI_list_1_btn = lv_list_get_next_btn(guider_ui.screen2_WIFI_eth_list, NULL);
+	ethernet_change_state_gui(&eth_100mb_addr, screen2_WIFI_list_1_btn);
+
+	screen2_WIFI_list_1_btn = lv_list_get_next_btn(guider_ui.screen2_WIFI_eth_list, NULL);
+	if (screen2_WIFI_list_1_btn)
+	{
+		screen2_WIFI_list_1_btn = lv_list_get_next_btn(guider_ui.screen2_WIFI_eth_list, screen2_WIFI_list_1_btn);
+		ethernet_change_state_gui(&eth_1g_addr, screen2_WIFI_list_1_btn);
+	}
+
+    s_page_refresh = &refreshNetworkPage;
     startSSIDScan();
 }
 

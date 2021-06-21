@@ -250,6 +250,7 @@ static void print_dhcp_state(void *arg)
 				eth_100mb_addr.ip = (netif->ip_addr).addr;
 				eth_100mb_addr.sub = (netif->netmask).addr;
 				eth_100mb_addr.gw = (netif->gw).addr;
+				eth_100mb_addr.eth = 0;
 				PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
 				PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
 				PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
@@ -330,6 +331,7 @@ static void print_dhcp_state_1g(void *arg)
 				eth_1g_addr.ip = (netif->ip_addr).addr;
 				eth_1g_addr.sub = (netif->netmask).addr;
 				eth_1g_addr.gw = (netif->gw).addr;
+				eth_1g_addr.eth = 1;
 				PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
 				PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
 				PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));

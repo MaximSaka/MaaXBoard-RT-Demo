@@ -598,7 +598,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_border_color(&style_screen3_USB_i2c_ddlist_selected, LV_STATE_DEFAULT, lv_color_make(0xe1, 0xe6, 0xee));
 	lv_style_set_border_width(&style_screen3_USB_i2c_ddlist_selected, LV_STATE_DEFAULT, 1);
 	lv_style_set_text_color(&style_screen3_USB_i2c_ddlist_selected, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
-	lv_style_set_text_font(&style_screen3_USB_i2c_ddlist_selected, LV_STATE_DEFAULT, &lv_font_simsun_12);
+	lv_style_set_text_font(&style_screen3_USB_i2c_ddlist_selected, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_24);
 	lv_obj_add_style(ui->screen3_USB_i2c_ddlist, LV_DROPDOWN_PART_SELECTED, &style_screen3_USB_i2c_ddlist_selected);
 
 	//Write style LV_DROPDOWN_PART_LIST for screen3_USB_i2c_ddlist
@@ -614,10 +614,10 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_border_color(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, lv_color_make(0xe1, 0xe6, 0xee));
 	lv_style_set_border_width(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, 1);
 	lv_style_set_text_color(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
-	lv_style_set_text_font(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, &lv_font_simsun_12);
+	lv_style_set_text_font(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_24);
 	lv_obj_add_style(ui->screen3_USB_i2c_ddlist, LV_DROPDOWN_PART_LIST, &style_screen3_USB_i2c_ddlist_list);
 	lv_obj_set_pos(ui->screen3_USB_i2c_ddlist, 380, 730);
-	lv_obj_set_width(ui->screen3_USB_i2c_ddlist, 100);
+	lv_obj_set_width(ui->screen3_USB_i2c_ddlist, 120);
 
 	//Init events for screen
 	events_init_screen3_USB(ui);

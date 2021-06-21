@@ -15,6 +15,25 @@ void setup_scr_screen0_MENU(lv_ui *ui){
 	//Write codes screen0_MENU
 	ui->screen0_MENU = lv_obj_create(NULL, NULL);
 
+	//Write codes screen0_MENU_cursor_img
+	ui->screen0_MENU_cursor_img = lv_img_create(ui->screen0_MENU, NULL);
+
+	//Write style LV_IMG_PART_MAIN for screen0_MENU_cursor_img
+	static lv_style_t style_screen0_MENU_cursor_img_main;
+	lv_style_init(&style_screen0_MENU_cursor_img_main);
+
+	//Write style state: LV_STATE_DEFAULT for style_screen0_MENU_cursor_img_main
+	lv_style_set_image_recolor(&style_screen0_MENU_cursor_img_main, LV_STATE_DEFAULT, lv_color_make(0xff, 0xff, 0xff));
+	lv_style_set_image_recolor_opa(&style_screen0_MENU_cursor_img_main, LV_STATE_DEFAULT, 0);
+	lv_style_set_image_opa(&style_screen0_MENU_cursor_img_main, LV_STATE_DEFAULT, 255);
+	lv_obj_add_style(ui->screen0_MENU_cursor_img, LV_IMG_PART_MAIN, &style_screen0_MENU_cursor_img_main);
+	lv_obj_set_pos(ui->screen0_MENU_cursor_img, 177, 205);
+	lv_obj_set_size(ui->screen0_MENU_cursor_img, 45, 45);
+	lv_obj_set_click(ui->screen0_MENU_cursor_img, true);
+	lv_img_set_src(ui->screen0_MENU_cursor_img,&_mouse_alpha_45x45);
+	lv_img_set_pivot(ui->screen0_MENU_cursor_img, 0,0);
+	lv_img_set_angle(ui->screen0_MENU_cursor_img, 0);
+
 	//Write codes screen0_MENU_canvas_white
 	ui->screen0_MENU_canvas_white = lv_canvas_create(ui->screen0_MENU, NULL);
 
