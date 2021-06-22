@@ -75,17 +75,14 @@ static int s_mic_2_buffer_count = 0;
 static int s_mic_3_buffer_count = 0;
 static int s_mic_4_buffer_count = 0;
 
-static bool s_mic_1_series_visible = true;
-static bool s_mic_2_series_visible = true;
+static bool s_mic_1_series_visible = false;
+static bool s_mic_2_series_visible = false;
 static bool s_mic_3_series_visible = false;
 static bool s_mic_4_series_visible = false;
-
-
+static uint8_t audio_channels[2];
 static bool *mic_states[4] = {&s_mic_1_series_visible, &s_mic_2_series_visible, &s_mic_3_series_visible, &s_mic_4_series_visible};
 
-
-
-static int s_enabled_mic_count = 2;
+static int s_enabled_mic_count = 0;
 
 static lv_chart_series_t *s_custom_series = NULL;
 static int s_custom_graph_refresh_count = 0;
@@ -614,11 +611,27 @@ void initMicGraph()
 	s_mic_3_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_BLUE);
 	s_mic_4_series = lv_chart_add_series(guider_ui.screen4_AV_mic_chart, LV_COLOR_CYAN);
 
+	s_mic_1_series_visible = false;
+	s_mic_2_series_visible = false;
+	s_mic_3_series_visible = false;
+	s_mic_4_series_visible = false;
+	uint8_t *temp = getEnabledChannels();
+	audio_channels[0] = *(temp++);
+	audio_channels[1] = *(temp);
+	if (audio_channels[0] != 0)
+	{
+		*mic_states[audio_channels[0]-1] = true;
+	}
+	if (audio_channels[1] != 0)
+	{
+		*mic_states[audio_channels[1]-1] = true;
+	}
+
     for (int i=0; i<4; i++)
     {
-    	enableMic(i+1, *mic_states[i]);
     	if (*mic_states[i] == true)
     	{
+    		enableMic(i+1, *mic_states[i]);
     		switch(i)
     		{
     		case 0:
@@ -813,7 +826,9 @@ void enableMic(int mic, bool state)
         default:
             PRINTF("Error: Invalid mic index: %d.\r\n", mic);
     }
-
+	uint8_t *temp = getEnabledChannels();
+	audio_channels[0] = *(temp++);
+	audio_channels[1] = *(temp);
     enableInactiveMicCheckboxes(s_enabled_mic_count < 2);
 }
 
@@ -1032,7 +1047,68 @@ void refreshCustomGraph(void)
  */
 void refreshAVPage(void)
 {
-    refreshMicGraph();
+    // check if different mics are enabled from console
+	uint8_t *temp = getEnabledChannels();
+	uint8_t left_channel = *(temp++);
+	uint8_t right_channel = *(temp);
+
+	if (audio_channels[0] != left_channel || audio_channels[1] != right_channel)
+	{
+		int temp;
+		s_mic_1_series_visible = false;
+		s_mic_2_series_visible = false;
+		s_mic_3_series_visible = false;
+		s_mic_4_series_visible = false;
+
+		if (left_channel != 0)
+		{
+			*mic_states[left_channel-1] = true;
+		}
+		if (right_channel != 0)
+		{
+			*mic_states[right_channel-1] = true;
+		}
+
+	    for (int i=0; i<4; i++)
+	    {
+	    	if (*mic_states[i]==false)
+	    	{
+	    		enableMic(i+1, *mic_states[i]);
+	    	}
+	    }
+	    for (int i=0; i<4; i++)
+	    {
+	    	switch(i)
+			{
+				case 0:
+					lv_checkbox_set_state(guider_ui.screen4_AV_mic1_cb, *mic_states[i]==true?LV_BTN_STATE_CHECKED_PRESSED:LV_BTN_STATE_RELEASED);
+					break;
+				case 1:
+					lv_checkbox_set_state(guider_ui.screen4_AV_mic2_cb, *mic_states[i]==true?LV_BTN_STATE_CHECKED_PRESSED:LV_BTN_STATE_RELEASED);
+					break;
+				case 2:
+					lv_checkbox_set_state(guider_ui.screen4_AV_mic3_cb, *mic_states[i]==true?LV_BTN_STATE_CHECKED_PRESSED:LV_BTN_STATE_RELEASED);
+					break;
+				case 3:
+					lv_checkbox_set_state(guider_ui.screen4_AV_mic4_cb, *mic_states[i]==true?LV_BTN_STATE_CHECKED_PRESSED:LV_BTN_STATE_RELEASED);
+					break;
+				default:
+					break;
+			}
+	    }
+
+	    s_enabled_mic_count = 0;
+	    for (int i=0; i<4; i++)
+	    {
+	    	if (*mic_states[i])
+	    	{
+	    		enableMic(i+1, *mic_states[i]);
+	    	}
+	    }
+	    audio_channels[0] = left_channel;
+	    audio_channels[1] = right_channel;
+	}
+	refreshMicGraph();
 }
 
 /*!

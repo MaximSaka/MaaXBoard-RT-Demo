@@ -39,7 +39,7 @@
 #include "demo_common.h"
 #include "lwip/tcpip.h"
 #include "lwip/inet.h"
-
+#include "audio_demo.h"
 /*******************************************************************************
  * Globals
  ******************************************************************************/
@@ -80,6 +80,7 @@ const char *TEXT_LIST_USB			= "\r\nList of USB devices:\r\n";
 const char *TEXT_MOUSE_DEMO		    = "\r\nMove the mouse:\r\n";
 const char *TEXT_KBOARD_DEMO		= "\r\nType Keyboard:\r\n";
 const char *TEXT_LED_ERROR			= "\r\nParam error: eg: led 101\r\n";
+const char *TEXT_AUDIO_ERROR		= "\r\nParam error: eg: am 01 (L->empty, R->mic1, Note: L!=R; 0-no sound)\r\n";
 const char *TEXT_I2C_ERROR			= "\r\nParam error: eg: i2c 3 (allows scan of I2C buses 2,3,5,6)\r\n";
 const char *TEXT_ETH_ERROR			= "\r\nParam error: eg: es 0,1 (to scan 100M or 1G Ethernet port)\r\n";
 const char *TEXT_CMD_ERROR			= "\r\nCommand Error\r\n";
@@ -287,6 +288,75 @@ static BaseType_t keyboardCommand( char *pcWriteBuffer,size_t xWriteBufferLen, c
     pcWriteBuffer[xWriteBufferLen-1]=0;
 
     cmdEnable |= (1<<keyboardLogEn);
+    return pdFALSE;
+}
+
+/*****************************************************************************\
+ * Function:    audioCommand
+ * Input:       char *pcWriteBufer,size_t xWriteBufferLen,const char *pcCommandString
+ * Returns:     BaseType_t
+ * Description:
+ *     This function controls audio output. E.g. am 12 -> left -> mic1, right -> mic2 will be heard on the audio output.
+ *     Note: Only up to mic can be chosen.	E.g. am 01 -> left -> nothing, right -> mic2
+\*****************************************************************************/
+static BaseType_t audioCommand( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+{
+    (void)pcCommandString;
+    /* Expecting one parameter */
+    int8_t *pcParameter1;
+    BaseType_t xParameter1StringLength;
+
+    pcParameter1 = (int8_t *)FreeRTOS_CLIGetParameter
+                        (
+                          /* The command string itself. */
+                          pcCommandString,
+                          /* Return the first parameter. */
+                          1,
+                          /* Store the parameter string length. */
+                          &xParameter1StringLength
+                        );
+    /* Terminate parameter. */
+    pcParameter1[ xParameter1StringLength ] = 0x00;
+
+    uint8_t validInput = 1;
+    /* input parameter validation */
+    if (xParameter1StringLength == 2)
+    {
+    	uint8_t count = 0;
+    	uint8_t sum = 0;
+    	for (uint8_t i=0; i<2; i++)
+    	{
+    		if(pcParameter1[i] >= 0x30 || pcParameter1[i] <= 0x34)
+    		{
+    			count++;
+    		}
+    	}
+    	if (count==2)
+    	{
+    		if (pcParameter1[0] == pcParameter1[1] && pcParameter1[0] != 0x30)
+    		{
+    		    strncpy(pcWriteBuffer,TEXT_AUDIO_ERROR,xWriteBufferLen-1);
+    		    pcWriteBuffer[xWriteBufferLen-1]=0;
+    		    return pdFALSE;
+    		}
+    		disableAllMicChannels();
+    		// enable mic here
+    		for (uint8_t i=0; i<2; i++)
+    		{
+    			if (pcParameter1[i] != 0x30)
+				{
+    				enableAudioMicChannels(i, pcParameter1[i]-0x30);
+				}
+    		}
+    		pcWriteBuffer[0] = 0; // to make sure
+    		return pdFALSE;
+    	}
+    }
+
+    // Only allowed to write up top xWriteBufferLen bytes ...
+    strncpy(pcWriteBuffer,TEXT_AUDIO_ERROR,xWriteBufferLen-1);
+    pcWriteBuffer[xWriteBufferLen-1]=0;
+
     return pdFALSE;
 }
 
@@ -883,6 +953,16 @@ static const CLI_Command_Definition_t enableKeyboardCommandStruct =
     0
 };
 
+/***************** A&V COMMANDS *******************************/
+static const CLI_Command_Definition_t audioCommandStruct =
+{
+    "am",
+    "--------- AUDIO & VIDEO -------\r\n"
+    " am ##      : audio L/R output #-mic 1-4\r\n",
+	audioCommand,
+    1
+};
+
 /***************** UTILITY COMMANDS ****************************/
 #if configGENERATE_RUN_TIME_STATS
 static const CLI_Command_Definition_t taskStatsCommandStruct =
@@ -968,6 +1048,9 @@ void console_task(void *pvParameters)
     FreeRTOS_CLIRegisterCommand( &listUSBCommandStruct );
     FreeRTOS_CLIRegisterCommand( &enableKeyboardCommandStruct );
     FreeRTOS_CLIRegisterCommand( &enableMouseCommandStruct );
+
+    /***************** AUDIO & VIDEO *******************************/
+    FreeRTOS_CLIRegisterCommand( &audioCommandStruct);
 
     /***************** UTILITY COMMANDS ****************************/
 #if configGENERATE_RUN_TIME_STATS

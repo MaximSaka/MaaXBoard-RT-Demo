@@ -118,14 +118,14 @@ sgtl_config_t sgtlConfig = {
 codec_config_t boardCodecConfig = {.codecDevType = kCODEC_SGTL5000, .codecDevConfig = &sgtlConfig};
 codec_handle_t codecHandle;
 
-static volatile bool s_channel0Enabled = false;
-static volatile bool s_channel1Enabled = false;
+static volatile bool s_channel0Enabled = true;
+static volatile bool s_channel1Enabled = true;
 static volatile bool s_channel2Enabled = false;
 static volatile bool s_channel3Enabled = false;
 
 static uint8_t s_channels = 0;
 
-uint8_t audio_jack[2] = {0,0};
+static uint8_t audio_jack[2] = {1,2};
 static int32_t channel_0;
 static int32_t channel_1;
 static int32_t channel_2;
@@ -315,6 +315,47 @@ static int32_t map_range(int32_t in_val, int32_t in_start, int32_t in_end, int32
 	return output;
 }
 
+void disableAllMicChannels()
+{
+	s_channel0Enabled = false;
+	s_channel1Enabled = false;
+	s_channel2Enabled = false;
+	s_channel3Enabled = false;
+	audio_jack[0] = 0;
+	audio_jack[1] = 0;
+}
+
+uint8_t * getEnabledChannels()
+{
+	return &audio_jack[0];
+}
+
+void enableAudioMicChannels(uint8_t ch, uint8_t val)
+{
+	if (ch>=0 && ch<2)
+	{
+		if (val>=0 && val<=4)
+		{
+			audio_jack[ch] = val;
+			switch(val)
+			{
+				case 1:
+					s_channel0Enabled = true;
+					break;
+				case 2:
+					s_channel1Enabled = true;
+					break;
+				case 3:
+					s_channel2Enabled = true;
+					break;
+				case 4:
+					s_channel3Enabled = true;
+					break;
+			}
+		}
+	}
+}
+
 void enableMicChannel(int id, bool state)
 {
     switch (id)
@@ -351,6 +392,16 @@ void enableMicChannel(int id, bool state)
     	}
     	else
     	{
+    		for (int i=0; i<2; i++)
+    		{
+    			if (audio_jack[i]==id+1)
+    			{
+    				//already enabled
+    				return;
+    			}
+    		}
+
+
     		for (int i=0; i<2; i++)
     		{
     			if (audio_jack[i]==0)
