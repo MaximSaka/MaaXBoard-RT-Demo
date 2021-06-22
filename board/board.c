@@ -10,12 +10,14 @@
 #include "board.h"
 #if defined(SDK_I2C_BASED_COMPONENT_USED) && SDK_I2C_BASED_COMPONENT_USED
 #include "fsl_lpi2c.h"
+#include "fsl_lpi2c_freertos.h"
 #endif /* SDK_I2C_BASED_COMPONENT_USED */
 #include "fsl_iomuxc.h"
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
+lpi2c_rtos_handle_t master_rtos_handle;
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -230,6 +232,7 @@ status_t BOARD_Camera_I2C_ReceiveSCCB(
 
 void BOARD_MIPIPanelTouch_I2C_Init(void)
 {
+	NVIC_SetPriority(LPI2C2_IRQn, 5);
     const clock_root_config_t lpi2cClockConfig = {
         .clockOff = false,
         .mux      = BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_SOURCE,
@@ -237,9 +240,23 @@ void BOARD_MIPIPanelTouch_I2C_Init(void)
     };
 
     CLOCK_SetRootClock(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT, &lpi2cClockConfig);
+//
+//    BOARD_LPI2C_Init(BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR,
+//                     CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
 
-    BOARD_LPI2C_Init(BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR,
-                     CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
+	lpi2c_master_config_t masterConfig;
+    /*
+     * masterConfig.debugEnable = false;
+     * masterConfig.ignoreAck = false;
+     * masterConfig.pinConfig = kLPI2C_2PinOpenDrain;
+     * masterConfig.baudRate_Hz = 100000U;
+     * masterConfig.busIdleTimeout_ns = 0;
+     * masterConfig.pinLowTimeout_ns = 0;
+     * masterConfig.sdaGlitchFilterWidth_ns = 0;
+     * masterConfig.sclGlitchFilterWidth_ns = 0;
+     */
+    LPI2C_MasterGetDefaultConfig(&masterConfig);
+    LPI2C_RTOS_Init(&master_rtos_handle, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
 }
 
 status_t BOARD_MIPIPanelTouch_I2C_Send(

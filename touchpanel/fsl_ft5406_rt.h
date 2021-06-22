@@ -11,7 +11,7 @@
 
 #include "fsl_common.h"
 #include "fsl_lpi2c.h"
-
+#include "fsl_lpi2c_freertos.h"
 
 /*!
  * @addtogroup ft5406_rt
@@ -52,12 +52,12 @@ typedef struct _touch_point
 
 typedef struct _ft5406_rt_handle
 {
-    LPI2C_Type *base;
+	lpi2c_rtos_handle_t *base;
     lpi2c_master_transfer_t xfer;
     uint8_t touch_buf[FT5406_RT_TOUCH_DATA_LEN];
 } ft5406_rt_handle_t;
 
-status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, LPI2C_Type *base);
+status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, lpi2c_rtos_handle_t *base);
 
 status_t FT5406_RT_Denit(ft5406_rt_handle_t *handle);
 

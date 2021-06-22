@@ -8,6 +8,7 @@
 
 #include "fsl_common.h"
 #include "fsl_lpi2c.h"
+#include "fsl_lpi2c_freertos.h"
 #include "fsl_ft5406_rt.h"
 
 typedef struct _ft5406_rt_touch_point
@@ -31,7 +32,8 @@ typedef struct _ft5406_rt_touch_data
 #define TOUCH_POINT_GET_X(T)     ((((T).XH & 0x0f) << 8) | (T).XL)
 #define TOUCH_POINT_GET_Y(T)     ((((T).YH & 0x0f) << 8) | (T).YL)
 
-status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, LPI2C_Type *base)
+//status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, LPI2C_Type *base)
+status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, lpi2c_rtos_handle_t *base)
 {
     lpi2c_master_transfer_t *xfer = &(handle->xfer);
     status_t status;
@@ -61,8 +63,10 @@ status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, LPI2C_Type *base)
     xfer->dataSize       = 1;
     xfer->flags          = kLPI2C_TransferDefaultFlag;
 
-    status = LPI2C_MasterTransferBlocking(handle->base, &handle->xfer);
 
+
+    //status = LPI2C_MasterTransferBlocking(handle->base, &handle->xfer);
+    status = LPI2C_RTOS_Transfer(handle->base, &handle->xfer);
     /* prepare transfer structure for reading touch data */
     xfer->slaveAddress   = FT5406_RT_I2C_ADDRESS;
     xfer->direction      = kLPI2C_Read;
@@ -97,7 +101,8 @@ status_t FT5406_RT_ReadTouchData(ft5406_rt_handle_t *handle)
         return kStatus_InvalidArgument;
     }
 
-    return LPI2C_MasterTransferBlocking(handle->base, &handle->xfer);
+    return LPI2C_RTOS_Transfer(handle->base, &handle->xfer);
+    // LPI2C_MasterTransferBlocking(handle->base, &handle->xfer);
 }
 
 status_t FT5406_RT_GetSingleTouch(ft5406_rt_handle_t *handle, touch_event_t *touch_event, int *touch_x, int *touch_y)

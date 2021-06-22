@@ -28,9 +28,17 @@
 //user added
 #include "globals.h"
 #include "usb_peripherals.h"
+#include "fsl_lpi2c.h"
+#include "fsl_lpi2c_freertos.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+
+/*******************************************************************************
+ * Variables
+ ******************************************************************************/
+extern lpi2c_rtos_handle_t master_rtos_handle;
 
 /* Cache line size. */
 #ifndef FSL_FEATURE_L2CACHE_LINESIZE_BYTE
@@ -328,7 +336,7 @@ static void DEMO_InitTouch(void)
     //pf status = GT911_Init(&s_touchHandle, &s_touchConfig);
 
 
-    status = FT5406_RT_Init(&touchHandle, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR);  //pf OK!
+    status = FT5406_RT_Init(&touchHandle, &master_rtos_handle);  //pf OK!
 
     if (kStatus_Success != status)
     {

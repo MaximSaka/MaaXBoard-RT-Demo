@@ -93,8 +93,8 @@ static struct netif netif_1g;
 // global variables for storing ethernet interfaces state
 static bool gConnected;
 
-ip_ro_t eth_100mb_addr;
-ip_ro_t eth_1g_addr;
+ip_ro_t eth_100mb_addr = {.eth = 0};
+ip_ro_t eth_1g_addr = {.eth = 1};
 
 static EventGroupHandle_t *temp_event_group;
 /*******************************************************************************
