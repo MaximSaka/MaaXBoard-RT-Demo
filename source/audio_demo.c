@@ -210,38 +210,6 @@ void PDM_ERROR_IRQHandler(void)
 }
 #endif
 
-//static void four_two_conv(uint8_t *src_buff, uint8_t *dest_buff)
-//{
-//    memset(dest_buff, 0x00, BUFFER_SIZE);
-//    int offset = 0;
-//    if (s_channels)	// if no mic is enabled, set the buffer to 0x00
-//	{
-//		// otherwise only up to 2 mic will be outputted to audio jack
-//		uint8_t mic_mask = 0x01;
-//        uint8_t count_enabled_mic = 0;
-//		for (int i=0; i<4; i++)
-//		{
-//			if (s_channels & mic_mask)
-//			{
-//				offset = 0;
-//				for (int j=0; j<BUFFER_SIZE/2/4; j++)
-//				{
-//					memcpy(dest_buff+j*8+count_enabled_mic*4, src_buff+i*4+offset, 4);
-//					offset = offset + 16;		// ch1(4) + ch2(4) + ch3(4) + ch4(4)
-//												// next sample is 16 bytes away
-//				}
-//                count_enabled_mic++;
-//			}
-//            if (count_enabled_mic==2)
-//            {
-//                // only up to 2 mics should be enabled.
-//                break;
-//            }
-//			mic_mask = mic_mask << 1;
-//		}
-//	}
-//}
-
 static void four_two_conv(uint8_t *src_buff, uint8_t *dest_buff)
 {
     memset(dest_buff, 0x00, BUFFER_SIZE);
@@ -412,67 +380,15 @@ void enableMicChannel(int id, bool state)
     		}
     	}
     }
-
 }
 
-static void audio_task(void *pvParameters)
+/*!
+* @brief returns the RTOS_i2c5_handle for i2c scan
+*/
+void * getRtosI2cHandle()
 {
-    int32_t mapped_ch0;
-    int32_t mapped_ch1;
-    int32_t mapped_ch2;
-    int32_t mapped_ch3;
-    int cnt = 0;
-
-    while(1)
-    {
-		if (s_readIndex != s_writeIndex)
-		{
-			/*  xfer structure */
-			xfer.data     = (uint8_t *)(&txBuff[s_writeIndex * BUFF_TIMES * BUFFER_SIZE]);
-			xfer.dataSize = BUFF_TIMES * BUFFER_SIZE;
-			if (SAI_TransferSendNonBlocking(DEMO_SAI, &s_saiTxHandle, &xfer) != kStatus_SAI_QueueFull)
-			{
-				if ((s_writeIndex += 1U) >= BUFFER_NUMBER/BUFF_TIMES)
-				{
-					s_writeIndex = 0U;
-				}
-				cnt++;
-				if (cnt<4)
-				{
-					cnt = 0;
-					if (s_channel0Enabled)
-					{
-						mapped_ch0 = map_range(channel_0>>8, -32768, 32767, 0, 100);
-						addMicData(1, mapped_ch0);
-					}
-
-					if (s_channel1Enabled)
-					{
-						mapped_ch1 = map_range(channel_1>>8, -32768, 32767, 0, 100);
-						addMicData(2, mapped_ch1);
-					}
-
-					if (s_channel2Enabled)
-					{
-						mapped_ch2 = map_range(channel_2>>8, -32768, 32767, 0, 100);
-						addMicData(3, mapped_ch2);
-					}
-
-					if (s_channel3Enabled)
-					{
-						mapped_ch3 = map_range(channel_3>>8, -32768, 32767, 0, 100);
-						addMicData(4, mapped_ch3);
-					}
-				}
-			}
-		}
-		vTaskDelay(3);
-    }
-
-    PRINTF("Task destroyed\r\n");
-    vTaskSuspend(NULL);
+	return ((sgtl_handle_t *)(codecHandle.codecDevHandle))->i2cHandle;
 }
-
 
 void audio_task_init()
 {
@@ -491,7 +407,7 @@ void audio_task_init()
 	CLOCK_SetRootClockDiv(kCLOCK_Root_Mic, 16);
 
 	BOARD_EnableSaiMclkOutput(true);
-
+	NVIC_SetPriority(LPI2C5_IRQn, 5);
 	PRINTF("PDM SAI interrupt transfer example started!\n\r");
 
 	memset(txBuff, 0U, sizeof(txBuff));
@@ -542,11 +458,59 @@ void audio_task_init()
     	PRINTF("Binary semaphore not created\r\n");
     }
 
-    if (xTaskCreate(audio_task, "av_task", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL) != pdPASS)
+    int32_t mapped_ch0;
+	int32_t mapped_ch1;
+	int32_t mapped_ch2;
+	int32_t mapped_ch3;
+	int cnt = 0;
+
+	while(1)
 	{
-		PRINTF("Failed to create console task\r\n");
-		while (1);
+		if (s_readIndex != s_writeIndex)
+		{
+			/*  xfer structure */
+			xfer.data     = (uint8_t *)(&txBuff[s_writeIndex * BUFF_TIMES * BUFFER_SIZE]);
+			xfer.dataSize = BUFF_TIMES * BUFFER_SIZE;
+			if (SAI_TransferSendNonBlocking(DEMO_SAI, &s_saiTxHandle, &xfer) != kStatus_SAI_QueueFull)
+			{
+				if ((s_writeIndex += 1U) >= BUFFER_NUMBER/BUFF_TIMES)
+				{
+					s_writeIndex = 0U;
+				}
+				cnt++;
+				if (cnt<4)
+				{
+					cnt = 0;
+					if (s_channel0Enabled)
+					{
+						mapped_ch0 = map_range(channel_0>>8, -32768, 32767, 0, 100);
+						addMicData(1, mapped_ch0);
+					}
+
+					if (s_channel1Enabled)
+					{
+						mapped_ch1 = map_range(channel_1>>8, -32768, 32767, 0, 100);
+						addMicData(2, mapped_ch1);
+					}
+
+					if (s_channel2Enabled)
+					{
+						mapped_ch2 = map_range(channel_2>>8, -32768, 32767, 0, 100);
+						addMicData(3, mapped_ch2);
+					}
+
+					if (s_channel3Enabled)
+					{
+						mapped_ch3 = map_range(channel_3>>8, -32768, 32767, 0, 100);
+						addMicData(4, mapped_ch3);
+					}
+				}
+			}
+		}
+		vTaskDelay(3);
 	}
 
+	PRINTF("Task destroyed\r\n");
+	vTaskSuspend(NULL);
 }
 

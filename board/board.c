@@ -19,7 +19,7 @@
  ******************************************************************************/
 lpi2c_rtos_handle_t master_rtos_handle2;
 lpi2c_rtos_handle_t master_rtos_handle3;
-lpi2c_rtos_handle_t master_rtos_handle5;
+//lpi2c_rtos_handle_t master_rtos_handle5;
 lpi2c_rtos_handle_t master_rtos_handle6;
 /*******************************************************************************
  * Code
@@ -266,11 +266,6 @@ void BOARD_RTOS_I2C_Init(uint8_t i2c_periph)
 			NVIC_SetPriority(LPI2C3_IRQn, 5);
 			i2c_base_addr = ((LPI2C_Type *)(LPI2C3_BASE));
 			i2c_handle = &master_rtos_handle3;
-			break;
-		case 5:
-			NVIC_SetPriority(LPI2C5_IRQn, 5);
-			i2c_base_addr = ((LPI2C_Type *)(LPI2C5_BASE));
-			i2c_handle = &master_rtos_handle5;
 			break;
 		case 6:
 			NVIC_SetPriority(LPI2C6_IRQn, 5);

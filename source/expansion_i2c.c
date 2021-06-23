@@ -8,6 +8,7 @@
 #include "board.h"
 #include "expansion_i2c.h"
 #include "fsl_debug_console.h"
+#include "audio_demo.h"
 
 /*******************************************************************************
  * Definitions
@@ -182,7 +183,7 @@ lpi2c_rtos_handle_t *select_i2c_bus(uint8_t index)
 		rtos_i2c_handle = &master_rtos_handle3;
 		break;
 	case 5:
-		rtos_i2c_handle = &master_rtos_handle5;
+		rtos_i2c_handle = (lpi2c_rtos_handle_t *)getRtosI2cHandle();
 		break;
 	case 6:
 		rtos_i2c_handle = &master_rtos_handle6;

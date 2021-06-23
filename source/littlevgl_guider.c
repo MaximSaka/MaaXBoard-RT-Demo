@@ -306,7 +306,12 @@ int main(void)
 //	}
 
 	// audio task init
-    audio_task_init();
+    if (xTaskCreate(audio_task_init, "av_task", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL) != pdPASS)
+	{
+		PRINTF("Failed to create console task\r\n");
+		while (1);
+	}
+
     // Init scheduler
 
     vTaskStartScheduler();
