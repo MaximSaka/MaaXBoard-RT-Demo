@@ -305,6 +305,7 @@ static BaseType_t audioCommand( char *pcWriteBuffer,size_t xWriteBufferLen, cons
     /* Expecting one parameter */
     int8_t *pcParameter1;
     BaseType_t xParameter1StringLength;
+    int length = 0;
 
     pcParameter1 = (int8_t *)FreeRTOS_CLIGetParameter
                         (
@@ -326,7 +327,7 @@ static BaseType_t audioCommand( char *pcWriteBuffer,size_t xWriteBufferLen, cons
     	uint8_t sum = 0;
     	for (uint8_t i=0; i<2; i++)
     	{
-    		if(pcParameter1[i] >= 0x30 || pcParameter1[i] <= 0x34)
+    		if(pcParameter1[i] >= 0x30 && pcParameter1[i] <= 0x34)
     		{
     			count++;
     		}
@@ -348,7 +349,31 @@ static BaseType_t audioCommand( char *pcWriteBuffer,size_t xWriteBufferLen, cons
     				enableAudioMicChannels(i, pcParameter1[i]-0x30);
 				}
     		}
-    		pcWriteBuffer[0] = 0; // to make sure
+
+    		length += sprintf(pcWriteBuffer+length, "\r\nSuccess: Audio L->");
+    		uint8_t temp[10];
+    		if (pcParameter1[0]==0x30)
+    		{
+    			length += sprintf(pcWriteBuffer+length, "empty");
+    		}
+    		else
+    		{
+    			length += sprintf(pcWriteBuffer+length, "mic%c", pcParameter1[0]);
+    		}
+
+    		length += sprintf(pcWriteBuffer+length, ", R->");
+    		if (pcParameter1[1]==0x30)
+			{
+				length += sprintf(pcWriteBuffer+length, "empty");
+			}
+			else
+			{
+				length += sprintf(pcWriteBuffer+length, "mic%c", pcParameter1[1]);
+			}
+    		length += sprintf(pcWriteBuffer+length, " are selected.");
+
+    		//length += sprintf(pcWriteBuffer+length, "\r\n*** Audio L->mic#%c, R->mic#%c are selected\r\n", pcParameter1[0]==0x30?'_':pcParameter1[0], pcParameter1[1]==0x30?'_':pcParameter1[1]);
+    		pcWriteBuffer[xWriteBufferLen-1]=0;
     		return pdFALSE;
     	}
     }
@@ -879,8 +904,8 @@ static int print_address(struct wlan_ip_config *addr, enum wlan_bss_role role, u
 static const CLI_Command_Definition_t controlLedCommandStruct =
 {
     "led",
-    "--------- PERIPHERALS ---------\r\n"
-    " led ***    : Set LEDs on/off \r\n",
+    "--------- PERIPHERALS ----------------\r\n"
+    " led ***    : RGB LEDs on/off \r\n",
 	controlLedCommand,
     1
 };
@@ -888,7 +913,7 @@ static const CLI_Command_Definition_t controlLedCommandStruct =
 static const CLI_Command_Definition_t i2cScanCommandStruct =
 {
     "i2c",
-    " i2c #      : I2C Bus# Scan \r\n",
+    " i2c #      : I2C Scan (bus# 2/3/5/6) \r\n",
 	scanCommand,
     1
 };
@@ -897,7 +922,7 @@ static const CLI_Command_Definition_t i2cScanCommandStruct =
 static const CLI_Command_Definition_t scanWifiCommandStruct =
 {
     "ws",
-    "--------- WIFI & LAN ----------\r\n"
+    "--------- WIFI & LAN -----------------\r\n"
     " ws         : Wifi Scan \r\n",
 	wifiScanCommand,
     0
@@ -914,7 +939,7 @@ static const CLI_Command_Definition_t connectWifiCommandStruct =
 static const CLI_Command_Definition_t printIpCommandStruct =
 {
     "wi",
-    " wi         : Wifi info \r\n",
+    " wi         : Wifi Info \r\n",
 	printIpCommand,
     0
 };
@@ -922,7 +947,7 @@ static const CLI_Command_Definition_t printIpCommandStruct =
 static const CLI_Command_Definition_t ethernetScanCommandStruct =
 {
     "es",
-    " es         : Scan Ethernet \r\n",
+    " es         : Ethernet Scan \r\n",
 	ethernetScanCommand,
     0
 };
@@ -931,25 +956,25 @@ static const CLI_Command_Definition_t ethernetScanCommandStruct =
 static const CLI_Command_Definition_t listUSBCommandStruct =
 {
     "ul",
-    " -------- USB HOST & DEV ------\r\n"
-    " ul         : List USB devices \r\n",
+    " -------- USB HOST & DEV -------------\r\n"
+    " ul         : USB List (attached devices) \r\n",
 	listUSBCommand,
-    0
-};
-
-static const CLI_Command_Definition_t enableMouseCommandStruct =
-{
-    "um",
-    " um         : mouse DEMO \r\n",
-	mouseCommand,
     0
 };
 
 static const CLI_Command_Definition_t enableKeyboardCommandStruct =
 {
     "uk",
-    " uk         : keyboard DEMO \r\n",
+    " uk         : Keyboard Test \r\n",
 	keyboardCommand,
+    0
+};
+
+static const CLI_Command_Definition_t enableMouseCommandStruct =
+{
+    "um",
+    " um         : Mouse Test \r\n",
+	mouseCommand,
     0
 };
 
@@ -957,8 +982,8 @@ static const CLI_Command_Definition_t enableKeyboardCommandStruct =
 static const CLI_Command_Definition_t audioCommandStruct =
 {
     "am",
-    "--------- AUDIO & VIDEO -------\r\n"
-    " am ##      : audio L/R output #-mic 1-4\r\n",
+    "--------- AUDIO & VIDEO --------------\r\n"
+    " am ##      : Audio L/R output (mic# 1-4)\r\n",
 	audioCommand,
     1
 };
@@ -968,8 +993,8 @@ static const CLI_Command_Definition_t audioCommandStruct =
 static const CLI_Command_Definition_t taskStatsCommandStruct =
 {
     "stats",
-    "--------- UTILITY -------------\r\n"
-    " stats      : RTOS statistics \r\n",
+    "--------- UTILITY --------------------\r\n"
+    " stats      : RTOS Statistics \r\n",
 	taskStatsCommand,
     0
 };
@@ -977,7 +1002,7 @@ static const CLI_Command_Definition_t taskStatsCommandStruct =
 static const CLI_Command_Definition_t clearCommandStruct =
 {
     "clr",
-    " clr        : Clear the screen \r\n",
+    " clr        : Clear the terminal \r\n",
     clearCommand,
     0
 };
@@ -985,7 +1010,7 @@ static const CLI_Command_Definition_t clearCommandStruct =
 static const CLI_Command_Definition_t exitCommandStruct =
 {
     "q",
-    " q/ctrl+c   : Abort command \r\n",
+    " q/ctrl+c   : Abort the command \r\n",
 	exitCommand,
     0
 };
@@ -993,7 +1018,8 @@ static const CLI_Command_Definition_t exitCommandStruct =
 static const CLI_Command_Definition_t helpCommandStruct =
 {
     "h",
-    " ? / h      : Menu Help \r\n===============================\r\n",
+    " ? / h      : Menu Help \r\n"
+	"======================================\r\n",
 	prvHelpCommand,
     0
 };
@@ -1015,17 +1041,6 @@ void console_task(void *pvParameters)
 	BaseType_t xMoreDataToFollow;
     int error;
     size_t n = 0;
-
-    /* Initialize i2c peripheral */
-    //init_expansion_i2c(((LPI2C_Type *)(LPI2C2_BASE)));
-//    init_expansion_i2c(((LPI2C_Type *)(LPI2C3_BASE)));
-//    init_expansion_i2c(((LPI2C_Type *)(LPI2C5_BASE)));
-//    init_expansion_i2c(((LPI2C_Type *)(LPI2C6_BASE)));
-
-//    if (kStatus_Success != LPUART_RTOS_Init(&handle, &t_handle, &lpuart_config))
-//    {
-//        vTaskSuspend(NULL);
-//    }
 
     /* Send introduction message. */
     if (kStatus_Success != LPUART_RTOS_Send(handle, (uint8_t *)TEXT_WELCOME, strlen(TEXT_WELCOME)))
