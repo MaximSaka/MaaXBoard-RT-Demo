@@ -19,7 +19,6 @@
  ******************************************************************************/
 lpi2c_rtos_handle_t master_rtos_handle2;
 lpi2c_rtos_handle_t master_rtos_handle3;
-//lpi2c_rtos_handle_t master_rtos_handle5;
 lpi2c_rtos_handle_t master_rtos_handle6;
 /*******************************************************************************
  * Code
@@ -333,6 +332,7 @@ void BOARD_MIPIPanelTouch_I2C_Init(void)
      * masterConfig.sclGlitchFilterWidth_ns = 0;
      */
     LPI2C_MasterGetDefaultConfig(&masterConfig);
+	//LPI2C_RTOS_Init(&master_rtos_handle2, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, (CLOCK_GetFreq(kCLOCK_OscRc48MDiv2)));
     LPI2C_RTOS_Init(&master_rtos_handle2, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
 }
 

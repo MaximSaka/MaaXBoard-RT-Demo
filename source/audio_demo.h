@@ -13,5 +13,5 @@ uint8_t * getEnabledChannels();
 void enableMicChannel(int id, bool state);
 void audio_task_init();
 void enableAudioMicChannels(uint8_t ch, uint8_t val);
-
+void * getRtosI2cHandle();
 #endif /* AUDIO_DEMO_H_ */

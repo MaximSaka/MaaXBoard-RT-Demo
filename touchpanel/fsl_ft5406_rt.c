@@ -125,7 +125,17 @@ status_t FT5406_RT_GetSingleTouch(ft5406_rt_handle_t *handle, touch_event_t *tou
         /* Update coordinates only if there is touch detected */
         if ((*touch_event == kTouch_Down) || (*touch_event == kTouch_Contact))
         {
-            if (touch_x)
+#ifdef AVT_DISPLAY_ROTATE_180    //pf  Display orientation is rotated 180 degrees
+        if (touch_x)
+            {
+                *touch_x = 720 - TOUCH_POINT_GET_X(touch_data->TOUCH[0]);
+            }
+            if (touch_y)
+            {
+                *touch_y = 1280 - TOUCH_POINT_GET_Y(touch_data->TOUCH[0]);
+            }
+#else
+        	if (touch_x)   //pf  Display orientation is default (no rotation)
             {
                 *touch_x = TOUCH_POINT_GET_X(touch_data->TOUCH[0]);
             }
@@ -133,6 +143,7 @@ status_t FT5406_RT_GetSingleTouch(ft5406_rt_handle_t *handle, touch_event_t *tou
             {
                 *touch_y = TOUCH_POINT_GET_Y(touch_data->TOUCH[0]);
             }
+#endif
         }
     }
 

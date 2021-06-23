@@ -202,7 +202,11 @@ static const struct ili9881c_instr ili9881c_init[] = {
 	ILI9881C_COMMAND_INSTR(0xB5, 0xD7),
 	ILI9881C_COMMAND_INSTR(0x35, 0x1f),
 	ILI9881C_SWITCH_PAGE_INSTR(1),
-	ILI9881C_COMMAND_INSTR(0x22, 0x0A),
+#ifdef AVT_DISPLAY_ROTATE_180
+       ILI9881C_COMMAND_INSTR(0x22, 0x09),      // rotate the display for use in stand fixture
+#else
+       ILI9881C_COMMAND_INSTR(0x22, 0x0A),      // default display orientation
+#endif
 	ILI9881C_COMMAND_INSTR(0x53, 0x72),
 	ILI9881C_COMMAND_INSTR(0x55, 0x77),
 	ILI9881C_COMMAND_INSTR(0x50, 0xa6),

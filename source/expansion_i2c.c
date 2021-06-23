@@ -20,7 +20,6 @@
  ******************************************************************************/
 extern lpi2c_rtos_handle_t master_rtos_handle2;
 extern lpi2c_rtos_handle_t master_rtos_handle3;
-extern lpi2c_rtos_handle_t master_rtos_handle5;
 extern lpi2c_rtos_handle_t master_rtos_handle6;
 
 /*****************************************************************************\
@@ -80,7 +79,7 @@ void scan_i2c_bus(lpi2c_rtos_handle_t *rtos_i2c_handle, uint8_t *buff)
     /* Lock resource mutex */
     if (xSemaphoreTake(rtos_i2c_handle->mutex, portMAX_DELAY) != pdTRUE)
     {
-        return kStatus_LPI2C_Busy;
+        return;
     }
 	// Iterate through the address starting at 0x00
 	for(uint8_t i2caddress=0;i2caddress<0x80;i2caddress++)
