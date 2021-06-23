@@ -50,7 +50,8 @@ static void (*s_page_refresh)(void) = NULL;
 static bool s_hid_list_refresh_required = true;
 
 static i2cBus s_i2c_bus = I2C2;
-static LPI2C_Type *s_i2c_bus_type = NULL;
+//static LPI2C_Type *s_i2c_bus_type = NULL;
+static lpi2c_rtos_handle_t *s_i2c_bus_handle = NULL;
 static uint8_t s_i2c_scanned_nodes[16];
 
 static char s_text_area_buffer[100];
@@ -131,16 +132,16 @@ void setI2cBus(i2cBus bus)
     switch (s_i2c_bus)
     {
     case I2C2:
-        s_i2c_bus_type = (LPI2C_Type *)LPI2C2_BASE;
+    	s_i2c_bus_handle = select_i2c_bus(2);
         break;
     case I2C3:
-        s_i2c_bus_type = (LPI2C_Type *)LPI2C3_BASE;
+    	s_i2c_bus_handle = select_i2c_bus(3);
         break;
     case I2C5:
-        s_i2c_bus_type = (LPI2C_Type *)LPI2C5_BASE;
+    	s_i2c_bus_handle = select_i2c_bus(5);
         break;
     case I2C6:
-        s_i2c_bus_type = (LPI2C_Type *)LPI2C6_BASE;
+    	s_i2c_bus_handle = select_i2c_bus(6);
         break;
     default:
         PRINTF("Unsupported bus selection: %d", s_i2c_bus);
@@ -162,7 +163,7 @@ void scani2cBusAndDisplay(void)
         return;
     }
 
-    scan_i2c_bus(s_i2c_bus_type, s_i2c_scanned_nodes);
+    scan_i2c_bus(s_i2c_bus_handle, s_i2c_scanned_nodes);
 
     for (uint16_t row = 1; row < 9; row++)
     {
@@ -591,6 +592,7 @@ void openUSBScreen()
 
     s_hid_list_refresh_required = true;
 
+    s_i2c_bus_handle = select_i2c_bus(2);
     scani2cBusAndDisplay();
 }
 

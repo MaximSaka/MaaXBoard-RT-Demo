@@ -12,7 +12,8 @@
 #include "fsl_common.h"
 #include "fsl_gpio.h"
 #include "fsl_clock.h"
-
+#include "fsl_lpi2c.h"
+#include "fsl_lpi2c_freertos.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -299,6 +300,12 @@ status_t BOARD_LPI2C_Send(LPI2C_Type *base,
                           uint8_t subaddressSize,
                           uint8_t *txBuff,
                           uint8_t txBuffSize);
+status_t BOARD_RTOS_LPI2C_Receive(lpi2c_rtos_handle_t *handle,
+                             uint8_t deviceAddress,
+                             uint32_t subAddress,
+                             uint8_t subAddressSize,
+                             uint8_t *rxBuff,
+                             uint8_t rxBuffSize);
 status_t BOARD_LPI2C_Receive(LPI2C_Type *base,
                              uint8_t deviceAddress,
                              uint32_t subAddress,
@@ -337,6 +344,7 @@ status_t BOARD_Camera_I2C_SendSCCB(
 status_t BOARD_Camera_I2C_ReceiveSCCB(
     uint8_t deviceAddress, uint32_t subAddress, uint8_t subAddressSize, uint8_t *rxBuff, uint8_t rxBuffSize);
 
+void BOARD_RTOS_I2C_Init(uint8_t i2c_periph);
 void BOARD_MIPIPanelTouch_I2C_Init(void);
 status_t BOARD_MIPIPanelTouch_I2C_Send(
     uint8_t deviceAddress, uint32_t subAddress, uint8_t subAddressSize, const uint8_t *txBuff, uint8_t txBuffSize);

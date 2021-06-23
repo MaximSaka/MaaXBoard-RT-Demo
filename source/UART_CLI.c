@@ -1018,9 +1018,9 @@ void console_task(void *pvParameters)
 
     /* Initialize i2c peripheral */
     //init_expansion_i2c(((LPI2C_Type *)(LPI2C2_BASE)));
-    init_expansion_i2c(((LPI2C_Type *)(LPI2C3_BASE)));
-    init_expansion_i2c(((LPI2C_Type *)(LPI2C5_BASE)));
-    init_expansion_i2c(((LPI2C_Type *)(LPI2C6_BASE)));
+//    init_expansion_i2c(((LPI2C_Type *)(LPI2C3_BASE)));
+//    init_expansion_i2c(((LPI2C_Type *)(LPI2C5_BASE)));
+//    init_expansion_i2c(((LPI2C_Type *)(LPI2C6_BASE)));
 
 //    if (kStatus_Success != LPUART_RTOS_Init(&handle, &t_handle, &lpuart_config))
 //    {

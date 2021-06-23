@@ -7,12 +7,20 @@
 #include "fsl_lpi2c.h"
 #include "board.h"
 #include "expansion_i2c.h"
-
+#include "fsl_debug_console.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 #define I2C_BUS_SIZE  4
+
+/*******************************************************************************
+ * Variables
+ ******************************************************************************/
+extern lpi2c_rtos_handle_t master_rtos_handle2;
+extern lpi2c_rtos_handle_t master_rtos_handle3;
+extern lpi2c_rtos_handle_t master_rtos_handle5;
+extern lpi2c_rtos_handle_t master_rtos_handle6;
 
 /*****************************************************************************\
  * Function:    init_expansion_i2c
@@ -35,24 +43,101 @@ void init_expansion_i2c(LPI2C_Type *base) {
  *     information inside input buffer. There can be total of 128 nodes.
  *     16 = 128/8. Each bit represents the node.
 \*****************************************************************************/
+//void scan_i2c_bus(lpi2c_rtos_handle_t *rtos_i2c_handle, uint8_t *buff)
+//{
+//	uint8_t rxBuff;	// dummy byte
+//	uint8_t index = 0;
+//	uint8_t bit_pos = 0;
+//
+//	// Iterate through the address starting at 0x00
+//	for(uint32_t i2caddress=0;i2caddress<0x80;i2caddress++)
+//	{
+//		index = i2caddress/8;
+//		bit_pos = 7-(i2caddress%8);
+//		if (BOARD_RTOS_LPI2C_Receive(rtos_i2c_handle, i2caddress, 0x00, 1, &rxBuff, 1) == kStatus_Success)
+//		{
+//			buff[index] |= (1<<bit_pos);
+//		}
+//		else
+//		{
+//			buff[index] &= ~(1<<bit_pos);
+//		}
+//	}
+//}
 
-void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff)
+void scan_i2c_bus(lpi2c_rtos_handle_t *rtos_i2c_handle, uint8_t *buff)
 {
 	uint8_t rxBuff;	// dummy byte
 	uint8_t index = 0;
 	uint8_t bit_pos = 0;
+	status_t ret;
+	uint32_t status;
+	status_t reVal        = kStatus_Fail;
+	size_t txCount        = 0xFFU;
 
+
+    /* Lock resource mutex */
+    if (xSemaphoreTake(rtos_i2c_handle->mutex, portMAX_DELAY) != pdTRUE)
+    {
+        return kStatus_LPI2C_Busy;
+    }
 	// Iterate through the address starting at 0x00
-	for(uint32_t i2caddress=0;i2caddress<0x80;i2caddress++)
+	for(uint8_t i2caddress=0;i2caddress<0x80;i2caddress++)
 	{
 		index = i2caddress/8;
 		bit_pos = 7-(i2caddress%8);
-		if (BOARD_LPI2C_Receive(base, i2caddress, 0x00, 1, &rxBuff, 1) == kStatus_LPI2C_Nak) {
+		if (BOARD_LPI2C_Send(rtos_i2c_handle->base, i2caddress, 0, 0, &rxBuff, 0) == kStatus_LPI2C_Nak)
+		{
 			buff[index] &= ~(1<<bit_pos);
-		} else {
+		}
+		else
+		{
 			buff[index] |= (1<<bit_pos);
 		}
+
+
+//		index = i2caddress/8;
+//		bit_pos = 7-(i2caddress%8);
+//		buff[index] &= ~(1<<bit_pos);
+//		if (LPI2C_MasterStart(rtos_i2c_handle->base, i2caddress, 0) == kStatus_Success)
+//		{
+//			 /* Check master tx FIFO empty or not */
+//			LPI2C_MasterGetFifoCounts(rtos_i2c_handle->base, NULL, &txCount);
+//			while (txCount)
+//			{
+//				LPI2C_MasterGetFifoCounts(rtos_i2c_handle->base, NULL, &txCount);
+//			}
+//
+//			//while(LPI2C_MasterGetStatusFlags(rtos_i2c_handle->base) & kLPI2C_MasterBusyFlag );
+//
+//			/* Check communicate with slave successful or not */
+//			if (LPI2C_MasterGetStatusFlags(rtos_i2c_handle->base) & kLPI2C_MasterNackDetectFlag) //kLPI2C_MasterNackDetectFlag
+//			{
+//				buff[index] &= ~(1<<bit_pos);
+//			}
+//			else
+//			{
+//				buff[index] |= (1<<bit_pos);
+//			}
+//			ret = LPI2C_MasterStop(rtos_i2c_handle->base);
+//			if (ret != kStatus_Success)
+//			{
+//				PRINTF("i2c stop error\r\n");
+//			}
+//		    /* Wait until the slave is ready for transmit, wait time depend on user's case.
+//		       Slave devices that need some time to process received byte or are not ready yet to
+//		       send the next byte, can pull the clock low to signal to the master that it should wait.*/
+//		    for (uint32_t i = 0U; i < 200; i++)
+//		    {
+//		        __NOP();
+//		    }
+//
+//		}
 	}
+
+	LPI2C_MasterStop(rtos_i2c_handle->base);
+	/* Unlock resource mutex */
+	(void)xSemaphoreGive(rtos_i2c_handle->mutex);
 }
 
 
@@ -82,30 +167,31 @@ uint8_t valid_i2c_index(int index)
  * Input:       uint8_t index - index for i2c peripherals (1-4)
  * Returns:     void
  * Description:
- *     returns the LPI2C base address based on the 1-4 indexing.
+ *     returns the LPI2C handle address based on the 1-4 indexing.
 \*****************************************************************************/
-LPI2C_Type *select_i2c_bus(uint8_t index)
+lpi2c_rtos_handle_t *select_i2c_bus(uint8_t index)
 {
-	LPI2C_Type *i2c_periph;
+	lpi2c_rtos_handle_t *rtos_i2c_handle;
+
 	switch(index)
 	{
 	case 2:
-		i2c_periph = ((LPI2C_Type *)(LPI2C2_BASE));
+		rtos_i2c_handle = &master_rtos_handle2;
 		break;
 	case 3:
-		i2c_periph = ((LPI2C_Type *)(LPI2C3_BASE));
+		rtos_i2c_handle = &master_rtos_handle3;
 		break;
 	case 5:
-		i2c_periph = ((LPI2C_Type *)(LPI2C5_BASE));
+		rtos_i2c_handle = &master_rtos_handle5;
 		break;
 	case 6:
-		i2c_periph = ((LPI2C_Type *)(LPI2C6_BASE));
+		rtos_i2c_handle = &master_rtos_handle6;
 		break;
 	default:
-		i2c_periph = ((LPI2C_Type *)(LPI2C3_BASE));
+		rtos_i2c_handle = &master_rtos_handle3;
 		break;
 	}
-	return i2c_periph;
+	return rtos_i2c_handle;
 }
 
 

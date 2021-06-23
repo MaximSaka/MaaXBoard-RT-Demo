@@ -9,7 +9,7 @@
 #define EXPANSION_I2C_H_
 
 #include "fsl_lpi2c.h"
-
+#include "fsl_lpi2c_freertos.h"
 /*
  * LPI2C3 is used. pins are configured on #3, #5 pin on the 40 pin header
  * More detailed information can be found on the pin_mux.c and MaaxBoardRT schematics pdf.
@@ -32,7 +32,10 @@
 #define LPI2C_DATA_LENGTH            33U
 
 void init_expansion_i2c(LPI2C_Type *base);
-void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff);
-LPI2C_Type *select_i2c_bus(uint8_t index);
+void scan_i2c_bus(lpi2c_rtos_handle_t *rtos_i2c_handle, uint8_t *buff);
+//void scan_i2c_test(lpi2c_rtos_handle_t *rtos_i2c_handle, uint8_t *buff);
+//void scan_i2c_bus(LPI2C_Type *base, uint8_t *buff);
+lpi2c_rtos_handle_t *select_i2c_bus(uint8_t index);
+//LPI2C_Type *select_i2c_bus(uint8_t index);
 uint8_t valid_i2c_index(int index);
 #endif /* EXPANSION_I2C_H_ */

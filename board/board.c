@@ -17,7 +17,10 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-lpi2c_rtos_handle_t master_rtos_handle;
+lpi2c_rtos_handle_t master_rtos_handle2;
+lpi2c_rtos_handle_t master_rtos_handle3;
+lpi2c_rtos_handle_t master_rtos_handle5;
+lpi2c_rtos_handle_t master_rtos_handle6;
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -79,6 +82,27 @@ status_t BOARD_LPI2C_Send(LPI2C_Type *base,
 
     return LPI2C_MasterTransferBlocking(base, &xfer);
 }
+
+status_t BOARD_RTOS_LPI2C_Receive(lpi2c_rtos_handle_t *handle,
+                             uint8_t deviceAddress,
+                             uint32_t subAddress,
+                             uint8_t subAddressSize,
+                             uint8_t *rxBuff,
+                             uint8_t rxBuffSize)
+{
+    lpi2c_master_transfer_t xfer;
+
+    xfer.flags          = kLPI2C_TransferDefaultFlag;
+    xfer.slaveAddress   = deviceAddress;
+    xfer.direction      = kLPI2C_Read;
+    xfer.subaddress     = subAddress;
+    xfer.subaddressSize = subAddressSize;
+    xfer.data           = rxBuff;
+    xfer.dataSize       = rxBuffSize;
+
+    return LPI2C_RTOS_Transfer(handle, &xfer);
+}
+
 
 status_t BOARD_LPI2C_Receive(LPI2C_Type *base,
                              uint8_t deviceAddress,
@@ -230,6 +254,64 @@ status_t BOARD_Camera_I2C_ReceiveSCCB(
                                    rxBuffSize);
 }
 
+void BOARD_RTOS_I2C_Init(uint8_t i2c_periph)
+{
+	lpi2c_rtos_handle_t *i2c_handle;
+	LPI2C_Type *i2c_base_addr;
+
+	int status = 0;
+	switch(i2c_periph)
+	{
+		case 3:
+			NVIC_SetPriority(LPI2C3_IRQn, 5);
+			i2c_base_addr = ((LPI2C_Type *)(LPI2C3_BASE));
+			i2c_handle = &master_rtos_handle3;
+			break;
+		case 5:
+			NVIC_SetPriority(LPI2C5_IRQn, 5);
+			i2c_base_addr = ((LPI2C_Type *)(LPI2C5_BASE));
+			i2c_handle = &master_rtos_handle5;
+			break;
+		case 6:
+			NVIC_SetPriority(LPI2C6_IRQn, 5);
+			i2c_base_addr = ((LPI2C_Type *)(LPI2C6_BASE));
+			i2c_handle = &master_rtos_handle6;
+			break;
+		default:
+			status = 1;
+			break;
+	}
+
+	if (status == 1)
+	{
+		PRINTF("i2c config error: Invalid i2c peripheral number\r\n");
+		return;// invalid i2c peripheral number;
+	}
+//    const clock_root_config_t lpi2cClockConfig = {
+//        .clockOff = false,
+//        .mux      = BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_SOURCE,
+//        .div      = BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_DIVIDER,
+//    };
+//
+//    CLOCK_SetRootClock(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT, &lpi2cClockConfig);
+
+	lpi2c_master_config_t masterConfig;
+    /*
+     * masterConfig.debugEnable = false;
+     * masterConfig.ignoreAck = false;
+     * masterConfig.pinConfig = kLPI2C_2PinOpenDrain;
+     * masterConfig.baudRate_Hz = 100000U;
+     * masterConfig.busIdleTimeout_ns = 0;
+     * masterConfig.pinLowTimeout_ns = 0;
+     * masterConfig.sdaGlitchFilterWidth_ns = 0;
+     * masterConfig.sclGlitchFilterWidth_ns = 0;
+     */
+    LPI2C_MasterGetDefaultConfig(&masterConfig);
+    LPI2C_RTOS_Init(i2c_handle, i2c_base_addr, &masterConfig, (CLOCK_GetFreq(kCLOCK_OscRc48MDiv2)));
+}
+
+
+
 void BOARD_MIPIPanelTouch_I2C_Init(void)
 {
 	NVIC_SetPriority(LPI2C2_IRQn, 5);
@@ -256,7 +338,7 @@ void BOARD_MIPIPanelTouch_I2C_Init(void)
      * masterConfig.sclGlitchFilterWidth_ns = 0;
      */
     LPI2C_MasterGetDefaultConfig(&masterConfig);
-    LPI2C_RTOS_Init(&master_rtos_handle, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
+    LPI2C_RTOS_Init(&master_rtos_handle2, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
 }
 
 status_t BOARD_MIPIPanelTouch_I2C_Send(
