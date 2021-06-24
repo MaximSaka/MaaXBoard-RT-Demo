@@ -613,7 +613,7 @@ void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY | ETH_100m_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
+	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
 	init_ENET_1g();
 }
 

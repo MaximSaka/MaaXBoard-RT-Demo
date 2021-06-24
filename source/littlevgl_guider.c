@@ -33,7 +33,7 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-//#define WIFI_EN		1
+#define WIFI_EN		1
 
 #ifdef WIFI_EN
 	#define ETH_100MB_EN	1
@@ -292,7 +292,13 @@ int main(void)
 #ifdef ETH_100MB_EN
 	dual_eth_configuration();
 	// eth100 task
-	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
+//	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
+//	{
+//		PRINTF("Failed to create console task\r\n");
+//		while (1);
+//	}
+	// eth1G task
+	if (xTaskCreate(eth_1g_task, "eth_1g", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
 	{
 		PRINTF("Failed to create console task\r\n");
 		while (1);
