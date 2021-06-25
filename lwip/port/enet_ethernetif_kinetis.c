@@ -317,8 +317,9 @@ void ethernetif_enet_init(struct netif *netif, struct ethernetif *ethernetif,
 #endif
 
     ethernetif_phy_init(ethernetif, ethernetifConfig, &speed, &duplex);
-    config.miiSpeed = (enet_mii_speed_t)speed;
-    config.miiDuplex = (enet_mii_duplex_t)duplex;
+    //Followings are configured by BOARD_ENETFlexibleConfigure function.
+//    config.miiSpeed = (enet_mii_speed_t)speed;
+//    config.miiDuplex = (enet_mii_duplex_t)duplex;
 
 #if USE_RTOS && defined(FSL_RTOS_FREE_RTOS)
     uint32_t instance;

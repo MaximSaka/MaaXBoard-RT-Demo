@@ -84,9 +84,10 @@
  ******************************************************************************/
 static uint8_t enet_mode_cnt = 0;
 
-static mdio_handle_t mdioHandle = {.ops = &EXAMPLE_MDIO_OPS};
-static phy_handle_t phyHandle_100m   = {.phyAddr = PHY_ADDRESS_100M, .mdioHandle = &mdioHandle, .ops = &PHY_OPS_100M};
-static phy_handle_t phyHandle_1g   = {.phyAddr = PHY_ADDRESS_1G, .mdioHandle = &mdioHandle, .ops = &PHY_OPS_1G};
+static mdio_handle_t mdioHandle100Mb = {.ops = &EXAMPLE_MDIO_OPS};
+static mdio_handle_t mdioHandle1Gb = {.ops = &EXAMPLE_MDIO_OPS};
+static phy_handle_t phyHandle_100m   = {.phyAddr = PHY_ADDRESS_100M, .mdioHandle = &mdioHandle100Mb, .ops = &PHY_OPS_100M};
+static phy_handle_t phyHandle_1g   = {.phyAddr = PHY_ADDRESS_1G, .mdioHandle = &mdioHandle1Gb, .ops = &PHY_OPS_1G};
 
 static struct netif netif_100m;
 static struct netif netif_1g;
@@ -107,14 +108,6 @@ static void BOARD_InitModuleClock(void)
     };
     CLOCK_InitSysPll1(&sysPll1Config);
 
-//#ifdef EXAMPLE_USE_100M_ENET_PORT
-//    clock_root_config_t rootCfg = {.mux = 4, .div = 10}; /* Generate 50M root clock. */
-//    CLOCK_SetRootClock(kCLOCK_Root_Enet1, &rootCfg);
-//#else
-//    clock_root_config_t rootCfg = {.mux = 4, .div = 4}; /* Generate 125M root clock. */
-//    CLOCK_SetRootClock(kCLOCK_Root_Enet2, &rootCfg);
-//#endif
-
     // set clock for 100M
     clock_root_config_t rootCfg = {.mux = 4, .div = 10}; /* Generate 50M root clock. */
     CLOCK_SetRootClock(kCLOCK_Root_Enet1, &rootCfg);
@@ -133,12 +126,6 @@ static void BOARD_InitModuleClock(void)
 
 static void IOMUXC_SelectENETClock(void)
 {
-//#ifdef EXAMPLE_USE_100M_ENET_PORT
-//    IOMUXC_GPR->GPR4 |= 0x3; /* 50M ENET_REF_CLOCK output to PHY and ENET module. */
-//#else
-//    IOMUXC_GPR->GPR5 |= IOMUXC_GPR_GPR5_ENET1G_RGMII_EN_MASK; /* bit1:iomuxc_gpr_enet_clk_dir
-//                                                                 bit0:GPR_ENET_TX_CLK_SEL(internal or OSC) */
-//#endif
 	IOMUXC_GPR->GPR4 |= 0x3; /* 50M ENET_REF_CLOCK output to PHY and ENET module. */
 	IOMUXC_GPR->GPR5 |= IOMUXC_GPR_GPR5_ENET1G_RGMII_EN_MASK; /* bit1:iomuxc_gpr_enet_clk_dir
 	                                                                 bit0:GPR_ENET_TX_CLK_SEL(internal or OSC) */
@@ -159,21 +146,17 @@ static uint8_t compareArrays(uint8_t a[], uint8_t b[], int len)
 
 void BOARD_ENETFlexibleConfigure(enet_config_t *config, uint8_t *hwAddr)
 {
-//#ifdef EXAMPLE_USE_100M_ENET_PORT
-//    config->miiMode = kENET_RmiiMode;
-//#else
-//    config->miiMode = kENET_RgmiiMode;
-//#endif
-
 	uint8_t temp_arr[6] = configMAC_ADDR_100M;
 
 	if (compareArrays(hwAddr, temp_arr, 6))
 	{
 		config->miiMode = kENET_RmiiMode;
+		config->miiSpeed = kENET_MiiSpeed100M;
 	}
 	else
 	{
 		config->miiMode = kENET_RgmiiMode;
+		config->miiSpeed = kENET_MiiSpeed1000M;
 	}
 }
 
@@ -382,7 +365,7 @@ static void cbETHNetIFStatus(struct netif *state_netif)
 		strcpy(ip, ip4addr_ntoa(netif_ip4_addr(state_netif)));
 		strcpy(ipgw, ip4addr_ntoa(netif_ip4_gw(state_netif)));
 		//messageDebug(DBG_INFO, __MODULE__, __LINE__,"cbETHNetIFStatus==UP, local interface IP is %s, GW IP is %s", ip, ipgw);
-		PRINTF("%s==UP, local interface IP is %s, GW IP is %s", eth0_eth1==0?"eth_100Mb":"eth_1Gb", ip, ipgw);
+		PRINTF("%s==UP, local interface IP is %s, GW IP is %s\r\n", eth0_eth1==0?"eth_100Mb":"eth_1Gb", ip, ipgw);
 		//PRINTF("cbETHNetIFStatus==UP\r\n");
 		if (state_netif->ip_addr.addr)
 		{
@@ -401,7 +384,6 @@ static void cbETHNetIFStatus(struct netif *state_netif)
 				eth_1g_addr.sub = (state_netif->netmask).addr;
 				eth_1g_addr.gw = (state_netif->gw).addr;
 			}
-
 		}
 	}
 	else
@@ -446,8 +428,6 @@ static void init_ENET_100mb()
 	    netif_set_status_callback(&netif_100m, cbETHNetIFStatus);
 	    netif_set_link_callback(&netif_100m, cbETHLinkStatus);
 
-	    sys_unlock_tcpip_core();
-
 	    phy_config_t phyConfig;
 	    status_t status;
 
@@ -478,7 +458,7 @@ static void init_ENET_100mb()
 	    		   netif_set_up(&netif_100m);
 	    		   dhcp_start(&netif_100m);
 	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("100Mb Link is coming up");
+	    		   PRINTF("100Mb Link is coming up\r\n");
 	    	   }
 	    	   else
 	    	   {
@@ -486,7 +466,7 @@ static void init_ENET_100mb()
 	    		   dhcp_release_and_stop(&netif_100m);
 	    		   netif_set_down(&netif_100m);
 	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("100Mb Link is going down..");
+	    		   PRINTF("100Mb Link is going down..\r\n");
 	    	   }
 	    	   oldLink=link;
 	    	}
@@ -517,8 +497,6 @@ static void init_ENET_1g() // must be called after 100m
 	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
 	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
 
-	    mdioHandle.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
-
 	    IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
 	    IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
 	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
@@ -531,8 +509,6 @@ static void init_ENET_1g() // must be called after 100m
 
 	    netif_set_status_callback(&netif_1g, cbETHNetIFStatus);
 	    netif_set_link_callback(&netif_1g, cbETHLinkStatus);
-
-	    sys_unlock_tcpip_core();
 
 	    phy_config_t phyConfig;
 	    status_t status;
@@ -563,7 +539,7 @@ static void init_ENET_1g() // must be called after 100m
 	    		   netif_set_up(&netif_1g);
 	    		   dhcp_start(&netif_1g);
 	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("Link is coming up\r\n");
+	    		   PRINTF("1Gb Link is coming up\r\n");
 	    	   }
 	    	   else
 	    	   {
@@ -571,7 +547,7 @@ static void init_ENET_1g() // must be called after 100m
 	    		   dhcp_release_and_stop(&netif_1g);
 	    		   netif_set_down(&netif_1g);
 	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("Link is going down..\r\n");
+	    		   PRINTF("1Gb Link is going down..\r\n");
 	    	   }
 	    	   oldLink=link;
 	    	}
@@ -595,7 +571,8 @@ void dual_eth_configuration()
     GPIO_WritePinOutput(GPIO8, 21, 1);
     SDK_DelayAtLeastUs(6, CLOCK_GetFreq(kCLOCK_CpuClk));
 
-    mdioHandle.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
+    mdioHandle100Mb.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
+    mdioHandle1Gb.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
 
 }
 
@@ -613,7 +590,7 @@ void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
+	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY | ETH_100m_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
 	init_ENET_1g();
 }
 
