@@ -33,11 +33,20 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+/*
+ * Note:
+ * WIFI_EN definition enables following 3 Freertos tasks
+ * 1. wifi
+ * 2. ethernet_100mb
+ * 3. ethernet_1g
+ * Reason is: There is one lwip thread is used. Inside wifi tcpip_init() is called.
+ * 			  ethernet_100mb, ethernet_1g assumes tcpip_init() is called.
+ * Freertos eventgroup (event_group_demo) is used for ensuring the correct order of execution.
+ *
+ * when ethernet task starts, it hangs the program until network cable is connected.
+ * so if network interface is not used, must comment below task.
+ *  */
 #define WIFI_EN		1
-
-#ifdef WIFI_EN
-	#define ETH_100MB_EN	1
-#endif
 
 portSTACK_TYPE *lvgl_task_stack = NULL;
 TaskHandle_t lvgl_task_task_handler;
@@ -61,7 +70,6 @@ uint8_t shared_buff[2048];
 static lpuart_rtos_handle_t uart_rtos_handle;
 static struct _lpuart_handle tuart_handle;
 static uint8_t background_buffer[32];
-//uint8_t recv_buffer[4];
 
 lpuart_rtos_config_t lpuart_config = {
 	.base		 = DEMO_LPUART,
@@ -84,10 +92,8 @@ static custom_usb_log_instance_t t_usb_log;
 static custom_wifi_instance_t t_wifi_cmd;
 static custom_console_instance_t t_console;
 
-static EventGroupHandle_t event_group_demo;
-
-/* counter used for freeRTOS tasks runtime analysis */
-static uint32_t perfCounter = 0;
+static EventGroupHandle_t event_group_demo; /*!< Freertos eventgroup for wifi, ethernet connectivity tasks */
+static uint32_t perfCounter = 0; 			/*!< counter used for freeRTOS tasks runtime analysis */
 
 /*******************************************************************************
  * Function Prototypes
@@ -121,6 +127,9 @@ void PIT1_IRQHANDLER(void)
 	//__DSB();
 }
 
+/*!
+ * @brief Configures the PIT timer, it will be called by Freertos
+ */
 void AppConfigureTimerForRuntimeStats(void) {
 	pit_config_t config;
 
@@ -133,6 +142,9 @@ void AppConfigureTimerForRuntimeStats(void) {
 	PIT_StartTimer(PIT1_PERIPHERAL, PIT1_CHANNEL_0);
 }
 
+/*!
+ * @brief Returns 32bit counter value. Used for freertos runtime analysis
+ */
 uint32_t AppGetRuntimeCounterValueFromISR(void) {
 	return perfCounter;
 }
@@ -159,15 +171,13 @@ int main(void)
     BOARD_InitMipiPanelPins();
     BOARD_MIPIPanelTouch_I2C_Init();
     BOARD_InitDebugConsole();
-    //enable lpi2c3
+    /* initialize lpi2c3, lpi2c6 */
     BOARD_RTOS_I2C_Init(3);
     BOARD_RTOS_I2C_Init(6);
-    // configure uart for Maaxboard RT
+    /* configure uart for Maaxboard RT for console task*/
     uart_init();
 	/* Init input switch GPIO. */
     EnableIRQ(BOARD_USER_BUTTON_IRQ);
-
-    setInputSignal(false);
 
     /* Freertos Queue for usb mouse and keyboards */
 	hid_devices_queue = xQueueCreate(10, sizeof(struct hid_device*));
@@ -197,123 +207,73 @@ int main(void)
 	/******** Freertos task declarations ********/
     os_setup_tick_function(vApplicationTickHook_lvgl);
 
-   // Create lvgl task
-
-   stat = xTaskCreate(
-       lvgl_task,
-       "lvgl",
-       configMINIMAL_STACK_SIZE + 800,
-       lvgl_task_stack,
-       tskIDLE_PRIORITY + 3,
-       &lvgl_task_task_handler);
+    /* Freertos task: lvgl "Gui Guider" */
+   stat = xTaskCreate(lvgl_task, "lvgl", configMINIMAL_STACK_SIZE + 800, lvgl_task_stack, tskIDLE_PRIORITY + 3, &lvgl_task_task_handler);
    assert(pdPASS == stat);
 
-    // Create wifi task
 #ifdef WIFI_EN
+    /* Freertos task: wifi
+     * @brief ssid scan, wifi connect (hardcoded)*/
 	t_wifi_cmd.cmd_queue = &wifi_commands_queue;
 	t_wifi_cmd.event_group_wifi = &event_group_demo;
 	t_wifi_cmd.wifi_resQ = &wifi_response_queue;
-    stat = xTaskCreate(
-        wifi_task,
-        "wifi",
-        configMINIMAL_STACK_SIZE + 800,
-		&t_wifi_cmd,
-        tskIDLE_PRIORITY + 4,
-        &wifi_task_task_handler);
+    stat = xTaskCreate(wifi_task, "wifi", configMINIMAL_STACK_SIZE + 800, &t_wifi_cmd, tskIDLE_PRIORITY + 4, &wifi_task_task_handler);
     assert(pdPASS == stat);
-#endif
-    /* usb host, freertos task initialization */
-	USB_HostApplicationInit(&g_HostHandle);
-	if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 4, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create USB host task\r\n");
-		while (1);
-	}
 
-	/* handle USB mouse input */
+	/* must be called before starting ethernet tasks. */
+	dual_eth_configuration();
+	/* Freertos task: eth_100Mb
+	 * @brief dhcp client running to get ip address*/
+	stat = xTaskCreate(eth_100m_task, "eth_100Mb", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL);
+	assert(pdPASS == stat);
+
+	/* Freertos task: eth_1Gb
+	 * @brief dhcp client running to get ip address*/
+	stat = xTaskCreate(eth_1g_task, "eth_1Gb", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL);
+	assert(pdPASS == stat);
+#endif
+
+	/* Freertos task: usb host task */
+	USB_HostApplicationInit(&g_HostHandle);
+	stat = xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 4, NULL);
+	assert(pdPASS == stat);
+
+	/* Freertos task: mouse task */
 	t_usb_host_mouse.hid_queue = &hid_devices_queue;
 	t_usb_host_mouse.host_hid_mouse = &g_HostHidMouse;
-	if (xTaskCreate(USB_HostApplicationMouseTask, "mouse task", 2000L / sizeof(portSTACK_TYPE), &t_usb_host_mouse, 3,
-					NULL) != pdPASS)
-	{
-		PRINTF("Failed to create mouse task\r\n");
-		while (1);
-	}
+	stat = xTaskCreate(USB_HostApplicationMouseTask, "mouse task", 2000L / sizeof(portSTACK_TYPE), &t_usb_host_mouse, 3,
+					NULL);
+	assert(pdPASS == stat);
 
-	/* handle USB keyboard input */
+	/* Freertos task: keyboard task */
 	t_usb_host_keyboard.hid_queue = &hid_devices_queue;
 	t_usb_host_keyboard.host_hid_keyboard = &g_HostHidKeyboard;
-	if (xTaskCreate(USB_HostApplicationKeyboardTask, "keyboard task", 2000L / sizeof(portSTACK_TYPE),
-					&t_usb_host_keyboard, 3, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create keyboard task\r\n");
-		while (1);
-	}
+	stat = xTaskCreate(USB_HostApplicationKeyboardTask, "keyboard task", 2000L / sizeof(portSTACK_TYPE),
+					&t_usb_host_keyboard, 3, NULL);
+	assert(pdPASS == stat);
 
-    /* launch HID input logging task */
+#if defined(ENABLED_LOG_TASK)
+	/* Freertos task: USB_log
+	 * @brief: logs mouse, keyboard values on the console screen */
 	t_usb_log.hid_queue = &hid_devices_queue;
 	t_usb_log.uart_handle = &uart_rtos_handle;
-	#if defined(ENABLED_LOG_TASK)
-	if (xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 2, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create log task\r\n");
-		while (1);
-	}
-	#endif
+	stat = xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 2, NULL);
+	assert(pdPASS == stat);
+#endif
 
     /* launch demo console task */
     t_console.cmd_queue = &wifi_commands_queue;
     t_console.wifi_resQ = &wifi_response_queue;
     t_console.uart_handle = &uart_rtos_handle;
     t_console.event_group_wifi = &event_group_demo;
-	if (xTaskCreate(console_task, "Console_task", configMINIMAL_STACK_SIZE + 200, &t_console, 3, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create console task\r\n");
-		while (1);
-	}
+    stat = xTaskCreate(console_task, "Console_task", configMINIMAL_STACK_SIZE + 200, &t_console, 3, NULL);
+    assert(pdPASS == stat);
 
-	/* Note: when ethernet task starts, it hangs the program until network cable is connected.
-	 	 if network interface is not connected, must comment below task */
-	/*
-	 * Note:
-	 * order of wifi, ethernet initialization is
-	 * 1. wifi
-	 * 2. ethernet_100mb
-	 * 3. ethernet_1g
-	 * Reason is: There is one lwip thread is used. Inside wifi tcpip_init() is called.
-	 * 			  ethernet_100mb, ethernet_1g assumes tcpip_init() is called.
-	 * Freertos eventgroup (event_group_demo) is used for ensuring the correct order of execution.
-	 *
-	 * when ethernet task starts, it hangs the program until network cable is connected.
-	 * so if network interface is not used, must comment below task.
-	 *  */
+	/* Audio task */
+    stat = xTaskCreate(audio_task_init, "av_task", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL);
+    assert(pdPASS == stat);
 
-	// dual_eth_configuration() must be called before starting ethernet tasks.
-#ifdef ETH_100MB_EN
-	dual_eth_configuration();
-	// eth100 task
-	if (xTaskCreate(eth_100m_task, "eth_100m", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create console task\r\n");
-		while (1);
-	}
-	// eth1G task
-	if (xTaskCreate(eth_1g_task, "eth_1g", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create console task\r\n");
-		while (1);
-	}
-#endif
-
-	// audio task init
-    if (xTaskCreate(audio_task_init, "av_task", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL) != pdPASS)
-	{
-		PRINTF("Failed to create console task\r\n");
-		while (1);
-	}
-
-    // Init scheduler
-
+    /* Init scheduler */
     vTaskStartScheduler();
 
     for (;;)

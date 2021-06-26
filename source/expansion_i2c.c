@@ -89,12 +89,14 @@ void scan_i2c_bus(lpi2c_rtos_handle_t *rtos_i2c_handle, uint8_t *buff)
 		if (BOARD_LPI2C_Receive(rtos_i2c_handle->base, i2caddress, 0, 0, &rxBuff, 1) == kStatus_LPI2C_Nak)
 		{
 			buff[index] &= ~(1<<bit_pos);
+			LPI2C_MasterStop(rtos_i2c_handle->base);
 		}
 		else
 		{
 			buff[index] |= (1<<bit_pos);
 		}
 
+		SDK_DelayAtLeastUs(100, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
 
 //		index = i2caddress/8;
 //		bit_pos = 7-(i2caddress%8);
