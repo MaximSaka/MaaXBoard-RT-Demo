@@ -1,3 +1,31 @@
+/**
+ * @brief - Maaxboard RT Demo
+ * @Description - Demo program can be interacted with both GUI and Console.
+ * LPUART1 is used at baudrate 115200 for console application. It is physically available on debug UART 3-pin header.
+ * LPUART6 is used for printing debug message. It is available on 40 pin header.
+ *
+ * Following commands are available on console
+ *--------- PERIPHERALS ----------------
+ * led ***    : RGB LEDs on/off
+ * i2c #      : I2C Scan (bus# 2/3/5/6)
+ *--------- WIFI & LAN -----------------
+ * ws         : Wifi Scan
+ * wc         : Wifi Connect
+ * wi         : Wifi Info
+ * es         : Ethernet Scan
+ * -------- USB HOST & DEV -------------
+ * ul         : USB List (attached devices)
+ * uk         : Keyboard Test
+ * um         : Mouse Test
+ *--------- AUDIO & VIDEO --------------
+ * am ##      : Audio L/R output (mic# 1-4)
+ *--------- UTILITY --------------------
+ * stats      : RTOS Statistics
+ * clr        : Clear the terminal
+ * q/ctrl+c   : Abort the command
+ * ? / h      : Menu Help
+ */
+
 /*
  * Copyright 2020 NXP
  * All rights reserved.
@@ -211,13 +239,14 @@ int main(void)
 	/******** Freertos task declarations ********/
     os_setup_tick_function(vApplicationTickHook_lvgl);
 
-    /* Freertos task: lvgl "Gui Guider" */
+    /* 1. Freertos task: lvgl "Gui Guider"
+     * displays GUI pages on 7 inch touch display. It uses lvgl library version 7.11.0  */
    stat = xTaskCreate(lvgl_task, "lvgl", configMINIMAL_STACK_SIZE + 800, lvgl_task_stack, tskIDLE_PRIORITY + 3, &lvgl_task_task_handler);
    assert(pdPASS == stat);
 
 #ifdef WIFI_EN
-    /* Freertos task: wifi
-     * @brief ssid scan, wifi connect (hardcoded)*/
+    /* 2. Freertos task: wifi
+     * @brief ssid scan, wifi connect to ssid (hardcoded), get wifi network info*/
 	t_wifi_cmd.cmd_queue = &wifi_commands_queue;
 	t_wifi_cmd.event_group_wifi = &event_group_demo;
 	t_wifi_cmd.wifi_resQ = &wifi_response_queue;
@@ -226,30 +255,33 @@ int main(void)
 
 	/* must be called before starting ethernet tasks. */
 	dual_eth_configuration();
-	/* Freertos task: eth_100Mb
-	 * @brief dhcp client running to get ip address*/
+	/* 3. Freertos task: eth_100Mb
+	 * @brief dhcp client running to get ip address */
 	stat = xTaskCreate(eth_100m_task, "eth_100Mb", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL);
 	assert(pdPASS == stat);
 
-	/* Freertos task: eth_1Gb
-	 * @brief dhcp client running to get ip address*/
+	/* 4. Freertos task: eth_1Gb
+	 * @brief dhcp client running to get ip address */
 	stat = xTaskCreate(eth_1g_task, "eth_1Gb", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL);
 	assert(pdPASS == stat);
 #endif
 
-	/* Freertos task: usb host task */
+	/* 5. Freertos task: usb host task
+	 * @brief: USB host task for enumerating hid devices */
 	USB_HostApplicationInit(&g_HostHandle);
 	stat = xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 4, NULL);
 	assert(pdPASS == stat);
 
-	/* Freertos task: mouse task */
+	/* 6. Freertos task: mouse task
+	 * @brief: reading mouse value from hid device */
 	t_usb_host_mouse.hid_queue = &hid_devices_queue;
 	t_usb_host_mouse.host_hid_mouse = &g_HostHidMouse;
 	stat = xTaskCreate(USB_HostApplicationMouseTask, "mouse task", 2000L / sizeof(portSTACK_TYPE), &t_usb_host_mouse, 3,
 					NULL);
 	assert(pdPASS == stat);
 
-	/* Freertos task: keyboard task */
+	/* 7. Freertos task: keyboard task
+	 * @brief: reading keyboard value from hid device */
 	t_usb_host_keyboard.hid_queue = &hid_devices_queue;
 	t_usb_host_keyboard.host_hid_keyboard = &g_HostHidKeyboard;
 	stat = xTaskCreate(USB_HostApplicationKeyboardTask, "keyboard task", 2000L / sizeof(portSTACK_TYPE),
@@ -257,7 +289,7 @@ int main(void)
 	assert(pdPASS == stat);
 
 #if defined(ENABLED_LOG_TASK)
-	/* Freertos task: USB_log
+	/* 8. Freertos task: USB_log
 	 * @brief: logs mouse, keyboard values on the console screen */
 	t_usb_log.hid_queue = &hid_devices_queue;
 	t_usb_log.uart_handle = &uart_rtos_handle;
@@ -265,7 +297,8 @@ int main(void)
 	assert(pdPASS == stat);
 #endif
 
-    /* launch demo console task */
+	/* 9. Freertos task: Console_task
+	 * @brief: console application using lpuart1 peripheral */
     t_console.cmd_queue = &wifi_commands_queue;
     t_console.wifi_resQ = &wifi_response_queue;
     t_console.uart_handle = &uart_rtos_handle;
@@ -274,6 +307,8 @@ int main(void)
     assert(pdPASS == stat);
 
 	/* Audio task */
+	/* 10. Freertos task: av_task
+	 * @brief: read 4 microphones, output selected mic to audio codec */
     stat = xTaskCreate(audio_task_init, "av_task", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL);
     assert(pdPASS == stat);
 

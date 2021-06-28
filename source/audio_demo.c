@@ -5,6 +5,15 @@
  *      Author: gulziibayar
  */
 
+/* @Brief
+ * There are total 4 microphones are connected. P5 -> mic0, mic2 R5 -> mic1, mic3
+ * PDM peripheral is used for reading 4 microphone samples at 16Khz.
+ * SAI is used for connecting to the audio codec. Audio codec expects L/R channel data.
+ * any combination of microphone can be selected as source for audio codec.
+ * E.g {L->mic0, R->mic1} {L->mic0, R->mic3} ... {L->empty, R->mic1}
+ * Microphones are selected from GUI or Console.
+ */
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -415,9 +424,10 @@ void * getRtosI2cHandle()
 	return ((sgtl_handle_t *)(codecHandle.codecDevHandle))->i2cHandle;
 }
 
-/*!
- * @brief main body freertos audio_task
- */
+/*******************************************************************************
+ * Freetos Task: audio_task
+ * @brief: read 4 microphones, output selected mic to audio codec
+ ******************************************************************************/
 void audio_task_init()
 {
 	BOARD_InitPins_Sai();

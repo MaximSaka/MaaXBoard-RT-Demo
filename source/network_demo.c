@@ -645,9 +645,10 @@ static int32_t waitWifiStatus(uint32_t ms, uint32_t statusMask)
 	return 1;
 }
 
-/*!
- * @brief freertos wifi task
- */
+/*******************************************************************************
+ * Freetos Task: wifi
+ * @brief ssid scan, wifi connect to ssid (hardcoded), get wifi network info
+ ******************************************************************************/
 void wifi_task(void *param)
 {
 	//  reset pulse to WL_REG_ON, but it seems to be unnecessary

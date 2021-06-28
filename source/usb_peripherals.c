@@ -200,6 +200,10 @@ void USB_HostApplicationInit(usb_host_handle *t_hostHandle)
     usb_echo("host init done\r\n");
 }
 
+/*******************************************************************************
+ * Freetos Task: usb host task
+ * @brief USB host task for enumerating hid devices
+ ******************************************************************************/
 void USB_HostTask(void *param)
 {
     while (1)
@@ -209,6 +213,10 @@ void USB_HostTask(void *param)
     }
 }
 
+/*******************************************************************************
+ * Freetos Task: mouse task
+ * @brief: reading mouse value from hid device
+ ******************************************************************************/
 void USB_HostApplicationMouseTask(void *param)
 {
     while (1)
@@ -218,6 +226,10 @@ void USB_HostApplicationMouseTask(void *param)
     }
 }
 
+/*******************************************************************************
+ * Freetos Task: keyboard task
+ * @brief: reading keyboard value from hid device
+ ******************************************************************************/
 void USB_HostApplicationKeyboardTask(void *param)
 {
     while (1)
@@ -235,11 +247,10 @@ void read_mouseState(mouse_t *mouse_i)
 	mouse_btn = 0;
 }
 
-/*!
- * @brief log freertos task.
- *
- * receive "hid_device" structure data from queue, prints the value on the serial port.
- */
+/*******************************************************************************
+ * Freetos Task: USB_log
+ * @brief receive "hid_device" structure data from queue, prints the value on the serial port.
+ ******************************************************************************/
 void USB_logTask(void *param)
 {
 	custom_usb_log_instance_t *t_usb_log = (custom_usb_log_instance_t *)param;

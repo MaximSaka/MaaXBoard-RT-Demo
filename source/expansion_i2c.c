@@ -4,6 +4,23 @@
  *  Created on: May 14, 2021
  *      Author: gulziibayar
  */
+
+/* @Brief
+ * There are total 4 lpi2c peripherals available on the Maaxboard RT.
+ * lpi2c#2 - touchscreen chip(0x38), TO136<Rev.2> Security chip (0x50), Camera OV5640 (0x3C)
+ * lpi2c#3 - available on 40 pin connector, no device is connected by default
+ * lpi2c#5 - audio codec (0x0A), available on 18 pin connector
+ * lpi2c#6 - available on 40 pin conenctor, no device is connected by default
+ *
+ * Freertos handle of lpi2c#2, lpi2c#5 are initialized by lvgl, audio tasks respectively.
+ * lpi2c3, lpi2c6 are initialized by console task.
+ *
+ * Freertos i2c library is used for scanning the bus.
+ * Bus is scanned with following way.
+ * 		if address exists following transaction will take place. START+(ADDRESS)(R) + DATA + STOP
+ * 		Otherwise START+(ADDRESS)(R) + STOP
+ */
+
 #include "fsl_lpi2c.h"
 #include "board.h"
 #include "expansion_i2c.h"

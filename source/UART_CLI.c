@@ -5,17 +5,46 @@
  *      Author: gulziibayar
  */
 
-/*
- * MaaxBoard RT CLI use LPUART1 on J17 Debug UART 3 pin header
+/* @Brief
+ * MaaxBoard RT CLI use LPUART1 on J17 Debug UART 3 pin header.
+ * Adding new command:
+ * 1. create the function with these 3 parameters. pcWriteBuffer is the output buffer sending string to console,
+ * 	  after command execution. Look for other functions.
+ * 		static BaseType_t newFunction( char *pcWriteBuffer,size_t xWriteBufferLen, const char *pcCommandString )
+ * 		{}
+ * 2. create the new struct like below
+ * 		static const CLI_Command_Definition_t taskNewFuncCommandStruct =
+ *		{
+ *			"newfunc",
+ *			"--------- UTILITY --------------------\r\n"
+ *			" newfunc      : newfunc description \r\n",
+ *			newFunction,
+ *			0
+ *		};
+ * 3. FreeRTOS_CLIRegisterCommand( &taskNewFuncCommandStruct )
  *
- * Lists all the registered commands
- * clear    : Clear Screen by sending VT100 Escape Code
- * led ***  : on/off leds
- * scan     : Scan I2C bus
- * lsusb    : List USB devices
- * mouse    : mouse DEMO
- * keyboard : keyboard DEMO
- * q/ctrl+c : Abort command
+ * For more: https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_CLI/FreeRTOS_Plus_Command_Line_Interface.html
+ *
+ * Following commands are available on console
+ *--------- PERIPHERALS ----------------
+ * led ***    : RGB LEDs on/off
+ * i2c #      : I2C Scan (bus# 2/3/5/6)
+ *--------- WIFI & LAN -----------------
+ * ws         : Wifi Scan
+ * wc         : Wifi Connect
+ * wi         : Wifi Info
+ * es         : Ethernet Scan
+ * -------- USB HOST & DEV -------------
+ * ul         : USB List (attached devices)
+ * uk         : Keyboard Test
+ * um         : Mouse Test
+ *--------- AUDIO & VIDEO --------------
+ * am ##      : Audio L/R output (mic# 1-4)
+ *--------- UTILITY --------------------
+ * stats      : RTOS Statistics
+ * clr        : Clear the terminal
+ * q/ctrl+c   : Abort the command
+ * ? / h      : Menu Help
 */
 
 #include "fsl_debug_console.h"
@@ -50,7 +79,7 @@ static QueueHandle_t *wifi_cmd_queue;
 static QueueHandle_t *wifi_response_queue;
 static EventGroupHandle_t *event_group_wifi;
 
-//ethernet
+/* ethernet */
 extern ip_ro_t eth_100mb_addr;
 extern ip_ro_t eth_1g_addr;
 ip_ro_t *eth_instance;
@@ -1026,9 +1055,10 @@ static const CLI_Command_Definition_t helpCommandStruct =
     0
 };
 
-/*!
- * @brief Main body of console task
- */
+/*******************************************************************************
+ * Freetos Task: USB_log
+ * @brief receive console application using lpuart1 peripheral.
+ ******************************************************************************/
 void console_task(void *pvParameters)
 {
 	custom_console_instance_t *t_console_instance = (custom_console_instance_t *)pvParameters;
@@ -1050,7 +1080,7 @@ void console_task(void *pvParameters)
         vTaskSuspend(NULL);
     }
 
-    /* Registering cli commands*/
+    /* Registering cli commands */
     /***************** PERIPHERALS COMMANDS ************************/
     FreeRTOS_CLIRegisterCommand( &controlLedCommandStruct );
     FreeRTOS_CLIRegisterCommand( &i2cScanCommandStruct );

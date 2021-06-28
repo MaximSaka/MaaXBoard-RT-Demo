@@ -5,6 +5,19 @@
  *      Author: gulziibayar
  */
 
+/* @Brief
+ * There are two ethernet interfaces. 100Mb, 1Gb
+ * Each interface runs its own freertos task. Each task uses dhcp client from LWIP thread to connect the network.
+ * Must use following driver for interacting phy.
+ * ethernet 100Mb - fsl_phyksz8081.c
+ * ethernet 1Gb - fsl_phyksz9131rnx.c
+ *
+ * Following two ethernet tasks assume LWIP thread is running which is started by wifi task.
+ *
+ * There are two global struct defined here. They are updated accordingly when connected or disconnected to network.
+ * 		1. eth_100mb_addr
+ * 		2. eth_1g_addr
+ */
 
 #include "lwip/opt.h"
 #if LWIP_IPV4 && LWIP_DHCP && LWIP_NETCONN
@@ -434,9 +447,10 @@ void dual_eth_configuration()
     mdioHandle1Gb.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
 }
 
-/*!
- * @brief Eth_100Mb task wrapper function
- */
+/*******************************************************************************
+ * Freetos Task: eth_100m
+ * @brief dhcp client running to get ip address
+ ******************************************************************************/
 void eth_100m_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
@@ -446,9 +460,10 @@ void eth_100m_task(void *pvParameters)
 	init_ENET_100mb();
 }
 
-/*!
- * @brief Eth_1Gb task wrapper function
- */
+/*******************************************************************************
+ * Freetos Task: eth_1G
+ * @brief dhcp client running to get ip address
+ ******************************************************************************/
 void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;

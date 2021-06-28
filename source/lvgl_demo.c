@@ -454,6 +454,9 @@ void startSSIDScan()
     ssidScan();
 }
 
+/*!
+* @brief changes the network image and label
+*/
 static void ethernet_change_state_gui(ip_ro_t *eth_instance, lv_obj_t *screen2_WIFI_eth_item)
 {
 	uint8_t temp_buff[128];
@@ -620,43 +623,6 @@ void initMicGraph()
 
 	audio_channels[0] = 0;
 	audio_channels[1] = 0;
-
-//	uint8_t *temp = getEnabledChannels();
-//	audio_channels[0] = *(temp++);
-//	audio_channels[1] = *(temp);
-//	if (audio_channels[0] != 0)
-//	{
-//		*mic_states[audio_channels[0]-1] = true;
-//	}
-//	if (audio_channels[1] != 0)
-//	{
-//		*mic_states[audio_channels[1]-1] = true;
-//	}
-//
-//    for (int i=0; i<4; i++)
-//    {
-//    	if (*mic_states[i] == true)
-//    	{
-//    		enableMic(i+1, *mic_states[i]);
-//    		switch(i)
-//    		{
-//    		case 0:
-//    			lv_checkbox_set_state(guider_ui.screen4_AV_mic1_cb, LV_BTN_STATE_CHECKED_PRESSED);
-//    			break;
-//    		case 1:
-//    			lv_checkbox_set_state(guider_ui.screen4_AV_mic2_cb, LV_BTN_STATE_CHECKED_PRESSED);
-//    			break;
-//    		case 2:
-//    			lv_checkbox_set_state(guider_ui.screen4_AV_mic3_cb, LV_BTN_STATE_CHECKED_PRESSED);
-//    			break;
-//    		case 3:
-//    			lv_checkbox_set_state(guider_ui.screen4_AV_mic4_cb, LV_BTN_STATE_CHECKED_PRESSED);
-//    			break;
-//    		default:
-//    			break;
-//    		}
-//    	}
-//    }
 
     lv_chart_refresh(guider_ui.screen4_AV_mic_chart);
 }
@@ -1220,9 +1186,9 @@ void setHIDsRefreshed(void)
 }
 
 /*******************************************************************************
- * Task
+ * Freertos Task: lvgl
+ * @brief - There are total 6 pages, task handles all gui object events, navigation
  ******************************************************************************/
-
 void lvgl_task(void *param)
 {
     lv_port_pre_init();
