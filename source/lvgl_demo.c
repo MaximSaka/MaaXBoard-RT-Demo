@@ -1186,6 +1186,10 @@ void openHelpScreen()
     s_active_page = PAGE_HELP;
 
     initDefaultPageInteractions();
+
+    char labelText[80];
+    sprintf(labelText, MAAXBOARD_VERSION_STRING);
+    lv_label_set_text(guider_ui.screen6_HELP_maaxboard_version_label, labelText);
 }
 
 /*!

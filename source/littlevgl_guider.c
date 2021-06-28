@@ -46,8 +46,11 @@
  * when ethernet task starts, it hangs the program until network cable is connected.
  * so if network interface is not used, must comment below task.
  *  */
-#define WIFI_EN		1
+//#define WIFI_EN		1
 
+/*******************************************************************************
+ * Variables
+ ******************************************************************************/
 portSTACK_TYPE *lvgl_task_stack = NULL;
 TaskHandle_t lvgl_task_task_handler;
 

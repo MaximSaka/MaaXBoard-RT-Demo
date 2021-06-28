@@ -19,6 +19,13 @@
  * Definitions
  ******************************************************************************/
 
+/* Maaxboard RT Version*/
+#define MAAXBOARD_VERSION_MAJOR	"1"
+#define MAAXBOARD_VERSION_MINOR	"0"
+#define MAAXBOARD_VERSION_DATE	"2021-06-25"
+#define MAAXBOARD_VERSION_STRING	"Avnet GUI Demo v"MAAXBOARD_VERSION_MAJOR"."MAAXBOARD_VERSION_MINOR" ["MAAXBOARD_VERSION_DATE"]"
+
+
 /* CLI definitions */
 #define mouseLogEn		0
 #define keyboardLogEn	1

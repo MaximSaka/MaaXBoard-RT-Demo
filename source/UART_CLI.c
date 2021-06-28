@@ -1019,7 +1019,9 @@ static const CLI_Command_Definition_t helpCommandStruct =
 {
     "h",
     " ? / h      : Menu Help \r\n"
-	"======================================\r\n",
+	"========= "
+	MAAXBOARD_VERSION_STRING
+	"\r\n",
 	prvHelpCommand,
     0
 };

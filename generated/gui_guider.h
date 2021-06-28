@@ -168,6 +168,7 @@ typedef struct
 	lv_obj_t *screen6_HELP_label_10;
 	lv_obj_t *screen6_HELP_label_11;
 	lv_obj_t *screen6_HELP_label_12;
+	lv_obj_t *screen6_HELP_maaxboard_version_label;
 }lv_ui;
 
 void setup_ui(lv_ui *ui);
