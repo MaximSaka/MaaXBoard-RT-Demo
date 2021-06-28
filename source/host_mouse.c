@@ -78,7 +78,7 @@ static void USB_HostMouseProcessBuffer(uint8_t *buffer)
 	mouse_dev.x_motion = (int8_t)buffer[1];
 	mouse_dev.y_motion = (int8_t)buffer[2];
 	mouse_dev.mouse_wheel = (int8_t)buffer[3];
-
+	/* send the mouse state value to hid_devices_queue */
 	xQueueSend(*hid_devices_queue, (void *) &mouse_dev, 10);
 }
 

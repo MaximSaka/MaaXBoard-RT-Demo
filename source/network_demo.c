@@ -105,12 +105,22 @@ static volatile uint32_t wifi_status = 0;
 /*******************************************************************************
  * Functions
  ******************************************************************************/
+static void printSeparator(void)
+{
+    PRINTF("========================================\r\n");
+}
 
+/*!
+ * @brief returns the wifi ssid string pointer, and its length
+ */
 void getTargetSSID(char* nameBuffer, int bufLen)
 {
     strncpy(nameBuffer, EXT_AP_SSID, bufLen);
 }
 
+/*!
+ * @brief callback for wifi scan
+ */
 int __scan_cb(unsigned int count)
 {
     struct wlan_scan_result res;
@@ -187,6 +197,9 @@ int __scan_cb(unsigned int count)
     return 0;
 }
 
+/*!
+ * @brief initiate wifi scan
+ */
 void ssidScan(void)
 {
     if (!isWifiReady())
@@ -201,6 +214,9 @@ void ssidScan(void)
         PRINTF("Scan scheduled...\r\n");
 }
 
+/*!
+ * @brief connects to hardcoded wifi network
+ */
 int connectToAP(void)
 {
     int ret;
@@ -324,6 +340,9 @@ static void print_network(struct wlan_network *network)
     print_address(&network->ip, network->role);
 }
 
+/*!
+ * @brief gets wifi network information(ip, sub, gw) and store in buffer
+ */
 uint8_t printWlanInfo(void)
 {
     enum wlan_connection_state state;
@@ -602,6 +621,9 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
     return 0;
 }
 
+/*!
+ * @brief returns the state of wifi connectivity
+ */
 bool isWifiReady(void)
 {
     return s_wifi_ready;
@@ -623,6 +645,9 @@ static int32_t waitWifiStatus(uint32_t ms, uint32_t statusMask)
 	return 1;
 }
 
+/*!
+ * @brief freertos wifi task
+ */
 void wifi_task(void *param)
 {
 	//  reset pulse to WL_REG_ON, but it seems to be unnecessary

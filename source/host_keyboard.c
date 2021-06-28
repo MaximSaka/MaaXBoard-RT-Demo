@@ -528,7 +528,7 @@ usb_status_t USB_HostHidKeyboardEvent(usb_device_handle deviceHandle,
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceAddress, &infoValue);
                         usb_devices[1].address = infoValue;
                         usb_echo("address=%d\r\n", infoValue);
-
+                        /* refresh HID device value on the GUI*/
                         setHIDsRefreshed();
                     }
                     else

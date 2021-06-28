@@ -1027,7 +1027,7 @@ static const CLI_Command_Definition_t helpCommandStruct =
 };
 
 /*!
- * @brief Task responsible for loopback.
+ * @brief Main body of console task
  */
 void console_task(void *pvParameters)
 {

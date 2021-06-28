@@ -50,7 +50,7 @@
 #define DEMO_PDM_ENABLE_CHANNEL_RIGHT DEMO_PDM_ENABLE_CHANNEL_3
 #endif
 
-#define DEMO_PDM_SAMPLE_CLOCK_RATE    (16000U) /* 6.144MHZ */
+#define DEMO_PDM_SAMPLE_CLOCK_RATE    (16000U) /* 16Khz */
 /* demo audio sample rate */
 #define DEMO_AUDIO_SAMPLE_RATE (kSAI_SampleRate16KHz)
 /* demo audio master clock */
@@ -101,7 +101,7 @@ static pdm_channel_config_t channelConfig = {
     .gain       = kPDM_DfOutputGain7,
 };
 
-// codec config
+/* codec config */
 sgtl_config_t sgtlConfig = {
 	.i2cConfig        = {.codecI2CInstance = BOARD_CODEC_I2C_INSTANCE, .codecI2CSourceClock = BOARD_CODEC_I2C_CLOCK_FREQ},
 	.route            = kSGTL_RoutePlaybackandRecord,
@@ -131,8 +131,6 @@ static int32_t channel_1;
 static int32_t channel_2;
 static int32_t channel_3;
 
-static SemaphoreHandle_t xBinarySemaphore = NULL;
-
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -149,6 +147,9 @@ const clock_audio_pll_config_t audioPllConfig = {
     .denominator = 100, /* 30 bit denominator of fractional loop divider */
 };
 
+/*!
+ * @brief Enable or Disable SAI clk
+ */
 void BOARD_EnableSaiMclkOutput(bool enable)
 {
     if (enable)
@@ -161,7 +162,9 @@ void BOARD_EnableSaiMclkOutput(bool enable)
     }
 }
 
-
+/*!
+ * @brief SAI call back when data transfer complete
+ */
 static void saiCallback(I2S_Type *base, sai_handle_t *handle, status_t status, void *userData)
 {
     if (kStatus_SAI_TxError == status)
@@ -210,6 +213,13 @@ void PDM_ERROR_IRQHandler(void)
 }
 #endif
 
+/*!
+ * @brief Among the all 4 channels data, only select only up to 2 selected channels to audio output
+ * @params - src_buff - source buffer which stores all 4 mic values in following order. mic1, mic2, mic3, mic4, mic1...
+ * 						4*7 samples are stored
+ * 			 dest_buff - destination buffer which stores the enabled 2 mic values. E.g mic1, mic2, mic1, mic2...
+ * audio_jack[0], audio_jack[1] holds the selected mic values.
+ */
 static void four_two_conv(uint8_t *src_buff, uint8_t *dest_buff)
 {
     memset(dest_buff, 0x00, BUFFER_SIZE);
@@ -234,6 +244,9 @@ static void four_two_conv(uint8_t *src_buff, uint8_t *dest_buff)
     }
 }
 
+/*!
+ * @brief 4 microphone data are sample at 16khz. Interrupt is triggered when fifo level is 7.
+ */
 void PDM_EVENT_IRQHandler(void)
 {
     uint32_t status = PDM_GetStatus(DEMO_PDM);
@@ -241,25 +254,22 @@ void PDM_EVENT_IRQHandler(void)
 #if (defined FSL_FEATURE_PDM_HAS_NO_INDEPENDENT_ERROR_IRQ && FSL_FEATURE_PDM_HAS_NO_INDEPENDENT_ERROR_IRQ)
     pdm_error_irqHandler();
 #endif
-    /* recieve data */
+    /* receive data */
     if ((1U << DEMO_PDM_ENABLE_CHANNEL_LEFT) & status)
     {
         PDM_ReadFifo(DEMO_PDM, DEMO_PDM_ENABLE_CHANNEL_LEFT, 4, &pdmBuff[0],
                       DEMO_PDM_FIFO_WATERMARK, FSL_FEATURE_PDM_FIFO_WIDTH);
         if ((s_readIndex >= s_writeIndex) || (s_readIndex <= (s_writeIndex - 1U)))
         {
-//            PDM_ReadFifo(DEMO_PDM, DEMO_PDM_ENABLE_CHANNEL_LEFT, 4, &txBuff[s_readIndex * BUFFER_SIZE],
-//                         DEMO_PDM_FIFO_WATERMARK, FSL_FEATURE_PDM_FIFO_WIDTH);
-
         	channel_0 = (int32_t)((pdmBuff[3]<<24)|(pdmBuff[2]<<16) | (pdmBuff[1]<<8))>>8;
 			channel_1 = (int32_t)((pdmBuff[3+4]<<24)|(pdmBuff[2+4]<<16) | (pdmBuff[1+4]<<8))>>8;
 			channel_2 = (int32_t)((pdmBuff[3+8]<<24)|(pdmBuff[2+8]<<16) | (pdmBuff[1+8]<<8))>>8;
 			channel_3 = (int32_t)((pdmBuff[3+12]<<24)|(pdmBuff[2+12]<<16) | (pdmBuff[1+12]<<8))>>8;
 
-
+			/* Only forward enabled mic to audio buffer */
         	four_two_conv(pdmBuff, &txBuff[s_readIndex * BUFF_TIMES * BUFFER_SIZE + s_buffCnt * BUFFER_SIZE]);
         	s_buffCnt += 1U;
-        	if (s_buffCnt == BUFF_TIMES)
+        	if (s_buffCnt == BUFF_TIMES)	/* audio buffer is ready */
         	{
         		s_buffCnt = 0;
         		s_readIndex += 1U;
@@ -271,11 +281,14 @@ void PDM_EVENT_IRQHandler(void)
         	}
         }
     }
-
+    /* Clear PDM status */
     PDM_ClearStatus(DEMO_PDM, status);
     __DSB();
 }
 
+/*!
+ * @brief maps the range to given range.
+ */
 static int32_t map_range(int32_t in_val, int32_t in_start, int32_t in_end, int32_t out_start, int32_t out_end)
 {
 	int32_t output;
@@ -283,6 +296,9 @@ static int32_t map_range(int32_t in_val, int32_t in_start, int32_t in_end, int32
 	return output;
 }
 
+/*!
+ * @brief disables all the channels.
+ */
 void disableAllMicChannels()
 {
 	s_channel0Enabled = false;
@@ -293,11 +309,17 @@ void disableAllMicChannels()
 	audio_jack[1] = 0;
 }
 
+/*!
+ * @brief returns the enabled channels. 0 -> empty, 1-4 enabled channels
+ */
 uint8_t * getEnabledChannels()
 {
 	return &audio_jack[0];
 }
 
+/*!
+ * @brief enables audio mic channels from console
+ */
 void enableAudioMicChannels(uint8_t ch, uint8_t val)
 {
 	if (ch>=0 && ch<2)
@@ -324,6 +346,9 @@ void enableAudioMicChannels(uint8_t ch, uint8_t val)
 	}
 }
 
+/*!
+ * @brief enables mic channels from gui
+ */
 void enableMicChannel(int id, bool state)
 {
     switch (id)
@@ -390,6 +415,9 @@ void * getRtosI2cHandle()
 	return ((sgtl_handle_t *)(codecHandle.codecDevHandle))->i2cHandle;
 }
 
+/*!
+ * @brief main body freertos audio_task
+ */
 void audio_task_init()
 {
 	BOARD_InitPins_Sai();
@@ -452,12 +480,6 @@ void audio_task_init()
 	EnableIRQ(PDM_EVENT_IRQn);
 	PDM_Enable(DEMO_PDM, true);
 
-    xBinarySemaphore = xSemaphoreCreateBinary();
-    if (xBinarySemaphore==NULL)
-    {
-    	PRINTF("Binary semaphore not created\r\n");
-    }
-
     int32_t mapped_ch0;
 	int32_t mapped_ch1;
 	int32_t mapped_ch2;
@@ -483,25 +505,33 @@ void audio_task_init()
 					cnt = 0;
 					if (s_channel0Enabled)
 					{
+						/* map the integer value to 0-100 range for plotting on GUI */
 						mapped_ch0 = map_range(channel_0>>8, -32768, 32767, 0, 100);
+						/* send the mic value to GUI graph*/
 						addMicData(1, mapped_ch0);
 					}
 
 					if (s_channel1Enabled)
 					{
+						/* map the integer value to 0-100 range for plotting on GUI */
 						mapped_ch1 = map_range(channel_1>>8, -32768, 32767, 0, 100);
+						/* send the mic value to GUI graph*/
 						addMicData(2, mapped_ch1);
 					}
 
 					if (s_channel2Enabled)
 					{
+						/* map the integer value to 0-100 range for plotting on GUI */
 						mapped_ch2 = map_range(channel_2>>8, -32768, 32767, 0, 100);
+						/* send the mic value to GUI graph*/
 						addMicData(3, mapped_ch2);
 					}
 
 					if (s_channel3Enabled)
 					{
+						/* map the integer value to 0-100 range for plotting on GUI */
 						mapped_ch3 = map_range(channel_3>>8, -32768, 32767, 0, 100);
+						/* send the mic value to GUI graph*/
 						addMicData(4, mapped_ch3);
 					}
 				}

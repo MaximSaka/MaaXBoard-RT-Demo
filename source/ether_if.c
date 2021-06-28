@@ -7,7 +7,6 @@
 
 
 #include "lwip/opt.h"
-//#define EXAMPLE_USE_100M_ENET_PORT
 #if LWIP_IPV4 && LWIP_DHCP && LWIP_NETCONN
 
 #include "FreeRTOS.h"
@@ -47,16 +46,17 @@
         0x02, 0x12, 0x13, 0x10, 0x15, 0x12 \
     }
 
-
+/* phy address in MDIO bus */
 #define PHY_ADDRESS_100M    BOARD_ENET0_PHY_ADDRESS
 #define PHY_ADDRESS_1G      BOARD_ENET1_PHY_ADDRESS
 
+/* Phy operations functions for each phy */
 #define PHY_OPS_100M        phyksz8081_ops
 #define PHY_OPS_1G          phyksz9131rnx_ops
 
+/* Function pointer for each interface initialization function */
 #define NETIF_INIT_FN_100M 	ethernetif0_init
 #define NETIF_INIT_FN_1G 	ethernetif1_init
-
 
 /* MDIO operations. */
 #define EXAMPLE_MDIO_OPS enet_ops
@@ -101,6 +101,9 @@ static EventGroupHandle_t *temp_event_group;
 /*******************************************************************************
  * Code
  ******************************************************************************/
+/*!
+ * @brief Enet1, Enet2 clock configuration
+ */
 static void BOARD_InitModuleClock(void)
 {
     const clock_sys_pll1_config_t sysPll1Config = {
@@ -124,6 +127,9 @@ static void BOARD_InitModuleClock(void)
     CLOCK_SetRootClock(kCLOCK_Root_Bus, &rootCfg); /* Generate 198M bus clock. */
 }
 
+/*!
+ * @brief Enet1, Enet2 clock mux
+ */
 static void IOMUXC_SelectENETClock(void)
 {
 	IOMUXC_GPR->GPR4 |= 0x3; /* 50M ENET_REF_CLOCK output to PHY and ENET module. */
@@ -131,7 +137,9 @@ static void IOMUXC_SelectENETClock(void)
 	                                                                 bit0:GPR_ENET_TX_CLK_SEL(internal or OSC) */
 }
 
-
+/*!
+ * @brief Utility function for comparing arrays
+ */
 static uint8_t compareArrays(uint8_t a[], uint8_t b[], int len)
 {
 	for (int i=0; i<len; i++)
@@ -144,6 +152,9 @@ static uint8_t compareArrays(uint8_t a[], uint8_t b[], int len)
 	return 1;
 }
 
+/*!
+ * @brief configure miiMode, miiSpeed based on the MAC address
+ */
 void BOARD_ENETFlexibleConfigure(enet_config_t *config, uint8_t *hwAddr)
 {
 	uint8_t temp_arr[6] = configMAC_ADDR_100M;
@@ -161,172 +172,10 @@ void BOARD_ENETFlexibleConfigure(enet_config_t *config, uint8_t *hwAddr)
 }
 
 /*!
- * @brief Prints DHCP status of the interface when it has changed from last status.
+ * @brief Link status call back
  *
- * @param arg pointer to network interface structure
+ * @param netif pointer
  */
-static void print_dhcp_state(void *arg)
-{
-    struct netif *netif = (struct netif *)arg;
-    struct dhcp *dhcp;
-    u8_t dhcp_last_state = DHCP_STATE_OFF;
-
-    while (netif_is_up(netif))
-    {
-        dhcp = netif_dhcp_data(netif);
-
-        if (dhcp == NULL)
-        {
-            dhcp_last_state = DHCP_STATE_OFF;
-        }
-        else if (dhcp_last_state != dhcp->state)
-        {
-            dhcp_last_state = dhcp->state;
-
-            PRINTF(" DHCP state       : ");
-            switch (dhcp_last_state)
-            {
-                case DHCP_STATE_OFF:
-                    PRINTF("OFF");
-                    break;
-                case DHCP_STATE_REQUESTING:
-                    PRINTF("REQUESTING");
-                    break;
-                case DHCP_STATE_INIT:
-                    PRINTF("INIT");
-                    break;
-                case DHCP_STATE_REBOOTING:
-                    PRINTF("REBOOTING");
-                    break;
-                case DHCP_STATE_REBINDING:
-                    PRINTF("REBINDING");
-                    break;
-                case DHCP_STATE_RENEWING:
-                    PRINTF("RENEWING");
-                    break;
-                case DHCP_STATE_SELECTING:
-                    PRINTF("SELECTING");
-                    break;
-                case DHCP_STATE_INFORMING:
-                    PRINTF("INFORMING");
-                    break;
-                case DHCP_STATE_CHECKING:
-                    PRINTF("CHECKING");
-                    break;
-                case DHCP_STATE_BOUND:
-                    PRINTF("BOUND");
-                    break;
-                case DHCP_STATE_BACKING_OFF:
-                    PRINTF("BACKING_OFF");
-                    break;
-                default:
-                    PRINTF("%u", dhcp_last_state);
-                    PRINTF("UNKNOWN STATE");
-                    assert(0);
-                    break;
-            }
-            PRINTF("\r\n");
-
-            if (dhcp_last_state == DHCP_STATE_BOUND)
-            {
-				eth_100mb_addr.connected = true;
-				eth_100mb_addr.ip = (netif->ip_addr).addr;
-				eth_100mb_addr.sub = (netif->netmask).addr;
-				eth_100mb_addr.gw = (netif->gw).addr;
-				eth_100mb_addr.eth = 0;
-				PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
-				PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
-				PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
-				xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
-            }
-        }
-        vTaskDelay(20);
-    }
-    PRINTF("\r\n DHCP Task is deleted\r\n");
-    vTaskDelete(NULL);
-}
-
-static void print_dhcp_state_1g(void *arg)
-{
-    struct netif *netif = (struct netif *)arg;
-    struct dhcp *dhcp;
-    u8_t dhcp_last_state = DHCP_STATE_OFF;
-
-    while (netif_is_up(netif))
-    {
-        dhcp = netif_dhcp_data(netif);
-
-        if (dhcp == NULL)
-        {
-            dhcp_last_state = DHCP_STATE_OFF;
-        }
-        else if (dhcp_last_state != dhcp->state)
-        {
-            dhcp_last_state = dhcp->state;
-
-            PRINTF(" DHCP state       : ");
-            switch (dhcp_last_state)
-            {
-                case DHCP_STATE_OFF:
-                    PRINTF("OFF");
-                    break;
-                case DHCP_STATE_REQUESTING:
-                    PRINTF("REQUESTING");
-                    break;
-                case DHCP_STATE_INIT:
-                    PRINTF("INIT");
-                    break;
-                case DHCP_STATE_REBOOTING:
-                    PRINTF("REBOOTING");
-                    break;
-                case DHCP_STATE_REBINDING:
-                    PRINTF("REBINDING");
-                    break;
-                case DHCP_STATE_RENEWING:
-                    PRINTF("RENEWING");
-                    break;
-                case DHCP_STATE_SELECTING:
-                    PRINTF("SELECTING");
-                    break;
-                case DHCP_STATE_INFORMING:
-                    PRINTF("INFORMING");
-                    break;
-                case DHCP_STATE_CHECKING:
-                    PRINTF("CHECKING");
-                    break;
-                case DHCP_STATE_BOUND:
-                    PRINTF("BOUND");
-                    break;
-                case DHCP_STATE_BACKING_OFF:
-                    PRINTF("BACKING_OFF");
-                    break;
-                default:
-                    PRINTF("%u", dhcp_last_state);
-                    PRINTF("UNKNOWN STATE");
-                    assert(0);
-                    break;
-            }
-            PRINTF("\r\n");
-
-            if (dhcp_last_state == DHCP_STATE_BOUND)
-            {
-				eth_1g_addr.connected = true;
-				eth_1g_addr.ip = (netif->ip_addr).addr;
-				eth_1g_addr.sub = (netif->netmask).addr;
-				eth_1g_addr.gw = (netif->gw).addr;
-				eth_1g_addr.eth = 1;
-				PRINTF("\r\n IPv4 Address     : %s\r\n", ipaddr_ntoa(&netif->ip_addr));
-				PRINTF(" IPv4 Subnet mask : %s\r\n", ipaddr_ntoa(&netif->netmask));
-				PRINTF(" IPv4 Gateway     : %s\r\n\r\n", ipaddr_ntoa(&netif->gw));
-            }
-        }
-        vTaskDelay(20);
-    }
-    PRINTF("\r\n DHCP Task is deleted\r\n");
-    vTaskDelete(NULL);
-}
-
-
 static void cbETHLinkStatus(struct netif *state_netif)
 {
 	if (netif_is_link_up(state_netif))
@@ -339,10 +188,11 @@ static void cbETHLinkStatus(struct netif *state_netif)
 	}
 }
 
-//---------------------------------------------------------------------------------------
-// netif callback
-// called when netif (ETH) goes up or down
-//---------------------------------------------------------------------------------------
+/*!
+ * @brief Link status call back
+ *
+ * @param netif pointer
+ */
 static void cbETHNetIFStatus(struct netif *state_netif)
 {
 	char ip[16];
@@ -402,159 +252,168 @@ static void cbETHNetIFStatus(struct netif *state_netif)
 	}
 }
 
-
+/*!
+ * @brief Main body for Ethetnet 100Mb task
+ */
 static void init_ENET_100mb()
 {
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    ip4_addr_t netif_ipaddr, netif_netmask, netif_gw;
-	    ethernetif_config_t enet_config = {
-	        .phyHandle  = &phyHandle_100m,
-	        .macAddress = configMAC_ADDR_100M,
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	        .non_dma_memory = non_dma_memory,
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    };
+#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
+	static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
+#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
+	ip4_addr_t netif_ipaddr, netif_netmask, netif_gw;
+	ethernetif_config_t enet_config = {
+		.phyHandle  = &phyHandle_100m,
+		.macAddress = configMAC_ADDR_100M,
+#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
+		.non_dma_memory = non_dma_memory,
+#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
+	};
 
-	    IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
+	IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
+	IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
+	IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
 
-	    //tcpip_init(NULL, NULL);
-	    netifapi_netif_add(&netif_100m, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_100M,
-	                       tcpip_input);
+	/* tcpip_init must be uncommented, if there is no wifi */
+	//tcpip_init(NULL, NULL);
+	netifapi_netif_add(&netif_100m, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_100M,
+					   tcpip_input);
 
-	    netif_set_status_callback(&netif_100m, cbETHNetIFStatus);
-	    netif_set_link_callback(&netif_100m, cbETHLinkStatus);
+	netif_set_status_callback(&netif_100m, cbETHNetIFStatus);
+	netif_set_link_callback(&netif_100m, cbETHLinkStatus);
 
-	    phy_config_t phyConfig;
-	    status_t status;
+	phy_config_t phyConfig;
+	status_t status;
 
-	    phyConfig.phyAddr = enet_config.phyHandle->phyAddr;
-	    phyConfig.autoNeg = true;
+	phyConfig.phyAddr = enet_config.phyHandle->phyAddr;
+	phyConfig.autoNeg = true;
 
-	    status = PHY_Init(enet_config.phyHandle, &phyConfig);
+	status = PHY_Init(enet_config.phyHandle, &phyConfig);
 
-	    if (kStatus_Success != status)
-	    {
-	    	PRINTF("PHY 100Mb cannot be initialized\r\n");
-	    	vTaskSuspend(NULL);
-	    	//while(1);
-	    }
+	if (kStatus_Success != status)
+	{
+		PRINTF("PHY 100Mb cannot be initialized\r\n");
+		vTaskSuspend(NULL);
+		//while(1);
+	}
 
-	    xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
-	    bool link;
-	    static bool oldLink=false;
-	    while(1)
-	    {
-	    	PHY_GetLinkStatus(enet_config.phyHandle, &link);
+	/* set the event group ETH_100m_RDY bit*/
+	xEventGroupSetBits(*temp_event_group, ETH_100m_RDY );
+	bool link;
+	static bool oldLink=false;
+	while(1)
+	{
+		PHY_GetLinkStatus(enet_config.phyHandle, &link);
 
-	    	if (link != oldLink)
-	    	{
-	    	   if (link)
-	    	   {
-	    		   sys_lock_tcpip_core();
-	    		   netif_set_up(&netif_100m);
-	    		   dhcp_start(&netif_100m);
-	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("100Mb Link is coming up\r\n");
-	    	   }
-	    	   else
-	    	   {
-	    		   sys_lock_tcpip_core();
-	    		   dhcp_release_and_stop(&netif_100m);
-	    		   netif_set_down(&netif_100m);
-	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("100Mb Link is going down..\r\n");
-	    	   }
-	    	   oldLink=link;
-	    	}
-	    	vTaskDelay(10);
-	    }
-
+		if (link != oldLink)
+		{
+		   if (link)
+		   {
+			   sys_lock_tcpip_core();
+			   netif_set_up(&netif_100m);
+			   dhcp_start(&netif_100m);
+			   sys_unlock_tcpip_core();
+			   PRINTF("100Mb Link is coming up\r\n");
+		   }
+		   else
+		   {
+			   sys_lock_tcpip_core();
+			   dhcp_release_and_stop(&netif_100m);
+			   netif_set_down(&netif_100m);
+			   sys_unlock_tcpip_core();
+			   PRINTF("100Mb Link is going down..\r\n");
+		   }
+		   oldLink=link;
+		}
+		vTaskDelay(10);
+	}
 }
 
+/*!
+ * @brief Main body for Ethetnet 1Gb task
+ */
 static void init_ENET_1g() // must be called after 100m
 {
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	    static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    ip4_addr_t netif_ipaddr, netif_netmask, netif_gw;
-	    ethernetif_config_t enet_config = {
-	        .phyHandle  = &phyHandle_1g,
-	        .macAddress = configMAC_ADDR_1G,
-	#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
-	        .non_dma_memory = non_dma_memory,
-	#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
-	    };
+#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
+	static mem_range_t non_dma_memory[] = NON_DMA_MEMORY_ARRAY;
+#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
+	ip4_addr_t netif_ipaddr, netif_netmask, netif_gw;
+	ethernetif_config_t enet_config = {
+		.phyHandle  = &phyHandle_1g,
+		.macAddress = configMAC_ADDR_1G,
+#if defined(FSL_FEATURE_SOC_LPC_ENET_COUNT) && (FSL_FEATURE_SOC_LPC_ENET_COUNT > 0)
+		.non_dma_memory = non_dma_memory,
+#endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
+	};
 
-	    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
-	    /*
-	     * Following 2 lines must be uncommented when running ethernet 1G alone without 100mb
-	     */
+	gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
+	/*
+	 * Following 2 lines must be uncommented when running ethernet 1G alone without 100mb
+	 */
 
-	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
-	    EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
+	EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
+	EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
 
-	    IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
-	    IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
+	IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
+	IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
+	IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
 
-	    /* tcpip_init must be uncommented, if there is no wifi or ethernet100mb task*/
-	    //tcpip_init(NULL, NULL);
+	/* tcpip_init must be uncommented, if there is no wifi or ethernet100mb task*/
+	//tcpip_init(NULL, NULL);
 
-	    netifapi_netif_add(&netif_1g, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_1G,
-	                       tcpip_input);
+	netifapi_netif_add(&netif_1g, &netif_ipaddr, &netif_netmask, &netif_gw, &enet_config, NETIF_INIT_FN_1G,
+					   tcpip_input);
 
-	    netif_set_status_callback(&netif_1g, cbETHNetIFStatus);
-	    netif_set_link_callback(&netif_1g, cbETHLinkStatus);
+	netif_set_status_callback(&netif_1g, cbETHNetIFStatus);
+	netif_set_link_callback(&netif_1g, cbETHLinkStatus);
 
-	    phy_config_t phyConfig;
-	    status_t status;
+	phy_config_t phyConfig;
+	status_t status;
 
-	    phyConfig.phyAddr = enet_config.phyHandle->phyAddr;
-	    phyConfig.autoNeg = true;
+	phyConfig.phyAddr = enet_config.phyHandle->phyAddr;
+	phyConfig.autoNeg = true;
 
-	    status = PHY_Init(enet_config.phyHandle, &phyConfig);
+	status = PHY_Init(enet_config.phyHandle, &phyConfig);
 
-	    if (kStatus_Success != status)
-	    {
-	    	PRINTF("PHY 1G cannot be initialized\r\n");
-	    	vTaskSuspend(NULL);
-	    	//while(1);
-	    }
+	if (kStatus_Success != status)
+	{
+		PRINTF("PHY 1G cannot be initialized\r\n");
+		vTaskSuspend(NULL);
+		//while(1);
+	}
 
-	    bool link;
-	    static bool oldLink=false;
-	    while(1)
-	    {
-	    	PHY_GetLinkStatus(enet_config.phyHandle, &link);
+	bool link;
+	static bool oldLink=false;
+	while(1)
+	{
+		PHY_GetLinkStatus(enet_config.phyHandle, &link);
 
-	    	if (link != oldLink)
-	    	{
-	    	   if (link)
-	    	   {
-	    		   sys_lock_tcpip_core();
-	    		   netif_set_up(&netif_1g);
-	    		   dhcp_start(&netif_1g);
-	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("1Gb Link is coming up\r\n");
-	    	   }
-	    	   else
-	    	   {
-	    		   sys_lock_tcpip_core();
-	    		   dhcp_release_and_stop(&netif_1g);
-	    		   netif_set_down(&netif_1g);
-	    		   sys_unlock_tcpip_core();
-	    		   PRINTF("1Gb Link is going down..\r\n");
-	    	   }
-	    	   oldLink=link;
-	    	}
-	    	vTaskDelay(10);
-	    }
+		if (link != oldLink)
+		{
+		   if (link)
+		   {
+			   sys_lock_tcpip_core();
+			   netif_set_up(&netif_1g);
+			   dhcp_start(&netif_1g);
+			   sys_unlock_tcpip_core();
+			   PRINTF("1Gb Link is coming up\r\n");
+		   }
+		   else
+		   {
+			   sys_lock_tcpip_core();
+			   dhcp_release_and_stop(&netif_1g);
+			   netif_set_down(&netif_1g);
+			   sys_unlock_tcpip_core();
+			   PRINTF("1Gb Link is going down..\r\n");
+		   }
+		   oldLink=link;
+		}
+		vTaskDelay(10);
+	}
 }
 
+/*!
+ * @brief Pin, clock, speed configuration for both ethernet interfaces
+ */
 void dual_eth_configuration()
 {
     gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
@@ -573,23 +432,28 @@ void dual_eth_configuration()
 
     mdioHandle100Mb.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
     mdioHandle1Gb.resource.csrClock_Hz = EXAMPLE_CLOCK_FREQ;
-
 }
 
-
+/*!
+ * @brief Eth_100Mb task wrapper function
+ */
 void eth_100m_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
-	// used for waiting wifi, wifi should initialize lwip thread.
+	/* used for waiting wifi, wifi should initialize lwip thread. */
 	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
 	init_ENET_100mb();
 }
 
+/*!
+ * @brief Eth_1Gb task wrapper function
+ */
 void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
+	/* used for waiting wifi, eth_100Mb task */
 	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY | ETH_100m_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
 	init_ENET_1g();
 }

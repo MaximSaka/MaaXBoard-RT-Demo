@@ -46,7 +46,7 @@
  * when ethernet task starts, it hangs the program until network cable is connected.
  * so if network interface is not used, must comment below task.
  *  */
-//#define WIFI_EN		1
+#define WIFI_EN		1
 
 /*******************************************************************************
  * Variables
@@ -67,6 +67,7 @@ static QueueHandle_t hid_devices_queue = NULL;
 static QueueHandle_t wifi_commands_queue = NULL;
 static QueueHandle_t wifi_response_queue = NULL;
 
+/* This buffer is used for storing wifi SSIDs, wifi network information */
 uint8_t shared_buff[2048];
 
 /******* UART handle definition ***************/

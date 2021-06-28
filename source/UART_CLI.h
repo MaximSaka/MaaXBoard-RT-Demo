@@ -9,5 +9,12 @@
 #define UART_CLI_H_
 #include "fsl_lpuart_freertos.h"
 
+/*****************************************************************************\
+ * Function:    console_task
+ * Input:       custom_console_instance_t *, for passing parameters
+ * Returns:     void
+ * Description:
+ *     Main body of console task
+\*****************************************************************************/
 void console_task(void *pvParameters);
 #endif /* UART_CLI_H_ */
