@@ -18,6 +18,14 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+/* Freertos task can be enabled by setting 1, disabled by setting 0 */
+#define GUI_EN			1
+#define WIFI_EN			1
+#define ETH100MB_EN		1
+#define ETH1GB_EN		1
+#define USB_PERIPH_EN	1
+#define CONSOLE_EN		1
+#define AUDIO_EN		1
 
 /* Maaxboard RT Version*/
 #define MAAXBOARD_VERSION_MAJOR	"1"

@@ -456,7 +456,12 @@ void eth_100m_task(void *pvParameters)
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
 	EventBits_t bits;
 	/* used for waiting wifi, wifi should initialize lwip thread. */
+
+#if (defined(WIFI_EN) && (WIFI_EN==1))
 	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
+#else
+	tcpip_init(NULL, NULL);
+#endif
 	init_ENET_100mb();
 }
 
@@ -467,9 +472,22 @@ void eth_100m_task(void *pvParameters)
 void eth_1g_task(void *pvParameters)
 {
 	temp_event_group = (EventGroupHandle_t *)pvParameters;
-	EventBits_t bits;
+	EventBits_t bits, compareBits = 0;
+
+#if (defined(WIFI_EN) && (WIFI_EN==1))
+	compareBits |= WIFI_RDY;
+#endif
+
+#if (defined(ETH100MB_EN) && (ETH100MB_EN==1))
+	compareBits |= ETH_100m_RDY;
+#endif
+
 	/* used for waiting wifi, eth_100Mb task */
-	bits = xEventGroupWaitBits(*temp_event_group, WIFI_RDY | ETH_100m_RDY, pdFALSE, pdTRUE, portMAX_DELAY);
+#if (defined(WIFI_EN) && (WIFI_EN==1)) || (defined(ETH100MB_EN) && (ETH100MB_EN==1))
+	bits = xEventGroupWaitBits(*temp_event_group, compareBits, pdFALSE, pdTRUE, portMAX_DELAY);
+#else
+	tcpip_init(NULL, NULL);
+#endif
 	init_ENET_1g();
 }
 

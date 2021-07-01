@@ -61,20 +61,6 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-/*
- * Note:
- * WIFI_EN definition enables following 3 Freertos tasks
- * 1. wifi
- * 2. ethernet_100mb
- * 3. ethernet_1g
- * Reason is: There is one lwip thread is used. Inside wifi tcpip_init() is called.
- * 			  ethernet_100mb, ethernet_1g assumes tcpip_init() is called.
- * Freertos eventgroup (event_group_demo) is used for ensuring the correct order of execution.
- *
- * when ethernet task starts, it hangs the program until network cable is connected.
- * so if network interface is not used, must comment below task.
- *  */
-#define WIFI_EN		1
 
 /*******************************************************************************
  * Variables
@@ -239,12 +225,14 @@ int main(void)
 	/******** Freertos task declarations ********/
     os_setup_tick_function(vApplicationTickHook_lvgl);
 
+#if defined(GUI_EN) && (GUI_EN==1)
     /* 1. Freertos task: lvgl "Gui Guider"
      * displays GUI pages on 7 inch touch display. It uses lvgl library version 7.11.0  */
    stat = xTaskCreate(lvgl_task, "lvgl", configMINIMAL_STACK_SIZE + 800, lvgl_task_stack, tskIDLE_PRIORITY + 3, &lvgl_task_task_handler);
    assert(pdPASS == stat);
+#endif
 
-#ifdef WIFI_EN
+#if defined(WIFI_EN) && (WIFI_EN==1)
     /* 2. Freertos task: wifi
      * @brief ssid scan, wifi connect to ssid (hardcoded), get wifi network info*/
 	t_wifi_cmd.cmd_queue = &wifi_commands_queue;
@@ -252,20 +240,26 @@ int main(void)
 	t_wifi_cmd.wifi_resQ = &wifi_response_queue;
     stat = xTaskCreate(wifi_task, "wifi", configMINIMAL_STACK_SIZE + 800, &t_wifi_cmd, tskIDLE_PRIORITY + 4, &wifi_task_task_handler);
     assert(pdPASS == stat);
+#endif
 
 	/* must be called before starting ethernet tasks. */
 	dual_eth_configuration();
+
+#if defined(ETH100MB_EN) && (ETH100MB_EN==1)
 	/* 3. Freertos task: eth_100Mb
 	 * @brief dhcp client running to get ip address */
 	stat = xTaskCreate(eth_100m_task, "eth_100Mb", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL);
 	assert(pdPASS == stat);
+#endif
 
+#if defined(ETH1GB_EN) && (ETH1GB_EN==1)
 	/* 4. Freertos task: eth_1Gb
 	 * @brief dhcp client running to get ip address */
 	stat = xTaskCreate(eth_1g_task, "eth_1Gb", configMINIMAL_STACK_SIZE + 200, &event_group_demo, 3, NULL);
 	assert(pdPASS == stat);
 #endif
 
+#if defined(USB_PERIPH_EN) && (USB_PERIPH_EN==1)
 	/* 5. Freertos task: usb host task
 	 * @brief: USB host task for enumerating hid devices */
 	USB_HostApplicationInit(&g_HostHandle);
@@ -288,15 +282,16 @@ int main(void)
 					&t_usb_host_keyboard, 3, NULL);
 	assert(pdPASS == stat);
 
-#if defined(ENABLED_LOG_TASK)
 	/* 8. Freertos task: USB_log
 	 * @brief: logs mouse, keyboard values on the console screen */
 	t_usb_log.hid_queue = &hid_devices_queue;
 	t_usb_log.uart_handle = &uart_rtos_handle;
 	stat = xTaskCreate(USB_logTask, "USB_log", configMINIMAL_STACK_SIZE + 166, &t_usb_log, 2, NULL);
 	assert(pdPASS == stat);
+
 #endif
 
+#if defined(CONSOLE_EN) && (CONSOLE_EN==1)
 	/* 9. Freertos task: Console_task
 	 * @brief: console application using lpuart1 peripheral */
     t_console.cmd_queue = &wifi_commands_queue;
@@ -305,13 +300,15 @@ int main(void)
     t_console.event_group_wifi = &event_group_demo;
     stat = xTaskCreate(console_task, "Console_task", configMINIMAL_STACK_SIZE + 200, &t_console, 3, NULL);
     assert(pdPASS == stat);
+#endif
 
+#if defined(AUDIO_EN) && (AUDIO_EN==1)
 	/* Audio task */
 	/* 10. Freertos task: av_task
 	 * @brief: read 4 microphones, output selected mic to audio codec */
     stat = xTaskCreate(audio_task_init, "av_task", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL);
     assert(pdPASS == stat);
-
+#endif
     /* Init scheduler */
     vTaskStartScheduler();
 

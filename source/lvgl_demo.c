@@ -1138,7 +1138,9 @@ void openCustomScreen()
 
     initCustomGraph();
 
+#ifdef WIFI_EN
     s_page_refresh = &refreshCustomPage;
+#endif
 }
 
 /*!

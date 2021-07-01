@@ -78,9 +78,6 @@ struct hid_device
 #define x_sensitivity 0.6
 #define y_sensitivity 0.6
 
-/* comment below line if want to remove log task */
-#define ENABLED_LOG_TASK	1
-
 //void USB_peripheral_start(lpuart_rtos_handle_t *uart_handle, QueueHandle_t *hid_queue);
 void USB_HostApplicationInit(usb_host_handle *t_hostHandle);
 void USB_logTask(void *param);
