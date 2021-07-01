@@ -1,6 +1,6 @@
-# Maaxboard-rt-Demo
+# MaaXBoard-RT-Demo
 
-This program demonstrates the basic functionality of Maaxboard-RT board. It includes:
+This program demonstrates the basic functionality of MaaXBoard-RT board. It includes:
 - GUI pages built by free GUI-Guider tool from nxp. Total 6 pages:
     1. Led Control
     2. Wi-fi & Network
@@ -27,7 +27,7 @@ This program demonstrates the basic functionality of Maaxboard-RT board. It incl
 
 # Required Hardwares
 
-## Maaxboard-rt-board 
+## MaaXBoard-rt-board 
 
 [<img align="right" src="https://www.avnet.com/wps/wcm/connect/onesite/9aced99e-d2fb-4e1b-a2f3-f947086950dc/mxboard-RT-front-main.jpg?MOD=AJPERES&CACHEID=ROOTWORKSPACE.Z18_NA5A1I41L0ICD0ABNDMDDG0000-9aced99e-d2fb-4e1b-a2f3-f947086950dc-nvnImiU">](https://www.avnet.com/wps/portal/us/products/avnet-boards/avnet-board-families/maaxboard/maaxboard-rt/)
 - NXP i.MX RT1176 Processor
@@ -51,7 +51,7 @@ This program demonstrates the basic functionality of Maaxboard-RT board. It incl
 
 # Mode of Operation
 ## Console mode
-User with no MIPI 7-inch display can run the demo completely from console. MaaxBoard RT CLI use LPUART1 on J17 Debug UART 3 pin header.
+User with no MIPI 7-inch display can run the demo completely from console. MaaXBoard RT CLI use LPUART1 on J17 Debug UART 3 pin header.
 Baudrate is 115200.
 
 *Note: If running without display, following definition in globals.h must be set 0*
@@ -90,6 +90,7 @@ In order to run in GUI mode, (720x1280) 7inch MIPI display is required. Menu can
 <img src="./images/GUI_usb.PNG" alt="usb_page" width="190"/>
 <img src="./images/GUI_audio.PNG" alt="audio_page" width="190"/>
 
+Depending on the orientation, user may want to rotate the screen by 180 degree. To do that, `AVT_DISPLAY_ROTATE_180` must defined in the preprocessor under project settings.
 # Project Structure
 
 * `generated/`
@@ -112,7 +113,7 @@ The main function is located under `source/littlevgl_guider.c`
 There are total 10 freertos tasks running. 
 
 # Add new cli command
-Maaxboard-demo uses [FREERTOS+CLI](https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_CLI/FreeRTOS_Plus_Command_Line_Interface.html) framework. Basically following 3 steps must be done. Look for other function implementations in `source/UART_CLI.c`
+MaaXBoard-demo uses [FREERTOS+CLI](https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_CLI/FreeRTOS_Plus_Command_Line_Interface.html) framework. Basically following 3 steps must be done. Look for other function implementations in `source/UART_CLI.c`
 
  1. create the function with these 3 parameters. pcWriteBuffer is the output buffer sending string to console, after command execution. 
  ```
