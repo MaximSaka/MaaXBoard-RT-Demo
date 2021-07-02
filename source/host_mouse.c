@@ -73,11 +73,22 @@ static void USB_HostMouseProcessBuffer(uint8_t *buffer)
 {
 
 	struct hid_device mouse_dev;
+	int16_t temp = 0;
 	mouse_dev.dev_type = MOUSE_DEVICE;
 	mouse_dev.dev_btn = buffer[0];
-	mouse_dev.x_motion = (int8_t)buffer[1];
-	mouse_dev.y_motion = (int8_t)buffer[2];
-	mouse_dev.mouse_wheel = (int8_t)buffer[3];
+	temp = 0;
+	temp |= buffer[1];
+	temp |= (buffer[2] & 0x0F) << 8;
+
+
+	temp = ( temp & 0x800 ? temp | 0xf000 : temp );
+	mouse_dev.x_motion = temp;
+	temp = 0;
+	temp |= (buffer[2] & 0xF0) >> 4;
+	temp |= (buffer[3]) << 4;
+	temp = ( temp & 0x800 ? temp | 0xf000 : temp );
+	mouse_dev.y_motion = temp;
+	mouse_dev.mouse_wheel = (int8_t)buffer[4];
 	/* send the mouse state value to hid_devices_queue */
 	xQueueSend(*hid_devices_queue, (void *) &mouse_dev, 10);
 }

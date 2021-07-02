@@ -198,7 +198,7 @@ int main(void)
     EnableIRQ(BOARD_USER_BUTTON_IRQ);
 
     /* Freertos Queue for usb mouse and keyboards */
-	hid_devices_queue = xQueueCreate(10, sizeof(struct hid_device*));
+	hid_devices_queue = xQueueCreate(10, sizeof(struct hid_device));
 	/* Enable queue view in MCUX IDE FreeRTOS TAD plugin. */
 	if (hid_devices_queue != NULL)
 	{

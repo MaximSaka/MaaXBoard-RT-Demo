@@ -61,8 +61,8 @@ struct hid_device
 {
 	uint8_t dev_type;	/*!< 0x11-mouse, 0x22-keyboard */
 	uint8_t dev_btn;	/*!< mouse buttons / keyboard keys */
-	int8_t x_motion;	/*!< -127, 127 left or right */
-	int8_t y_motion;	/*!< -127, 128 up or down */
+	int16_t x_motion;	/*!< -127, 127 left or right */
+	int16_t y_motion;	/*!< -127, 128 up or down */
 	int8_t mouse_wheel;	/*!< -127, 128 up or down */
 };
 #define MOUSE_DEVICE		0x11

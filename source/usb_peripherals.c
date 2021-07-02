@@ -266,8 +266,8 @@ void USB_logTask(void *param)
         } else {
         	if (usb_hid_received.dev_type == MOUSE_DEVICE) {
         		mouse_btn = usb_hid_received.dev_btn;
-        		int8_t x_val = (int8_t)usb_hid_received.x_motion;
-				int8_t y_val = (int8_t)usb_hid_received.y_motion;
+        		int16_t x_val = (int16_t)usb_hid_received.x_motion;
+				int16_t y_val = (int16_t)usb_hid_received.y_motion;
 
 				x_coordinate = x_coordinate + (int)((float)x_val*x_sensitivity);
 				y_coordinate = y_coordinate + (int)((float)y_val*y_sensitivity);
