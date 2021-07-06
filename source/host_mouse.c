@@ -14,13 +14,14 @@
 #include "usb_peripherals.h"
 #include "globals.h"
 #include "lvgl_demo.h"
-
+#include "HIDParser.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 
 static QueueHandle_t *hid_devices_queue;
 
+static HID_ReportInfo_t hid_report;
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -74,21 +75,69 @@ static void USB_HostMouseProcessBuffer(uint8_t *buffer)
 
 	struct hid_device mouse_dev;
 	int16_t temp = 0;
+//	mouse_dev.dev_type = MOUSE_DEVICE;
+//	mouse_dev.dev_btn = buffer[0];
+//	temp = 0;
+//	temp |= buffer[1];
+//	temp |= (buffer[2] & 0x0F) << 8;
+//	temp = ( temp & 0x800 ? temp | 0xf000 : temp );
+//	mouse_dev.x_motion = temp;
+//	temp = 0;
+//	temp |= (buffer[2] & 0xF0) >> 4;
+//	temp |= (buffer[3]) << 4;
+//	temp = ( temp & 0x800 ? temp | 0xf000 : temp );
+//	mouse_dev.y_motion = temp;
+//	mouse_dev.mouse_wheel = (int8_t)buffer[4];
 	mouse_dev.dev_type = MOUSE_DEVICE;
-	mouse_dev.dev_btn = buffer[0];
-	temp = 0;
-	temp |= buffer[1];
-	temp |= (buffer[2] & 0x0F) << 8;
+	int index = 0;
+	int items = 0;
+	if (hid_report.UsingReportIDs == true)
+	{
+		index++;
+	}
 
+	/* find buttons and reserved bits */
+	while(hid_report.ReportItems[items].Attributes.BitSize == 1)
+	{
+		items++;
+	}
 
-	temp = ( temp & 0x800 ? temp | 0xf000 : temp );
-	mouse_dev.x_motion = temp;
-	temp = 0;
-	temp |= (buffer[2] & 0xF0) >> 4;
-	temp |= (buffer[3]) << 4;
-	temp = ( temp & 0x800 ? temp | 0xf000 : temp );
-	mouse_dev.y_motion = temp;
-	mouse_dev.mouse_wheel = (int8_t)buffer[4];
+	mouse_dev.dev_btn = buffer[index];
+	index = index + (items/8);
+
+	// next item must be X and Y
+	if (hid_report.ReportItems[items].Attributes.BitSize == 8)
+	{
+		temp = 0;
+		temp |= buffer[index++];
+		temp = temp & 0x80 ? temp | 0xFF00 : temp;
+		mouse_dev.x_motion = temp;
+
+		temp = 0;
+		temp = buffer[index++];
+		temp = temp & 0x80 ? temp | 0xFF00 : temp;
+		mouse_dev.y_motion = temp;
+	}
+	else if (hid_report.ReportItems[items].Attributes.BitSize == 12)
+	{
+		temp = 0;
+		temp |= buffer[index++];
+		temp |= (buffer[index] & 0x0F) << 8;
+		temp = ( temp & 0x800 ? temp | 0xf000 : temp );
+		mouse_dev.x_motion = temp;
+
+		temp = 0;
+		temp |= (buffer[index++] & 0xF0) >> 4;
+		temp |= (buffer[index++]) << 4;
+		temp = ( temp & 0x800 ? temp | 0xf000 : temp );
+		mouse_dev.y_motion = temp;
+	}
+	else
+	{
+		mouse_dev.x_motion = (buffer[index]>>8) | ((buffer[index+1]<<8));
+		mouse_dev.y_motion = (buffer[index+2]>>8) | ((buffer[index+3]<<8));
+	}
+
 	/* send the mouse state value to hid_devices_queue */
 	xQueueSend(*hid_devices_queue, (void *) &mouse_dev, 10);
 }
@@ -109,6 +158,7 @@ static void USB_HostHidControlCallback(void *param, uint8_t *data, uint32_t data
              kUSB_HostHidRunWaitGetReportDescriptor) /* hid get report descriptor finish */
     {
         mouseInstance->runState = kUSB_HostHidRunGetReportDescriptorDone;
+        USB_ProcessHIDReport(data, dataLength, &hid_report); /* parse the hid report descriptor */
     }
     else if (mouseInstance->runWaitState == kUSB_HostHidRunWaitSetProtocol) /* hid set protocol finish */
     {
