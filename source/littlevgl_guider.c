@@ -101,7 +101,7 @@ lpuart_rtos_config_t lpuart_config = {
 /******* USB HID device definition ***************/
 static usb_host_handle g_HostHandle;
 /*! @brief USB host mouse instance global variable */
-static usb_host_mouse_instance_t g_HostHidMouse;
+static usb_host_mouse_instance_t *g_HostHidMouse;
 /*! @brief USB host keyboard instance global variable */
 static usb_host_keyboard_instance_t g_HostHidKeyboard;
 static custom_usb_host_mouse_instance_t t_usb_host_mouse;
@@ -269,7 +269,7 @@ int main(void)
 	/* 6. Freertos task: mouse task
 	 * @brief: reading mouse value from hid device */
 	t_usb_host_mouse.hid_queue = &hid_devices_queue;
-	t_usb_host_mouse.host_hid_mouse = &g_HostHidMouse;
+	t_usb_host_mouse.host_hid_mouse = g_HostHidMouse;
 	stat = xTaskCreate(USB_HostApplicationMouseTask, "mouse task", 2000L / sizeof(portSTACK_TYPE), &t_usb_host_mouse, 3,
 					NULL);
 	assert(pdPASS == stat);

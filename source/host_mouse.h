@@ -10,6 +10,7 @@
 #define _HOST_MOUSE_H_
 #include "usb_host_config.h"
 #include "usb_host.h"
+#include "HIDParser.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -27,6 +28,8 @@ typedef struct _usb_host_mouse_instance
     uint8_t runWaitState;   /*!< mouse application wait status, go to next run status when the wait status success */
     uint16_t maxPacketSize; /*!< Interrupt in max packet size */
     uint8_t *mouseBuffer;   /*!< use to receive report descriptor and data */
+    HID_ReportInfo_t hid_report;	// hid report
+    struct _usb_host_mouse_instance *next;
 } usb_host_mouse_instance_t;
 
 /*******************************************************************************
@@ -40,6 +43,9 @@ typedef struct _usb_host_mouse_instance
  *
  * @param param   the host mouse instance pointer.
  */
+
+void *USB_getMouseInstanceHead();
+
 extern void USB_HostHidMouseTask(void *param);
 
 /*!
