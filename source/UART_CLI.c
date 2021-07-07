@@ -69,6 +69,7 @@
 #include "lwip/tcpip.h"
 #include "lwip/inet.h"
 #include "audio_demo.h"
+#include "host_mouse.h"
 /*******************************************************************************
  * Globals
  ******************************************************************************/
@@ -83,6 +84,8 @@ static EventGroupHandle_t *event_group_wifi;
 extern ip_ro_t eth_100mb_addr;
 extern ip_ro_t eth_1g_addr;
 ip_ro_t *eth_instance;
+
+static usb_host_mouse_instance_t *curr_mouse_inst;
 
 /*******************************************************************************
  * Definitions
@@ -174,21 +177,48 @@ static BaseType_t listUSBCommand( char *pcWriteBuffer,size_t xWriteBufferLen, co
 {
     (void)pcCommandString;
     static int processed = 0;
-    const char *titleText = TEXT_LIST_USB;
-    // Only allowed to write up top xWriteBufferLen bytes ...
-    strncpy(pcWriteBuffer,&titleText[0],xWriteBufferLen-1);
-
-    if (usb_devices[0].deviceExist) {
-    	sprintf(pcWriteBuffer+strlen(pcWriteBuffer), "hid mouse attached:pid=0x%x vid=0x%x addr=%d\r\n",
-    			usb_devices[0].devicePid, usb_devices[0].deviceVid, usb_devices[0].address);
+    int length = 0;
+    BaseType_t xReturn;
+    if (processed==0)
+    {
+    	length += sprintf(pcWriteBuffer+length, "\r\nList Of USB devices:\r\n");
+    	curr_mouse_inst = (usb_host_mouse_instance_t *)USB_getMouseInstanceHead();
+    	processed++;
+    	xReturn = pdTRUE;
     }
-    if (usb_devices[1].deviceExist) {
-    	sprintf(pcWriteBuffer+strlen(pcWriteBuffer), "hid keyboard attached:pid=0x%x vid=0x%x addr=%d\r\n",
-        		usb_devices[1].devicePid, usb_devices[1].deviceVid, usb_devices[1].address);
+    else if (processed == 1)
+    {
+    	if (curr_mouse_inst != NULL)
+    	{
+    		/* print all the mouse nodes in the list */
+    		uint32_t pid_t, vid_t, address_t;
+    		USB_HostHelperGetPeripheralInformation(curr_mouse_inst->deviceHandle, kUSB_HostGetDevicePID, &pid_t);
+			USB_HostHelperGetPeripheralInformation(curr_mouse_inst->deviceHandle, kUSB_HostGetDeviceVID, &vid_t);
+			USB_HostHelperGetPeripheralInformation(curr_mouse_inst->deviceHandle, kUSB_HostGetDeviceAddress, &address_t);
+
+			length += sprintf(pcWriteBuffer+length, "hid mouse: pid=0x%x vid=0x%x addr=%d\r\n",
+					pid_t, vid_t, address_t);
+			curr_mouse_inst = curr_mouse_inst->next;
+    	}
+    	else
+    	{
+    		pcWriteBuffer[0] = 0;
+    		processed++;
+    	}
+    	xReturn = pdTRUE;
+    }
+    else
+    {
+        if (usb_devices[1].deviceExist) {
+        	sprintf(pcWriteBuffer+strlen(pcWriteBuffer), "hid keyboard attached:pid=0x%x vid=0x%x addr=%d\r\n",
+            		usb_devices[1].devicePid, usb_devices[1].deviceVid, usb_devices[1].address);
+        }
+        processed = 0;
+        xReturn = pdFALSE;
     }
 
     pcWriteBuffer[xWriteBufferLen-1]=0;
-    return pdFALSE;
+    return xReturn;
 }
 
 /*****************************************************************************\

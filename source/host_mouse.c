@@ -62,7 +62,7 @@ static void USB_HostHidInCallback(void *param, uint8_t *data, uint32_t dataLengt
 
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
 static uint8_t s_MouseBuffer[HID_BUFFER_SIZE]; /*!< use to receive report descriptor and data */
-static usb_host_mouse_instance_t *g_HostHidMouse, * curr_instance;
+static usb_host_mouse_instance_t *head_mouse_inst, *curr_mouse_inst;
 
 /*******************************************************************************
  * Code
@@ -176,7 +176,7 @@ static void USB_HostHidInCallback(void *param, uint8_t *data, uint32_t dataLengt
 
 void* USB_getMouseInstanceHead()
 {
-	return g_HostHidMouse;
+	return head_mouse_inst;
 }
 
 
@@ -190,12 +190,12 @@ void USB_HostHidMouseTask(void *param)
     custom_usb_host_mouse_instance_t *mouse_struct = (custom_usb_host_mouse_instance_t *)param;
     hid_devices_queue = mouse_struct->hid_queue;
 
-    curr_instance = g_HostHidMouse;
+    curr_mouse_inst = head_mouse_inst;
     usb_host_mouse_instance_t *mouseInstance;
 
-    while(curr_instance != NULL)
+    while(curr_mouse_inst != NULL)
     {
-    	mouseInstance = curr_instance;
+    	mouseInstance = curr_mouse_inst;
 		/* device state changes, process once for each state */
 		if (mouseInstance->deviceState != mouseInstance->prevState)
 		{
@@ -226,30 +226,30 @@ void USB_HostHidMouseTask(void *param)
 					mouseInstance->classHandle = NULL;
 
 					// remove the node from the list
-					curr_instance = g_HostHidMouse;
-					usb_host_mouse_instance_t *prev_instance = NULL;
-					while(curr_instance != NULL)
+					curr_mouse_inst = head_mouse_inst;
+					usb_host_mouse_instance_t *prev_mouse_inst = NULL;
+					while(curr_mouse_inst != NULL)
 					{
-						if (curr_instance == mouseInstance)
+						if (curr_mouse_inst == mouseInstance)
 						{
-							if (prev_instance == NULL)
+							if (prev_mouse_inst == NULL)
 							{
-								g_HostHidMouse = curr_instance->next; /* update the list HEAD */
-								vPortFree(curr_instance);
-								curr_instance = g_HostHidMouse;
+								head_mouse_inst = curr_mouse_inst->next; /* update the list HEAD */
+								vPortFree(curr_mouse_inst);
+								curr_mouse_inst = head_mouse_inst;
 							}
 							else
 							{
-								prev_instance->next = curr_instance->next;
-								vPortFree(curr_instance);
-								curr_instance = prev_instance->next;
+								prev_mouse_inst->next = curr_mouse_inst->next;
+								vPortFree(curr_mouse_inst);
+								curr_mouse_inst = prev_mouse_inst->next;
 							}
 							break;
 						}
 						else
 						{
-							prev_instance = curr_instance;
-							curr_instance = curr_instance->next;
+							prev_mouse_inst = curr_mouse_inst;
+							curr_mouse_inst = curr_mouse_inst->next;
 						}
 					}
 
@@ -393,7 +393,7 @@ void USB_HostHidMouseTask(void *param)
 			default:
 				break;
 		}
-		curr_instance = curr_instance->next;
+		curr_mouse_inst = curr_mouse_inst->next;
     }
 }
 
@@ -433,29 +433,29 @@ usb_status_t USB_HostHidMouseEvent(usb_device_handle deviceHandle,
                 }
                 else
                 {
-                	if (g_HostHidMouse == NULL) /* empty list */
+                	if (head_mouse_inst == NULL) /* empty list */
                 	{
-                		curr_instance = pvPortMalloc(sizeof(usb_host_mouse_instance_t));
-						curr_instance->mouseBuffer     = s_MouseBuffer;
-						curr_instance->deviceHandle    = deviceHandle;
-						curr_instance->interfaceHandle = interface;
-						curr_instance->configHandle    = configurationHandle;
-						curr_instance->next = NULL;
-						g_HostHidMouse = curr_instance;
+                		curr_mouse_inst = pvPortMalloc(sizeof(usb_host_mouse_instance_t));
+						curr_mouse_inst->mouseBuffer     = s_MouseBuffer;
+						curr_mouse_inst->deviceHandle    = deviceHandle;
+						curr_mouse_inst->interfaceHandle = interface;
+						curr_mouse_inst->configHandle    = configurationHandle;
+						curr_mouse_inst->next = NULL;
+						head_mouse_inst = curr_mouse_inst;
                 	}
                 	else
                 	{
-                		curr_instance = g_HostHidMouse;
-                		while (curr_instance->next!=NULL)
+                		curr_mouse_inst = head_mouse_inst;
+                		while (curr_mouse_inst->next!=NULL)
 						{
-							curr_instance = curr_instance->next;
+							curr_mouse_inst = curr_mouse_inst->next;
 						}
-						curr_instance->next = pvPortMalloc(sizeof(usb_host_mouse_instance_t));
-						curr_instance->next->mouseBuffer     = s_MouseBuffer;
-						curr_instance->next->deviceHandle    = deviceHandle;
-						curr_instance->next->interfaceHandle = interface;
-						curr_instance->next->configHandle    = configurationHandle;
-						curr_instance->next->next = NULL;
+						curr_mouse_inst->next = pvPortMalloc(sizeof(usb_host_mouse_instance_t));
+						curr_mouse_inst->next->mouseBuffer     = s_MouseBuffer;
+						curr_mouse_inst->next->deviceHandle    = deviceHandle;
+						curr_mouse_inst->next->interfaceHandle = interface;
+						curr_mouse_inst->next->configHandle    = configurationHandle;
+						curr_mouse_inst->next->next = NULL;
                 	}
                 	return kStatus_USB_Success;
                 }
@@ -468,17 +468,17 @@ usb_status_t USB_HostHidMouseEvent(usb_device_handle deviceHandle,
 
         case kUSB_HostEventEnumerationDone:
 
-        	curr_instance = g_HostHidMouse;
-        	while(curr_instance != NULL)
+        	curr_mouse_inst = head_mouse_inst;
+        	while(curr_mouse_inst != NULL)
         	{
-        		if (curr_instance->configHandle == configurationHandle)
+        		if (curr_mouse_inst->configHandle == configurationHandle)
         		{
-        			if ((curr_instance->deviceHandle != NULL) && (curr_instance->interfaceHandle != NULL))
+        			if ((curr_mouse_inst->deviceHandle != NULL) && (curr_mouse_inst->interfaceHandle != NULL))
 					{
 						/* the device enumeration is done */
-						if (curr_instance->deviceState == kStatus_DEV_Idle)
+						if (curr_mouse_inst->deviceState == kStatus_DEV_Idle)
 						{
-							curr_instance->deviceState = kStatus_DEV_Attached;
+							curr_mouse_inst->deviceState = kStatus_DEV_Attached;
 							usb_devices[0].deviceExist = 1;
 							USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDevicePID, &infoValue);
 							usb_devices[0].devicePid = infoValue;
@@ -500,53 +500,25 @@ usb_status_t USB_HostHidMouseEvent(usb_device_handle deviceHandle,
 					}
         			break;
         		}
-        		curr_instance = curr_instance->next;
+        		curr_mouse_inst = curr_mouse_inst->next;
         	}
-//            if (g_HostHidMouse->configHandle == configurationHandle)
-//            {
-//                if ((g_HostHidMouse->deviceHandle != NULL) && (g_HostHidMouse->interfaceHandle != NULL))
-//                {
-//                    /* the device enumeration is done */
-//                    if (g_HostHidMouse->deviceState == kStatus_DEV_Idle)
-//                    {
-//                        g_HostHidMouse->deviceState = kStatus_DEV_Attached;
-//                        usb_devices[0].deviceExist = 1;
-//                        USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDevicePID, &infoValue);
-//                        usb_devices[0].devicePid = infoValue;
-//                        usb_echo("hid mouse attached:pid=0x%x", infoValue);
-//                        USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceVID, &infoValue);
-//                        usb_devices[0].deviceVid = infoValue;
-//                        usb_echo("vid=0x%x ", infoValue);
-//                        USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceAddress, &infoValue);
-//                        usb_devices[0].address = infoValue;
-//                        usb_echo("address=%d\r\n", infoValue);
-//
-//                        setHIDsRefreshed();
-//                    }
-//                    else
-//                    {
-//                        usb_echo("not idle mouse instance\r\n");
-//                        status = kStatus_USB_Error;
-//                    }
-//                }
-//            }
             break;
 
         case kUSB_HostEventDetach:
-        	curr_instance = g_HostHidMouse;
-        	while(curr_instance != NULL)
+        	curr_mouse_inst = head_mouse_inst;
+        	while(curr_mouse_inst != NULL)
         	{
-        		if (curr_instance->configHandle == configurationHandle)
+        		if (curr_mouse_inst->configHandle == configurationHandle)
 				{
 					/* the device is detached */
-        			curr_instance->configHandle = NULL;
-					if (curr_instance->deviceState != kStatus_DEV_Idle)
+        			curr_mouse_inst->configHandle = NULL;
+					if (curr_mouse_inst->deviceState != kStatus_DEV_Idle)
 					{
-						curr_instance->deviceState = kStatus_DEV_Detached;
+						curr_mouse_inst->deviceState = kStatus_DEV_Detached;
 					}
 					break;
 				}
-        		curr_instance = curr_instance->next;
+        		curr_mouse_inst = curr_mouse_inst->next;
         	}
             break;
 

@@ -11,6 +11,7 @@
 #include "usb_peripherals.h"
 #include "expansion_i2c.h"
 #include "globals.h"
+#include "host_mouse.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -358,12 +359,24 @@ void refreshHIDList(void)
 
     char buffer[100];
 
-    if (usb_devices[0].deviceExist) {
+    /* get the head node of the mouse list */
+    usb_host_mouse_instance_t *curr_mouse_inst;
+    curr_mouse_inst = (usb_host_mouse_instance_t *)USB_getMouseInstanceHead();
+
+    uint32_t pid_t, vid_t, address_t;
+
+    while(curr_mouse_inst != NULL)
+    {
+    	USB_HostHelperGetPeripheralInformation(curr_mouse_inst->deviceHandle, kUSB_HostGetDevicePID, &pid_t);
+    	USB_HostHelperGetPeripheralInformation(curr_mouse_inst->deviceHandle, kUSB_HostGetDeviceVID, &vid_t);
+    	USB_HostHelperGetPeripheralInformation(curr_mouse_inst->deviceHandle, kUSB_HostGetDeviceAddress, &address_t);
     	sprintf(buffer, "hid mouse: pid=0x%x vid=0x%x addr=%d",
-    			usb_devices[0].devicePid, usb_devices[0].deviceVid, usb_devices[0].address);
-        addItemToList(guider_ui.screen3_USB_usb_list, buffer); 
+    			pid_t, vid_t, address_t);
+    	addItemToList(guider_ui.screen3_USB_usb_list, buffer);
+    	curr_mouse_inst = curr_mouse_inst->next;
     }
 
+    /* currently one keyboard is supported at the moment. must introduce linked list in host_keyboard.c */
     if (usb_devices[1].deviceExist) {
     	sprintf(buffer, "hid keyboard: pid=0x%x vid=0x%x addr=%d",
         		usb_devices[1].devicePid, usb_devices[1].deviceVid, usb_devices[1].address);
