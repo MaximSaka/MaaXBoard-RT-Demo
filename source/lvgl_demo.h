@@ -44,6 +44,7 @@ void setHIDsRefreshed(void);
 void setI2cBus(i2cBus bus);
 void scani2cBusAndDisplay(void);
 void writeToHIDInputTextArea(const char* text);
+void deleteLeftCharTextArea();
 bool capturingMouseInputOnTA(void);
 void setCaptureMouseInputOnTA(bool state);
 bool capturingKeyboardInputOnTA(void);

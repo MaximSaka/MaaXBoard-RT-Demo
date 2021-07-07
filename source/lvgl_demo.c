@@ -218,6 +218,21 @@ void writeToHIDInputTextArea(const char* text)
 }
 
 /*!
+ * @brief delete character from the left of the current cursor
+ */
+void deleteLeftCharTextArea()
+{
+    if (s_active_page != PAGE_USB)
+    {
+        return;
+    }
+
+    taskENTER_CRITICAL();
+	lv_textarea_del_char(guider_ui.screen3_USB_input_area);
+    taskEXIT_CRITICAL();
+}
+
+/*!
  * @brief clear the HID input test text area buffer
  */
 void clearTextAreaBuffer()

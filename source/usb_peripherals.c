@@ -304,8 +304,15 @@ void USB_logTask(void *param)
 
                 if (capturingKeyboardInputOnTA())
                 {
-                    sprintf(usb_buff, "%c", usb_hid_received.dev_btn);
-                    writeToHIDInputTextArea(usb_buff);
+                	if (usb_hid_received.dev_btn == '\b')
+                	{
+                		deleteLeftCharTextArea();
+                	}
+                	else
+                	{
+                		sprintf(usb_buff, "%c", usb_hid_received.dev_btn);
+                		writeToHIDInputTextArea(usb_buff);
+                	}
                 }
         	}
         }
