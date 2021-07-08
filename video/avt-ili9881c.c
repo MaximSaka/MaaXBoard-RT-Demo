@@ -28,6 +28,7 @@
 enum ili9881c_op {
 	ILI9881C_SWITCH_PAGE,
 	ILI9881C_COMMAND,
+	ILI9881C_COMMAND_MULTIPLE,
 };
 
 struct ili9881c_instr {
@@ -39,6 +40,11 @@ struct ili9881c_instr {
 			uint8_t	data;
 		} cmd;
 		uint8_t	page;
+		struct cmd_multiple {
+			uint8_t	cmd;
+			uint32_t data;
+			uint8_t	cnt;
+		} cmd_multiple;
 	} arg;
 };
 
@@ -57,6 +63,18 @@ struct ili9881c_instr {
 			.cmd = {						\
 				.cmd = (_cmd),				\
 				.data = (_data),			\
+			},								\
+		},									\
+	}
+
+#define ILI9881C_COMMAND_MULTIPLE_INSTR(_cmd, _data, _cnt)	\
+	{										\
+		.op = ILI9881C_COMMAND_MULTIPLE,	\
+		.arg = {							\
+			.cmd_multiple = {				\
+				.cmd = (_cmd),				\
+				.data = (_data),			\
+				.cnt = (_cnt),				\
 			},								\
 		},									\
 	}
@@ -322,6 +340,19 @@ status_t ILI9881C_Init(display_handle_t *handle, const display_config_t *config)
 			MIPI_DSI_GenericWrite(dsiDevice, buf, sizeof(buf));
 			PRINTF("Command: %X, %X\r\n", buf[0], buf[1]);
 		}
+		else if (instr->op == ILI9881C_COMMAND_MULTIPLE)
+		{
+			uint8_t buf[5] = { instr->arg.cmd_multiple.cmd, 0,0,0,0};
+			PRINTF("Command: %X", buf[0]);
+			for (uint8_t i=0; i<instr->arg.cmd_multiple.cnt; i++)
+			{
+				buf[i+1] = instr->arg.cmd_multiple.data>>((instr->arg.cmd_multiple.cnt-1-i)*8);
+				PRINTF(", %X", buf[i+1]);
+			}
+			PRINTF("\r\n");
+			MIPI_DSI_GenericWrite(dsiDevice, buf, instr->arg.cmd_multiple.cnt);
+
+		}
 
         if (kStatus_Success != status)
         {
@@ -345,6 +376,28 @@ status_t ILI9881C_Init(display_handle_t *handle, const display_config_t *config)
     MIPI_DSI_GenericWrite(dsiDevice, param, 2);
 
     ILI9881C_DelayMs(200);
+
+    /* set brightness */
+    uint8_t buf[5] = { 0xff, 0x98, 0x81, 2};
+    MIPI_DSI_GenericWrite(dsiDevice, buf, 4);
+    buf[0] = 0x06;
+    buf[1] = (1<<0)|(1<<1);
+    MIPI_DSI_GenericWrite(dsiDevice, buf, 2);
+
+    buf[0] = 0xff;
+    buf[1] = 0x98;
+    buf[2] = 0x81;
+    buf[3] = 0x00;
+    MIPI_DSI_GenericWrite(dsiDevice, buf, 4);
+
+	buf[0] = 0x53;
+	buf[1] = (1<<2)|(1<<3)|(1<<5);
+	MIPI_DSI_GenericWrite(dsiDevice, buf, 2);
+
+	buf[0] = 0x51;
+	buf[1] = 0x00;
+	buf[2] = 0x00;
+	MIPI_DSI_GenericWrite(dsiDevice, buf, 3);
 
     return kStatus_Success;
 }

@@ -132,8 +132,9 @@ void lv_port_disp_init(void)
     /*-------------------------
      * Initialize your display
      * -----------------------*/
+    taskENTER_CRITICAL();
     BOARD_PrepareDisplayController();
-
+    taskEXIT_CRITICAL();
     status = g_dc.ops->init(&g_dc);
     if (kStatus_Success != status)
     {
