@@ -251,7 +251,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_bg_opa(&style_screen3_USB_usb_list_main_child, LV_STATE_DEFAULT, 255);
 	lv_style_set_text_color(&style_screen3_USB_usb_list_main_child, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
 	lv_obj_set_pos(ui->screen3_USB_usb_list, 0, 235);
-	lv_obj_set_size(ui->screen3_USB_usb_list, 720, 160);
+	lv_obj_set_size(ui->screen3_USB_usb_list, 720, 190);
 	lv_obj_t *screen3_USB_usb_list_btn;
 
 	//Write codes screen3_USB_usb_devices_label
@@ -305,7 +305,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_pad_top(&style_screen3_USB_input_label_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_pad_bottom(&style_screen3_USB_input_label_main, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen3_USB_input_label, LV_LABEL_PART_MAIN, &style_screen3_USB_input_label_main);
-	lv_obj_set_pos(ui->screen3_USB_input_label, 30, 430);
+	lv_obj_set_pos(ui->screen3_USB_input_label, 30, 455);
 	lv_obj_set_size(ui->screen3_USB_input_label, 300, 0);
 
 	//Write codes screen3_USB_i2c_nodes_label
@@ -332,7 +332,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_pad_top(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_pad_bottom(&style_screen3_USB_i2c_nodes_label_main, LV_STATE_DEFAULT, 0);
 	lv_obj_add_style(ui->screen3_USB_i2c_nodes_label, LV_LABEL_PART_MAIN, &style_screen3_USB_i2c_nodes_label_main);
-	lv_obj_set_pos(ui->screen3_USB_i2c_nodes_label, 30, 730);
+	lv_obj_set_pos(ui->screen3_USB_i2c_nodes_label, 30, 755);
 	lv_obj_set_size(ui->screen3_USB_i2c_nodes_label, 250, 0);
 
 	//Write codes screen3_USB_i2c_table
@@ -366,7 +366,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_border_color(&style_screen3_USB_i2c_table_cell1, LV_STATE_DEFAULT, lv_color_make(0xd5, 0xde, 0xe6));
 	lv_style_set_border_width(&style_screen3_USB_i2c_table_cell1, LV_STATE_DEFAULT, 1);
 	lv_obj_add_style(ui->screen3_USB_i2c_table, LV_TABLE_PART_CELL1, &style_screen3_USB_i2c_table_cell1);
-	lv_obj_set_pos(ui->screen3_USB_i2c_table, 24, 785);
+	lv_obj_set_pos(ui->screen3_USB_i2c_table, 24, 810);
 	lv_table_set_col_cnt(ui->screen3_USB_i2c_table,5);
 	lv_table_set_row_cnt(ui->screen3_USB_i2c_table,9);
 	lv_table_set_cell_value(ui->screen3_USB_i2c_table,0,0," ");
@@ -462,7 +462,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_bg_grad_dir(&style_screen3_USB_input_area_edge_flash, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
 	lv_style_set_bg_opa(&style_screen3_USB_input_area_edge_flash, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen3_USB_input_area, LV_PAGE_PART_EDGE_FLASH, &style_screen3_USB_input_area_edge_flash);
-	lv_obj_set_pos(ui->screen3_USB_input_area, 20, 485);
+	lv_obj_set_pos(ui->screen3_USB_input_area, 20, 510);
 	lv_obj_set_size(ui->screen3_USB_input_area, 680, 200);
 	lv_textarea_set_text(ui->screen3_USB_input_area,"Press 'keyboard' or 'mouse' to capture HID input...");
 	lv_obj_set_event_cb(ui->screen3_USB_input_area, text_area_event_cb);
@@ -482,7 +482,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_image_recolor_opa(&style_screen3_USB_kbd_imgbtn_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_image_opa(&style_screen3_USB_kbd_imgbtn_main, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen3_USB_kbd_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen3_USB_kbd_imgbtn_main);
-	lv_obj_set_pos(ui->screen3_USB_kbd_imgbtn, 360, 426);
+	lv_obj_set_pos(ui->screen3_USB_kbd_imgbtn, 360, 451);
 	lv_obj_set_size(ui->screen3_USB_kbd_imgbtn, 160, 50);
 	lv_imgbtn_set_src(ui->screen3_USB_kbd_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_160x50);
 	lv_imgbtn_set_src(ui->screen3_USB_kbd_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_160x50);
@@ -506,7 +506,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_image_recolor_opa(&style_screen3_USB_mouse_imgbtn_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_image_opa(&style_screen3_USB_mouse_imgbtn_main, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen3_USB_mouse_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen3_USB_mouse_imgbtn_main);
-	lv_obj_set_pos(ui->screen3_USB_mouse_imgbtn, 530, 426);
+	lv_obj_set_pos(ui->screen3_USB_mouse_imgbtn, 530, 451);
 	lv_obj_set_size(ui->screen3_USB_mouse_imgbtn, 160, 50);
 	lv_imgbtn_set_src(ui->screen3_USB_mouse_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_160x50);
 	lv_imgbtn_set_src(ui->screen3_USB_mouse_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_160x50);
@@ -530,7 +530,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_image_recolor_opa(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, 0);
 	lv_style_set_image_opa(&style_screen3_USB_i2c_scan_imgbtn_main, LV_STATE_DEFAULT, 255);
 	lv_obj_add_style(ui->screen3_USB_i2c_scan_imgbtn, LV_IMGBTN_PART_MAIN, &style_screen3_USB_i2c_scan_imgbtn_main);
-	lv_obj_set_pos(ui->screen3_USB_i2c_scan_imgbtn, 530, 726);
+	lv_obj_set_pos(ui->screen3_USB_i2c_scan_imgbtn, 530, 751);
 	lv_obj_set_size(ui->screen3_USB_i2c_scan_imgbtn, 160, 50);
 	lv_imgbtn_set_src(ui->screen3_USB_i2c_scan_imgbtn,LV_BTN_STATE_RELEASED,&_button_alpha_160x50);
 	lv_imgbtn_set_src(ui->screen3_USB_i2c_scan_imgbtn,LV_BTN_STATE_PRESSED,&_button_on_alpha_160x50);
@@ -616,7 +616,7 @@ void setup_scr_screen3_USB(lv_ui *ui){
 	lv_style_set_text_color(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, lv_color_make(0x0D, 0x30, 0x55));
 	lv_style_set_text_font(&style_screen3_USB_i2c_ddlist_list, LV_STATE_DEFAULT, &lv_font_OpenSans_Regular_24);
 	lv_obj_add_style(ui->screen3_USB_i2c_ddlist, LV_DROPDOWN_PART_LIST, &style_screen3_USB_i2c_ddlist_list);
-	lv_obj_set_pos(ui->screen3_USB_i2c_ddlist, 380, 730);
+	lv_obj_set_pos(ui->screen3_USB_i2c_ddlist, 380, 755);
 	lv_obj_set_width(ui->screen3_USB_i2c_ddlist, 120);
 
 	//Init events for screen
