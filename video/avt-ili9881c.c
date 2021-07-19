@@ -330,7 +330,7 @@ status_t ILI9881C_Init(display_handle_t *handle, const display_config_t *config)
 		{
 			uint8_t buf[4] = { 0xff, 0x98, 0x81, instr->arg.page};
 			MIPI_DSI_GenericWrite(dsiDevice, buf, sizeof(buf));
-			PRINTF("Switch Page %X\r\n", buf[3]);  //pf
+//			PRINTF("Switch Page %X\r\n", buf[3]);  //pf
 		}
 
 		else if (instr->op == ILI9881C_COMMAND)
@@ -338,18 +338,18 @@ status_t ILI9881C_Init(display_handle_t *handle, const display_config_t *config)
 		{
 			uint8_t buf[2] = { instr->arg.cmd.cmd, instr->arg.cmd.data};
 			MIPI_DSI_GenericWrite(dsiDevice, buf, sizeof(buf));
-			PRINTF("Command: %X, %X\r\n", buf[0], buf[1]);
+//			PRINTF("Command: %X, %X\r\n", buf[0], buf[1]);
 		}
 		else if (instr->op == ILI9881C_COMMAND_MULTIPLE)
 		{
 			uint8_t buf[5] = { instr->arg.cmd_multiple.cmd, 0,0,0,0};
-			PRINTF("Command: %X", buf[0]);
+//			PRINTF("Command: %X", buf[0]);
 			for (uint8_t i=0; i<instr->arg.cmd_multiple.cnt; i++)
 			{
 				buf[i+1] = instr->arg.cmd_multiple.data>>((instr->arg.cmd_multiple.cnt-1-i)*8);
 				PRINTF(", %X", buf[i+1]);
 			}
-			PRINTF("\r\n");
+//			PRINTF("\r\n");
 			MIPI_DSI_GenericWrite(dsiDevice, buf, instr->arg.cmd_multiple.cnt);
 
 		}
