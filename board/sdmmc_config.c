@@ -55,7 +55,7 @@ uint32_t BOARD_USDHC1ClockConfiguration(void)
     CLOCK_InitPfd(kCLOCK_PllSys2, kCLOCK_Pfd2, 24);//528*18/24=396Mhz
 
     rootCfg.mux = 4;
-    rootCfg.div = 8;//49.5Mhz
+    rootCfg.div = 2;//200 Mhz
     CLOCK_SetRootClock(kCLOCK_Root_Usdhc1, &rootCfg);
 
     return CLOCK_GetRootClockFreq(kCLOCK_Root_Usdhc1);
