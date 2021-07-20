@@ -44,4 +44,6 @@ void lv_port_indev_init(void);
 }
 #endif
 
+uint8_t detect_display();
+
 #endif /*LITTLEVGL_SUPPORT_H */

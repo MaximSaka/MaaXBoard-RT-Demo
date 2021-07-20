@@ -466,3 +466,20 @@ static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
     return false;
 }
 
+/*!
+ * @brief detect display if display is connected. 1 - true, 0 - false
+ */
+uint8_t detect_display()
+{
+	uint8_t rxBuff;	/* dummy byte to read */
+	BOARD_LPI2C_Init(BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, (CLOCK_GetFreq(kCLOCK_OscRc48MDiv2)));
+	if (BOARD_LPI2C_Receive(BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, FT5406_RT_I2C_ADDRESS, 0, 0, &rxBuff, 1) != kStatus_LPI2C_Nak)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+

@@ -186,8 +186,25 @@ int main(void)
 
     BOARD_InitPins();
     BOARD_InitMipiPanelPins();
-    BOARD_MIPIPanelTouch_I2C_Init();
     BOARD_InitDebugConsole();
+
+    if (detect_display())
+    {
+    	PRINTF("Display detected. Starting lvgl task\r\n");
+    	BOARD_MIPIPanelTouch_I2C_Init();
+    	#if defined(GUI_EN) && (GUI_EN==1)
+    		/* 1. Freertos task: lvgl "Gui Guider"
+    		 * displays GUI pages on 7 inch touch display. It uses lvgl library version 7.11.0  */
+    	   stat = xTaskCreate(lvgl_task, "lvgl", configMINIMAL_STACK_SIZE + 800, lvgl_task_stack, tskIDLE_PRIORITY + 3, &lvgl_task_task_handler);
+    	   assert(pdPASS == stat);
+    	#endif
+    }
+    else
+    {
+    	PRINTF("Display not detected.\r\n");
+    	BOARD_MIPIPanelTouch_I2C_Init();
+    }
+
     /* initialize lpi2c3, lpi2c6 */
     BOARD_RTOS_I2C_Init(3);
     BOARD_RTOS_I2C_Init(6);
@@ -223,13 +240,6 @@ int main(void)
 
 	/******** Freertos task declarations ********/
     os_setup_tick_function(vApplicationTickHook_lvgl);
-
-#if defined(GUI_EN) && (GUI_EN==1)
-    /* 1. Freertos task: lvgl "Gui Guider"
-     * displays GUI pages on 7 inch touch display. It uses lvgl library version 7.11.0  */
-   stat = xTaskCreate(lvgl_task, "lvgl", configMINIMAL_STACK_SIZE + 800, lvgl_task_stack, tskIDLE_PRIORITY + 3, &lvgl_task_task_handler);
-   assert(pdPASS == stat);
-#endif
 
 #if defined(WIFI_EN) && (WIFI_EN==1)
     /* 2. Freertos task: wifi
