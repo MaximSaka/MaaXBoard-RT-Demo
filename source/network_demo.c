@@ -89,7 +89,7 @@ static void iperf_test_abort(void *arg);
 
 static int network_added     = 0;
 static int uap_network_added = 0;
-
+static int network_initialized = 0;
 static bool s_wifi_ready     = false;
 
 static QueueHandle_t *wifi_cmd_queue;
@@ -232,22 +232,32 @@ int connectToAP(void)
     return ret;
 }
 
-short getCurrentSignalStrength(void)
+int8_t getCurrentSignalStrength(short *rssi)
 {
     int ret;
 
     // PRINTF("Getting RSSI for %s .....\r\n", sta_network.ssid);
 
-    short rssi = 0;
     int snr = 0;
-    ret = wlan_get_current_signal_strength(&rssi, &snr);
 
-    if (ret != WM_SUCCESS)
+    if (network_initialized)
     {
-        PRINTF("Failed to get RSSI: %d\r\n", ret);
+        ret = wlan_get_current_signal_strength(rssi, &snr);
+
+        if (ret != WM_SUCCESS)
+        {
+            PRINTF("Failed to get RSSI: %d\r\n", ret);
+        }
+
+        return 0;
+    }
+    else
+    {
+    	/* error wifi not initialized */
+    	return 1;
     }
 
-    return rssi;
+
 }
 
 static const char *print_role(enum wlan_bss_role role)
@@ -423,7 +433,7 @@ int wlan_event_callback(enum wlan_event_reason reason, void *data)
             PRINTF("app_cb: WLAN initialized\r\n");
             xEventGroupSetBits(*event_group_wifi, WIFI_RDY );
             int ret;
-
+            network_initialized = 1;
             printSeparator();
 
             /* Print WLAN FW Version */
@@ -672,7 +682,6 @@ void wifi_task(void *param)
     (void)result;
 
     PRINTF("Initialize WLAN Driver\r\n");
-
     /* Initialize WIFI Driver */
 	result = wlan_init(wlan_fw_bin, wlan_fw_bin_len);
 

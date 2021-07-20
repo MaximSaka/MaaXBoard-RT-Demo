@@ -1022,18 +1022,21 @@ void refreshCustomGraph(void)
 
     if (s_custom_graph_refresh_count == 0)
     {
-        short rssi = getCurrentSignalStrength();
+        short rssi;
 
-        int value = 100 + rssi;
+        if (getCurrentSignalStrength(&rssi) == 0)
+        {
+            int value = 100 + rssi;
 
-        if (value > 100) value = 100;
-        else if (value < 0) value = 0;
+            if (value > 100) value = 100;
+            else if (value < 0) value = 0;
 
-        // PRINTF("RSSI: %d scaled: %d\r\n", rssi, value);
+            // PRINTF("RSSI: %d scaled: %d\r\n", rssi, value);
 
-        lv_chart_set_next(guider_ui.screen5_SYSTEM_custom_chart, s_custom_series, value);
-        
-        setCustomValue(rssi);
+            lv_chart_set_next(guider_ui.screen5_SYSTEM_custom_chart, s_custom_series, value);
+
+            setCustomValue(rssi);
+        }
     }
 
     s_custom_graph_refresh_count = 

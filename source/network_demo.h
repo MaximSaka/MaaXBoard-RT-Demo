@@ -39,12 +39,12 @@ int connectToAP(void);
 
 /*****************************************************************************\
  * Function:    getCurrentSignalStrength
- * Input:       void
- * Returns:     short
+ * Input:       short pointer
+ * Returns:     int8_t
  * Description:
- *     This function return the RSSI of connected WIFI network.
+ *     This function return 0 - success, 1 - fail
 \*****************************************************************************/
-short getCurrentSignalStrength(void);
+int8_t getCurrentSignalStrength(short *rssi);
 
 /*****************************************************************************\
  * Function:    isWifiReady
