@@ -63,10 +63,9 @@ status_t FT5406_RT_Init(ft5406_rt_handle_t *handle, lpi2c_rtos_handle_t *base)
     xfer->dataSize       = 1;
     xfer->flags          = kLPI2C_TransferDefaultFlag;
 
-
-
     //status = LPI2C_MasterTransferBlocking(handle->base, &handle->xfer);
     status = LPI2C_RTOS_Transfer(handle->base, &handle->xfer);
+
     /* prepare transfer structure for reading touch data */
     xfer->slaveAddress   = FT5406_RT_I2C_ADDRESS;
     xfer->direction      = kLPI2C_Read;
@@ -101,7 +100,7 @@ status_t FT5406_RT_ReadTouchData(ft5406_rt_handle_t *handle)
         return kStatus_InvalidArgument;
     }
 
-    return LPI2C_RTOS_Transfer(handle->base, &handle->xfer);
+	return LPI2C_RTOS_Transfer(handle->base, &handle->xfer);
     // LPI2C_MasterTransferBlocking(handle->base, &handle->xfer);
 }
 

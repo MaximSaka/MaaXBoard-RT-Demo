@@ -209,10 +209,6 @@ status_t SGTL_EnableModule(sgtl_handle_t *handle, sgtl_module_t module)
             ret = SGTL_ModifyReg(handle, CHIP_ANA_POWER, SGTL5000_LINEOUT_POWERUP_CLR_MASK,
                                  ((uint16_t)1U << SGTL5000_LINEOUT_POWERUP_SHIFT));
             break;
-        case kSGTL_ModuleMicin:
-            ret = SGTL_ModifyReg(handle, CHIP_ANA_POWER, 0xFFDF,
-                                 ((uint16_t)1U << 5));
-            break;
         default:
             ret = kStatus_InvalidArgument;
             break;
@@ -295,23 +291,6 @@ status_t SGTL_SetDataRoute(sgtl_handle_t *handle, sgtl_route_t route)
             ret = SGTL_ModifyReg(handle, CHIP_SSS_CTRL, SGTL5000_DAC_SEL_CLR_MASK, SGTL5000_DAC_SEL_I2S_IN);
             ret = SGTL_ModifyReg(handle, CHIP_ANA_CTRL, SGTL5000_SEL_HP_CLR_MASK, SGTL5000_SEL_HP_DAC);
             ret = SGTL_ModifyReg(handle, CHIP_ANA_CTRL, SGTL5000_SEL_ADC_CLR_MASK, SGTL5000_SEL_ADC_LINEIN);
-            ret = SGTL_ModifyReg(handle, CHIP_SSS_CTRL, SGTL5000_I2S_OUT_SEL_CLR_MASK, SGTL5000_I2S_OUT_SEL_ADC);
-            break;
-        case kSGTL_RoutePlaybackandMicRecord:
-            /* I2S IN->DAC->HP  MIC_IN->ADC->I2S_OUT */
-            ret = SGTL_EnableModule(handle, kSGTL_ModuleHP);
-            ret = SGTL_EnableModule(handle, kSGTL_ModuleDAC);
-            ret = SGTL_EnableModule(handle, kSGTL_ModuleI2SIN);
-            ret = SGTL_EnableModule(handle, kSGTL_ModuleI2SOUT);
-            ret = SGTL_EnableModule(handle, kSGTL_ModuleADC);
-            //ret = SGTL_EnableModule(handle, kSGTL_ModuleMicin);// enable bias currents
-            ret = SGTL_ModifyReg(handle, CHIP_MIC_CTRL, 0xFCFF , 0x0100);// MIC Bias Output Impedance = 2.0Kohm
-            ret = SGTL_ModifyReg(handle, CHIP_MIC_CTRL, 0xFF8F, 0x0070);// bias voltage = 3.0v
-            ret = SGTL_ModifyReg(handle, CHIP_MIC_CTRL, 0xFFFC, 0x0003);// MIC Amplifier Gain = +40 dB
-
-            ret = SGTL_ModifyReg(handle, CHIP_SSS_CTRL, SGTL5000_DAC_SEL_CLR_MASK, SGTL5000_DAC_SEL_I2S_IN);
-            ret = SGTL_ModifyReg(handle, CHIP_ANA_CTRL, SGTL5000_SEL_HP_CLR_MASK, SGTL5000_SEL_HP_DAC);
-            ret = SGTL_ModifyReg(handle, CHIP_ANA_CTRL, SGTL5000_SEL_ADC_CLR_MASK, 0);// ADC input = Microphone
             ret = SGTL_ModifyReg(handle, CHIP_SSS_CTRL, SGTL5000_I2S_OUT_SEL_CLR_MASK, SGTL5000_I2S_OUT_SEL_ADC);
             break;
         case kSGTL_RoutePlaybackwithDAP:

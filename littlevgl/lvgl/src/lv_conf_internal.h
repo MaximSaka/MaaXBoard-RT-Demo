@@ -11,11 +11,10 @@
 #include <stdint.h>
 
 /* Handle special Kconfig options */
-#ifndef LV_KCONFIG_IGNORE
-#   include "lv_conf_kconfig.h"
-#   ifdef CONFIG_LV_CONF_SKIP
-#       define LV_CONF_SKIP
-#   endif
+#include "lv_conf_kconfig.h"
+
+#ifdef CONFIG_LV_CONF_SKIP
+#define LV_CONF_SKIP
 #endif
 
 /* If "lv_conf.h" is available from here try to use it later.*/
@@ -170,15 +169,6 @@
 #endif
 
 /* Type of coordinates. Should be `int16_t` (or `int32_t` for extreme cases) */
-
-/* Maximum buffer size to allocate for rotation. Only used if software rotation is enabled. */
-#ifndef LV_DISP_ROT_MAX_BUF
-#  ifdef CONFIG_LV_DISP_ROT_MAX_BUF
-#    define LV_DISP_ROT_MAX_BUF CONFIG_LV_DISP_ROT_MAX_BUF
-#  else
-#    define  LV_DISP_ROT_MAX_BUF  (10U * 1024U)
-#  endif
-#endif
 
 /*=========================
    Memory manager settings
@@ -511,7 +501,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
 #endif
 
 /*1: Add default bare metal and FreeRTOS interrupt handling routines for PXP (lv_gpu_nxp_pxp_osa.c)
- *   and call lv_gpu_nxp_pxp_init() automatically during lv_init(). Note that symbol FSL_RTOS_FREE_RTOS
+ *   and call lv_gpu_nxp_pxp_init() automatically during lv_init(). Note that symbol SDK_OS_FREE_RTOS
  *   has to be defined in order to use FreeRTOS OSA, otherwise bare-metal implementation is selected.
  *0: lv_gpu_nxp_pxp_init() has to be called manually before lv_init()
  * */

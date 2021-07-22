@@ -1,12 +1,12 @@
 /*
- * Copyright  2019 NXP
+ * Copyright  2021 NXP
  * All rights reserved.
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "fsl_codec_adapter.h"
+#include "fsl_codec_sgtl_adapter.h"
 #include "fsl_codec_common.h"
 /*******************************************************************************
  * Definitions
@@ -59,7 +59,7 @@ static const codec_capability_t s_sgtl5000_capability = {
  * param config codec configuration.
  * return kStatus_Success is success, else initial failed.
  */
-status_t HAL_CODEC_Init(void *handle, void *config)
+status_t HAL_CODEC_SGTL5000_Init(void *handle, void *config)
 {
     assert((config != NULL) && (handle != NULL));
 
@@ -80,7 +80,7 @@ status_t HAL_CODEC_Init(void *handle, void *config)
  * param handle codec handle.
  * return kStatus_Success is success, else de-initial failed.
  */
-status_t HAL_CODEC_Deinit(void *handle)
+status_t HAL_CODEC_SGTL5000_Deinit(void *handle)
 {
     assert(handle != NULL);
 
@@ -96,7 +96,7 @@ status_t HAL_CODEC_Deinit(void *handle)
  * param bitWidth bit width.
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetFormat(void *handle, uint32_t mclk, uint32_t sampleRate, uint32_t bitWidth)
+status_t HAL_CODEC_SGTL5000_SetFormat(void *handle, uint32_t mclk, uint32_t sampleRate, uint32_t bitWidth)
 {
     assert(handle != NULL);
 
@@ -112,7 +112,7 @@ status_t HAL_CODEC_SetFormat(void *handle, uint32_t mclk, uint32_t sampleRate, u
  * param volume volume value, support 0 ~ 100, 0 is mute, 100 is the maximum volume value.
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetVolume(void *handle, uint32_t playChannel, uint32_t volume)
+status_t HAL_CODEC_SGTL5000_SetVolume(void *handle, uint32_t playChannel, uint32_t volume)
 {
     assert(handle != NULL);
 
@@ -175,7 +175,7 @@ status_t HAL_CODEC_SetVolume(void *handle, uint32_t playChannel, uint32_t volume
  * param isMute true is mute, false is unmute.
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetMute(void *handle, uint32_t playChannel, bool isMute)
+status_t HAL_CODEC_SGTL5000_SetMute(void *handle, uint32_t playChannel, bool isMute)
 {
     assert(handle != NULL);
 
@@ -205,7 +205,7 @@ status_t HAL_CODEC_SetMute(void *handle, uint32_t playChannel, bool isMute)
  * param powerOn true is power on, false is power down.
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetPower(void *handle, uint32_t module, bool powerOn)
+status_t HAL_CODEC_SGTL5000_SetPower(void *handle, uint32_t module, bool powerOn)
 {
     assert(handle != NULL);
 
@@ -229,7 +229,7 @@ status_t HAL_CODEC_SetPower(void *handle, uint32_t module, bool powerOn)
  *
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetRecord(void *handle, uint32_t recordSource)
+status_t HAL_CODEC_SGTL5000_SetRecord(void *handle, uint32_t recordSource)
 {
     assert(handle != NULL);
 
@@ -259,7 +259,7 @@ status_t HAL_CODEC_SetRecord(void *handle, uint32_t recordSource)
 
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetRecordChannel(void *handle, uint32_t leftRecordChannel, uint32_t rightRecordChannel)
+status_t HAL_CODEC_SGTL5000_SetRecordChannel(void *handle, uint32_t leftRecordChannel, uint32_t rightRecordChannel)
 {
     return kStatus_CODEC_NotSupport;
 }
@@ -272,7 +272,7 @@ status_t HAL_CODEC_SetRecordChannel(void *handle, uint32_t leftRecordChannel, ui
  *
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_SetPlay(void *handle, uint32_t playSource)
+status_t HAL_CODEC_SGTL5000_SetPlay(void *handle, uint32_t playSource)
 {
     assert(handle != NULL);
 
@@ -301,7 +301,7 @@ status_t HAL_CODEC_SetPlay(void *handle, uint32_t playSource)
  *  codec specific driver for detail configurations.
  * return kStatus_Success is success, else configure failed.
  */
-status_t HAL_CODEC_ModuleControl(void *handle, uint32_t cmd, uint32_t data)
+status_t HAL_CODEC_SGTL5000_ModuleControl(void *handle, uint32_t cmd, uint32_t data)
 {
     return kStatus_CODEC_NotSupport;
 }

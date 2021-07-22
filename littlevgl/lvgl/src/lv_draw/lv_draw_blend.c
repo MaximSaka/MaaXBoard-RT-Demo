@@ -348,7 +348,8 @@ LV_ATTRIBUTE_FAST_MEM static void fill_normal(const lv_area_t * disp_area, lv_co
                 lv_gpu_stm32_dma2d_fill(disp_buf_first, disp_w, color, draw_area_w, draw_area_h);
                 return;
             }
-#elif LV_USE_GPU
+#endif
+#if LV_USE_GPU
             if(disp->driver.gpu_fill_cb && lv_area_get_size(draw_area) > GPU_SIZE_LIMIT) {
                 disp->driver.gpu_fill_cb(&disp->driver, disp_buf, disp_w, draw_area, color);
                 return;
@@ -764,8 +765,8 @@ LV_ATTRIBUTE_FAST_MEM static void map_normal(const lv_area_t * disp_area, lv_col
                 blit.src_stride = lv_area_get_width(map_area) * sizeof(lv_color_t);
                 blit.src_area.x1 = (draw_area->x1 - (map_area->x1 - disp_area->x1));
                 blit.src_area.y1 = (draw_area->y1 - (map_area->y1 - disp_area->y1));
-                blit.src_area.x2 = blit.src_area.x1 + draw_area_w;
-                blit.src_area.y2 = blit.src_area.y1 + draw_area_h;
+                blit.src_area.x2 = blit.src_area.x1 + draw_area_w - 1;
+                blit.src_area.y2 = blit.src_area.y1 + draw_area_h - 1;
 
                 blit.dst = disp_buf;
                 blit.dst_width = lv_area_get_width(disp_area);
@@ -773,8 +774,8 @@ LV_ATTRIBUTE_FAST_MEM static void map_normal(const lv_area_t * disp_area, lv_col
                 blit.dst_stride = lv_area_get_width(disp_area) * sizeof(lv_color_t);
                 blit.dst_area.x1 = draw_area->x1;
                 blit.dst_area.y1 = draw_area->y1;
-                blit.dst_area.x2 = blit.dst_area.x1 + draw_area_w;
-                blit.dst_area.y2 = blit.dst_area.y1 + draw_area_h;
+                blit.dst_area.x2 = blit.dst_area.x1 + draw_area_w - 1;
+                blit.dst_area.y2 = blit.dst_area.y1 + draw_area_h - 1;
 
                 blit.opa = opa;
 
@@ -814,8 +815,8 @@ LV_ATTRIBUTE_FAST_MEM static void map_normal(const lv_area_t * disp_area, lv_col
                 blit.src_stride = lv_area_get_width(map_area) * sizeof(lv_color_t);
                 blit.src_area.x1 = (draw_area->x1 - (map_area->x1 - disp_area->x1));
                 blit.src_area.y1 = (draw_area->y1 - (map_area->y1 - disp_area->y1));
-                blit.src_area.x2 = blit.src_area.x1 + draw_area_w;
-                blit.src_area.y2 = blit.src_area.y1 + draw_area_h;
+                blit.src_area.x2 = blit.src_area.x1 + draw_area_w - 1;
+                blit.src_area.y2 = blit.src_area.y1 + draw_area_h - 1;
 
                 blit.dst = disp_buf;
                 blit.dst_width = lv_area_get_width(disp_area);
@@ -823,8 +824,8 @@ LV_ATTRIBUTE_FAST_MEM static void map_normal(const lv_area_t * disp_area, lv_col
                 blit.dst_stride = lv_area_get_width(disp_area) * sizeof(lv_color_t);
                 blit.dst_area.x1 = draw_area->x1;
                 blit.dst_area.y1 = draw_area->y1;
-                blit.dst_area.x2 = blit.dst_area.x1 + draw_area_w;
-                blit.dst_area.y2 = blit.dst_area.y1 + draw_area_h;
+                blit.dst_area.x2 = blit.dst_area.x1 + draw_area_w - 1;
+                blit.dst_area.y2 = blit.dst_area.y1 + draw_area_h - 1;
 
                 blit.opa = opa;
 

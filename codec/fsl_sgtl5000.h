@@ -13,6 +13,7 @@
 
 /*!
  * @addtogroup sgtl5000
+ * @ingroup codec
  * @{
  */
 
@@ -780,7 +781,6 @@ typedef enum _sgtl_route
     kSGTL_RouteBypass = 0x0,             /*!< LINEIN->Headphone. */
     kSGTL_RoutePlayback,                 /*!< I2SIN->DAC->Headphone. */
     kSGTL_RoutePlaybackandRecord,        /*!< I2SIN->DAC->Headphone, LINEIN->ADC->I2SOUT. */
-    kSGTL_RoutePlaybackandMicRecord,     /*!< I2SIN->DAC->Headphone, MICIN->ADC->I2SOUT. */
     kSGTL_RoutePlaybackwithDAP,          /*!< I2SIN->DAP->DAC->Headphone. */
     kSGTL_RoutePlaybackwithDAPandRecord, /*!< I2SIN->DAP->DAC->HP, LINEIN->ADC->I2SOUT. */
     kSGTL_RouteRecord                    /*!< LINEIN->ADC->I2SOUT. */

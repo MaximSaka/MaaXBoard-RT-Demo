@@ -2274,15 +2274,15 @@ void SD_HostReset(SDMMCHOST_CONFIG *host)
     SDMMCHOST_Reset(host);
 }
 
-void SD_PowerOnCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
-{
-    SDMMCHOST_PowerOnCard(base, pwr);
-}
-
-void SD_PowerOffCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
-{
-    SDMMCHOST_PowerOffCard(base, pwr);
-}
+//void SD_PowerOnCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
+//{
+//    SDMMCHOST_PowerOnCard(base, pwr);
+//}
+//
+//void SD_PowerOffCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
+//{
+//    SDMMCHOST_PowerOffCard(base, pwr);
+//}
 
 status_t SD_WaitCardDetectStatus(SDMMCHOST_TYPE *hostBase, const sdmmchost_detect_card_t *cd, bool waitCardStatus)
 {

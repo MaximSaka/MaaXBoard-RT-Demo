@@ -2287,15 +2287,15 @@ void MMC_HostReset(SDMMCHOST_CONFIG *host)
     SDMMCHOST_Reset(host);
 }
 
-void MMC_PowerOnCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
-{
-    SDMMCHOST_PowerOnCard(base, pwr);
-}
-
-void MMC_PowerOffCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
-{
-    SDMMCHOST_PowerOffCard(base, pwr);
-}
+//void MMC_PowerOnCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
+//{
+//    SDMMCHOST_PowerOnCard(base, pwr);
+//}
+//
+//void MMC_PowerOffCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr)
+//{
+//    SDMMCHOST_PowerOffCard(base, pwr);
+//}
 
 void MMC_SetCardPower(mmc_card_t *card, bool enable)
 {

@@ -14,8 +14,8 @@ extern "C" {
  * CURRENT VERSION OF LVGL
  ***************************/
 #define LVGL_VERSION_MAJOR 7
-#define LVGL_VERSION_MINOR 11
-#define LVGL_VERSION_PATCH 0
+#define LVGL_VERSION_MINOR 10
+#define LVGL_VERSION_PATCH 1
 #define LVGL_VERSION_INFO ""
 
 /*********************
@@ -43,6 +43,7 @@ extern "C" {
 #include "src/lv_font/lv_font_fmt_txt.h"
 #include "src/lv_misc/lv_printf.h"
 
+#include "src/lv_widgets/lv_anim_img.h"
 #include "src/lv_widgets/lv_btn.h"
 #include "src/lv_widgets/lv_imgbtn.h"
 #include "src/lv_widgets/lv_img.h"

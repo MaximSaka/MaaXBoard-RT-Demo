@@ -182,25 +182,25 @@ void MMC_HostDeinit(mmc_card_t *card);
  */
 void MMC_HostReset(SDMMCHOST_CONFIG *host);
 
-/*!
- * @brief power on card.
- *
- * The power on operation depend on host or the user define power on function.
- * @deprecated Do not use this function.  It has been superceded by @ref MMC_SetCardPower.
- * @param base host base address.
- * @param pwr user define power control configuration
- */
-void MMC_PowerOnCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr);
-
-/*!
- * @brief power off card.
- *
- * The power off operation depend on host or the user define power on function.
- * @deprecated Do not use this function.  It has been superceded by @ref MMC_SetCardPower.
- * @param base host base address.
- * @param pwr user define power control configuration
- */
-void MMC_PowerOffCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr);
+///*!
+// * @brief power on card.
+// *
+// * The power on operation depend on host or the user define power on function.
+// * @deprecated Do not use this function.  It has been superceded by @ref MMC_SetCardPower.
+// * @param base host base address.
+// * @param pwr user define power control configuration
+// */
+//void MMC_PowerOnCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr);
+//
+///*!
+// * @brief power off card.
+// *
+// * The power off operation depend on host or the user define power on function.
+// * @deprecated Do not use this function.  It has been superceded by @ref MMC_SetCardPower.
+// * @param base host base address.
+// * @param pwr user define power control configuration
+// */
+//void MMC_PowerOffCard(SDMMCHOST_TYPE *base, const sdmmchost_pwr_card_t *pwr);
 
 /*!
  * @brief set card power.
