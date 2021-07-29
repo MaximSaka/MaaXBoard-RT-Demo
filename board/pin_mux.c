@@ -15,6 +15,7 @@ board: MIMXRT1170-EVK
 pin_labels:
 - {pin_num: R1, pin_signal: GPIO_EMC_B2_03, label: DSI_BL_PWM, identifier: DSI_BL_PWM}
 - {pin_num: K2, pin_signal: GPIO_EMC_B2_00, label: LPI2C2_SCL, identifier: LPI2C2_SCL}
+- {pin_num: M2, pin_signal: GPIO_EMC_B2_12, label: CAM_SPARE, identifier: SEMC_D27}
 - {pin_num: N3, pin_signal: GPIO_EMC_B2_18, label: USER_GREEN, identifier: SEMC_DQS4;USER_GREEN}
 - {pin_num: K4, pin_signal: GPIO_EMC_B2_01, label: LPI2C2_SDA, identifier: LPI2C2_SDA}
 - {pin_num: N12, pin_signal: GPIO_AD_00}
@@ -23,7 +24,7 @@ pin_labels:
 - {pin_num: A4, pin_signal: GPIO_DISP_B2_15, label: 'WDOG_B/LCM_PWR_EN/J48[32]', identifier: DSI_EN}
 - {pin_num: P13, pin_signal: GPIO_AD_05, label: DSI_TS_RST, identifier: DSI_TS_RST}
 - {pin_num: R15, pin_signal: GPIO_AD_08, label: USER_RED, identifier: USER_RED}
-- {pin_num: R16, pin_signal: GPIO_AD_09, label: DSI_RST, identifier: DSI_RST}
+- {pin_num: R16, pin_signal: GPIO_AD_09, label: CAM_PWR_EN, identifier: DSI_RST}
 - {pin_num: R17, pin_signal: GPIO_AD_10, label: USER_BLUE, identifier: USER_BLUE}
 - {pin_num: M14, pin_signal: GPIO_AD_15, label: LCD_RST_B, identifier: LCD_RST_B}
 - {pin_num: M17, pin_signal: GPIO_AD_29, label: DSI_EN, identifier: DSI_EN}
@@ -81,6 +82,8 @@ BOARD_InitPins:
   - {pin_num: P8, peripheral: LPI2C6, signal: SDA, pin_signal: GPIO_LPSR_06, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
   - {pin_num: L4, peripheral: GPIO8, signal: 'gpio_io, 21', pin_signal: GPIO_EMC_B2_11}
   - {pin_num: N14, peripheral: GPIO9, signal: 'gpio_io, 13', pin_signal: GPIO_AD_14, software_input_on: Enable, drive_strength: Normal}
+  - {pin_num: R16, peripheral: GPIO9, signal: 'gpio_io, 08', pin_signal: GPIO_AD_09, direction: OUTPUT}
+  - {pin_num: M2, peripheral: GPIO8, signal: 'gpio_io, 22', pin_signal: GPIO_EMC_B2_12, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -93,6 +96,15 @@ BOARD_InitPins:
 void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* LPCG on: LPCG is ON. */
   CLOCK_EnableClock(kCLOCK_Iomuxc_Lpsr);      /* LPCG on: LPCG is ON. */
+
+  /* GPIO configuration of SEMC_D27 on GPIO_EMC_B2_12 (pin M2) */
+  gpio_pin_config_t SEMC_D27_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_EMC_B2_12 (pin M2) */
+  GPIO_PinInit(GPIO8, 22U, &SEMC_D27_config);
 
   /* GPIO configuration of USER_GREEN on GPIO_EMC_B2_18 (pin N3) */
   gpio_pin_config_t USER_GREEN_config = {
@@ -111,6 +123,15 @@ void BOARD_InitPins(void) {
   };
   /* Initialize GPIO functionality on GPIO_AD_08 (pin R15) */
   GPIO_PinInit(GPIO9, 7U, &USER_RED_config);
+
+  /* GPIO configuration of DSI_RST on GPIO_AD_09 (pin R16) */
+  gpio_pin_config_t DSI_RST_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_AD_09 (pin R16) */
+  GPIO_PinInit(GPIO9, 8U, &DSI_RST_config);
 
   /* GPIO configuration of USER_BLUE on GPIO_AD_10 (pin R17) */
   gpio_pin_config_t USER_BLUE_config = {
@@ -134,6 +155,9 @@ void BOARD_InitPins(void) {
 
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_08_GPIO9_IO07,           /* GPIO_AD_08 is configured as GPIO9_IO07 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_AD_09_GPIO9_IO08,           /* GPIO_AD_09 is configured as GPIO9_IO08 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_AD_10_GPIO9_IO09,           /* GPIO_AD_10 is configured as GPIO9_IO09 */
@@ -170,6 +194,9 @@ void BOARD_InitPins(void) {
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_EMC_B2_11_GPIO8_IO21,       /* GPIO_EMC_B2_11 is configured as GPIO8_IO21 */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_EMC_B2_12_GPIO8_IO22,       /* GPIO_EMC_B2_12 is configured as GPIO8_IO22 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_EMC_B2_18_GPIO8_IO28,       /* GPIO_EMC_B2_18 is configured as GPIO8_IO28 */

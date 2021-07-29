@@ -205,9 +205,9 @@ int main(void)
     	BOARD_MIPIPanelTouch_I2C_Init();
     }
 
-    /* initialize lpi2c3, lpi2c6 */
+    /* initialize lpi2c2, lpi2c3 */
+    BOARD_RTOS_I2C_Init(2);
     BOARD_RTOS_I2C_Init(3);
-    BOARD_RTOS_I2C_Init(6);
     /* configure uart for Maaxboard RT for console task*/
     uart_init();
 	/* Init input switch GPIO. */

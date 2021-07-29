@@ -28,6 +28,7 @@
             <pin_labels>
                <pin_label pin_num="R1" pin_signal="GPIO_EMC_B2_03" label="DSI_BL_PWM" identifier="DSI_BL_PWM"/>
                <pin_label pin_num="K2" pin_signal="GPIO_EMC_B2_00" label="LPI2C2_SCL" identifier="LPI2C2_SCL"/>
+               <pin_label pin_num="M2" pin_signal="GPIO_EMC_B2_12" label="CAM_SPARE" identifier="SEMC_D27"/>
                <pin_label pin_num="N3" pin_signal="GPIO_EMC_B2_18" label="USER_GREEN" identifier="SEMC_DQS4;USER_GREEN"/>
                <pin_label pin_num="K4" pin_signal="GPIO_EMC_B2_01" label="LPI2C2_SDA" identifier="LPI2C2_SDA"/>
                <pin_label pin_num="N12" pin_signal="GPIO_AD_00" label=""/>
@@ -36,7 +37,7 @@
                <pin_label pin_num="A4" pin_signal="GPIO_DISP_B2_15" label="WDOG_B/LCM_PWR_EN/J48[32]" identifier="DSI_EN"/>
                <pin_label pin_num="P13" pin_signal="GPIO_AD_05" label="DSI_TS_RST" identifier="DSI_TS_RST"/>
                <pin_label pin_num="R15" pin_signal="GPIO_AD_08" label="USER_RED" identifier="USER_RED"/>
-               <pin_label pin_num="R16" pin_signal="GPIO_AD_09" label="DSI_RST" identifier="DSI_RST"/>
+               <pin_label pin_num="R16" pin_signal="GPIO_AD_09" label="CAM_PWR_EN" identifier="DSI_RST"/>
                <pin_label pin_num="R17" pin_signal="GPIO_AD_10" label="USER_BLUE" identifier="USER_BLUE"/>
                <pin_label pin_num="M14" pin_signal="GPIO_AD_15" label="LCD_RST_B" identifier="LCD_RST_B"/>
                <pin_label pin_num="M17" pin_signal="GPIO_AD_29" label="DSI_EN" identifier="DSI_EN"/>
@@ -238,6 +239,16 @@
                      <pin_features>
                         <pin_feature name="software_input_on" value="Enable"/>
                         <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIO9" signal="gpio_io, 08" pin_num="R16" pin_signal="GPIO_AD_09">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIO8" signal="gpio_io, 22" pin_num="M2" pin_signal="GPIO_EMC_B2_12">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
                </pins>
@@ -754,7 +765,7 @@
             </clock_configuration>
          </clock_configurations>
       </clocks>
-      <dcdx name="DCDx" version="3.0" enabled="true" update_project_code="true">
+      <dcdx name="DCDx" version="3.0" enabled="true" update_project_code="false">
          <generated_project_files>
             <file path="board/dcd.c" update_enabled="true"/>
             <file path="board/dcd.h" update_enabled="true"/>

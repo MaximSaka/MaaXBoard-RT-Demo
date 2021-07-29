@@ -261,15 +261,15 @@ void BOARD_RTOS_I2C_Init(uint8_t i2c_periph)
 	int status = 0;
 	switch(i2c_periph)
 	{
+		case 2:
+			NVIC_SetPriority(LPI2C2_IRQn, 5);
+			i2c_base_addr = ((LPI2C_Type *)(LPI2C2_BASE));
+			i2c_handle = &master_rtos_handle2;
+			break;
 		case 3:
 			NVIC_SetPriority(LPI2C3_IRQn, 5);
 			i2c_base_addr = ((LPI2C_Type *)(LPI2C3_BASE));
 			i2c_handle = &master_rtos_handle3;
-			break;
-		case 6:
-			NVIC_SetPriority(LPI2C6_IRQn, 5);
-			i2c_base_addr = ((LPI2C_Type *)(LPI2C6_BASE));
-			i2c_handle = &master_rtos_handle6;
 			break;
 		default:
 			status = 1;
@@ -308,7 +308,7 @@ void BOARD_RTOS_I2C_Init(uint8_t i2c_periph)
 
 void BOARD_MIPIPanelTouch_I2C_Init(void)
 {
-	NVIC_SetPriority(LPI2C2_IRQn, 5);
+	NVIC_SetPriority(LPI2C6_IRQn, 5);
     const clock_root_config_t lpi2cClockConfig = {
         .clockOff = false,
         .mux      = BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_SOURCE,
@@ -333,7 +333,7 @@ void BOARD_MIPIPanelTouch_I2C_Init(void)
      */
     LPI2C_MasterGetDefaultConfig(&masterConfig);
 	//LPI2C_RTOS_Init(&master_rtos_handle2, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, (CLOCK_GetFreq(kCLOCK_OscRc48MDiv2)));
-    LPI2C_RTOS_Init(&master_rtos_handle2, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
+    LPI2C_RTOS_Init(&master_rtos_handle6, BOARD_MIPI_PANEL_TOUCH_I2C_BASEADDR, &masterConfig, CLOCK_GetRootClockFreq(BOARD_MIPI_PANEL_TOUCH_I2C_CLOCK_ROOT));
 }
 
 status_t BOARD_MIPIPanelTouch_I2C_Send(

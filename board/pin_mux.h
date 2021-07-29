@@ -186,6 +186,28 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_SEMC_D26_GPIO_PIN                                     21U   /*!< GPIO pin number */
 #define BOARD_INITPINS_SEMC_D26_GPIO_PIN_MASK                        (1U << 21U)   /*!< GPIO pin mask */
 
+/* GPIO_AD_09 (coord R16), CAM_PWR_EN */
+/* Routed pin properties */
+#define BOARD_INITPINS_DSI_RST_PERIPHERAL                                  GPIO9   /*!< Peripheral name */
+#define BOARD_INITPINS_DSI_RST_SIGNAL                                    gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_DSI_RST_CHANNEL                                        8U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_DSI_RST_GPIO                                        GPIO9   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_DSI_RST_GPIO_PIN                                       8U   /*!< GPIO pin number */
+#define BOARD_INITPINS_DSI_RST_GPIO_PIN_MASK                          (1U << 8U)   /*!< GPIO pin mask */
+
+/* GPIO_EMC_B2_12 (coord M2), CAM_SPARE */
+/* Routed pin properties */
+#define BOARD_INITPINS_SEMC_D27_PERIPHERAL                                 GPIO8   /*!< Peripheral name */
+#define BOARD_INITPINS_SEMC_D27_SIGNAL                                   gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_SEMC_D27_CHANNEL                                      22U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_SEMC_D27_GPIO                                       GPIO8   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_SEMC_D27_GPIO_PIN                                     22U   /*!< GPIO pin number */
+#define BOARD_INITPINS_SEMC_D27_GPIO_PIN_MASK                        (1U << 22U)   /*!< GPIO pin mask */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

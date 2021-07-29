@@ -38,7 +38,7 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-extern lpi2c_rtos_handle_t master_rtos_handle2;
+extern lpi2c_rtos_handle_t master_rtos_handle6;
 
 /* Cache line size. */
 #ifndef FSL_FEATURE_L2CACHE_LINESIZE_BYTE
@@ -337,7 +337,7 @@ static void DEMO_InitTouch(void)
     //pf status = GT911_Init(&s_touchHandle, &s_touchConfig);
 
 
-    status = FT5406_RT_Init(&touchHandle, &master_rtos_handle2);  //pf OK!
+    status = FT5406_RT_Init(&touchHandle, &master_rtos_handle6);  //pf OK!
 
     if (kStatus_Success != status)
     {
