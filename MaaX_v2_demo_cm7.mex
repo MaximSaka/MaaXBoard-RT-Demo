@@ -26,6 +26,7 @@
             <processor_version>9.0.2</processor_version>
             <power_domains/>
             <pin_labels>
+               <pin_label pin_num="K1" pin_signal="GPIO_EMC_B1_40" label="CAM_PWREN" identifier="SEMC_RDY"/>
                <pin_label pin_num="R1" pin_signal="GPIO_EMC_B2_03" label="DSI_BL_PWM" identifier="DSI_BL_PWM"/>
                <pin_label pin_num="K2" pin_signal="GPIO_EMC_B2_00" label="LPI2C2_SCL" identifier="LPI2C2_SCL"/>
                <pin_label pin_num="N3" pin_signal="GPIO_EMC_B2_18" label="USER_GREEN" identifier="SEMC_DQS4;USER_GREEN"/>
@@ -68,17 +69,17 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="LPUART6" description="Peripheral LPUART6 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
-                     <feature name="initialized" evaluation="equal">
-                        <data>true</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="LPI2C5" description="Peripheral LPI2C5 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
                   </dependency>
                   <dependency resourceType="Peripheral" resourceId="LPI2C6" description="Peripheral LPI2C6 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="Peripheral" resourceId="LPUART12" description="Peripheral LPUART12 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -197,8 +198,6 @@
                         <pin_feature name="drive_strength" value="Normal"/>
                      </pin_features>
                   </pin>
-                  <pin peripheral="LPUART6" signal="RXD" pin_num="L1" pin_signal="GPIO_EMC_B1_41"/>
-                  <pin peripheral="LPUART6" signal="TXD" pin_num="K1" pin_signal="GPIO_EMC_B1_40"/>
                   <pin peripheral="LPI2C5" signal="SCL" pin_num="N8" pin_signal="GPIO_LPSR_05">
                      <pin_features>
                         <pin_feature name="software_input_on" value="Enable"/>
@@ -238,6 +237,13 @@
                      <pin_features>
                         <pin_feature name="software_input_on" value="Enable"/>
                         <pin_feature name="drive_strength" value="Normal"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPUART12" signal="RXD" pin_num="R6" pin_signal="GPIO_LPSR_01"/>
+                  <pin peripheral="LPUART12" signal="TXD" pin_num="N6" pin_signal="GPIO_LPSR_00"/>
+                  <pin peripheral="GPIO8" signal="gpio_io, 08" pin_num="K1" pin_signal="GPIO_EMC_B1_40">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
                </pins>
@@ -754,7 +760,7 @@
             </clock_configuration>
          </clock_configurations>
       </clocks>
-      <dcdx name="DCDx" version="3.0" enabled="true" update_project_code="true">
+      <dcdx name="DCDx" version="3.0" enabled="true" update_project_code="false">
          <generated_project_files>
             <file path="board/dcd.c" update_enabled="true"/>
             <file path="board/dcd.h" update_enabled="true"/>

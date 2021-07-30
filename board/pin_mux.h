@@ -145,16 +145,6 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_BT_UART_RXD_PERIPHERAL                             LPI2C3   /*!< Peripheral name */
 #define BOARD_INITPINS_BT_UART_RXD_SIGNAL                                    SDA   /*!< Signal name */
 
-/* GPIO_EMC_B1_41 (coord L1), SEMC_CSX0/U14A[C6] */
-/* Routed pin properties */
-#define BOARD_INITPINS_SEMC_CSX0_PERIPHERAL                              LPUART6   /*!< Peripheral name */
-#define BOARD_INITPINS_SEMC_CSX0_SIGNAL                                      RXD   /*!< Signal name */
-
-/* GPIO_EMC_B1_40 (coord K1), SEMC_RDY/U14A[C8] */
-/* Routed pin properties */
-#define BOARD_INITPINS_SEMC_RDY_PERIPHERAL                               LPUART6   /*!< Peripheral name */
-#define BOARD_INITPINS_SEMC_RDY_SIGNAL                                       TXD   /*!< Signal name */
-
 /* GPIO_LPSR_05 (coord N8), I2C5_SCL/J48[27]/U32[17]/U34[4]/J10[20] */
 /* Routed pin properties */
 #define BOARD_INITPINS_I2C5_SCL_PERIPHERAL                                LPI2C5   /*!< Peripheral name */
@@ -185,6 +175,27 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_SEMC_D26_GPIO                                       GPIO8   /*!< GPIO peripheral base pointer */
 #define BOARD_INITPINS_SEMC_D26_GPIO_PIN                                     21U   /*!< GPIO pin number */
 #define BOARD_INITPINS_SEMC_D26_GPIO_PIN_MASK                        (1U << 21U)   /*!< GPIO pin mask */
+
+/* GPIO_LPSR_01 (coord R6), CAN3_RX/U42[4] */
+/* Routed pin properties */
+#define BOARD_INITPINS_CAN3_RX_PERIPHERAL                               LPUART12   /*!< Peripheral name */
+#define BOARD_INITPINS_CAN3_RX_SIGNAL                                        RXD   /*!< Signal name */
+
+/* GPIO_LPSR_00 (coord N6), CAN3_TX/U42[1] */
+/* Routed pin properties */
+#define BOARD_INITPINS_CAN3_TX_PERIPHERAL                               LPUART12   /*!< Peripheral name */
+#define BOARD_INITPINS_CAN3_TX_SIGNAL                                        TXD   /*!< Signal name */
+
+/* GPIO_EMC_B1_40 (coord K1), CAM_PWREN */
+/* Routed pin properties */
+#define BOARD_INITPINS_SEMC_RDY_PERIPHERAL                                 GPIO8   /*!< Peripheral name */
+#define BOARD_INITPINS_SEMC_RDY_SIGNAL                                   gpio_io   /*!< Signal name */
+#define BOARD_INITPINS_SEMC_RDY_CHANNEL                                       8U   /*!< Signal channel */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_SEMC_RDY_GPIO                                       GPIO8   /*!< GPIO peripheral base pointer */
+#define BOARD_INITPINS_SEMC_RDY_GPIO_PIN                                      8U   /*!< GPIO pin number */
+#define BOARD_INITPINS_SEMC_RDY_GPIO_PIN_MASK                         (1U << 8U)   /*!< GPIO pin mask */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

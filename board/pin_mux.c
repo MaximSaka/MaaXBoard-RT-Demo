@@ -13,6 +13,7 @@ mcu_data: ksdk2_0
 processor_version: 9.0.2
 board: MIMXRT1170-EVK
 pin_labels:
+- {pin_num: K1, pin_signal: GPIO_EMC_B1_40, label: CAM_PWREN, identifier: SEMC_RDY}
 - {pin_num: R1, pin_signal: GPIO_EMC_B2_03, label: DSI_BL_PWM, identifier: DSI_BL_PWM}
 - {pin_num: K2, pin_signal: GPIO_EMC_B2_00, label: LPI2C2_SCL, identifier: LPI2C2_SCL}
 - {pin_num: N3, pin_signal: GPIO_EMC_B2_18, label: USER_GREEN, identifier: SEMC_DQS4;USER_GREEN}
@@ -71,8 +72,6 @@ BOARD_InitPins:
   - {pin_num: K16, peripheral: CM7_GPIO3, signal: 'gpio_mux_io_cm7, 31', pin_signal: GPIO_AD_32}
   - {pin_num: D9, peripheral: LPI2C3, signal: SCL, pin_signal: GPIO_DISP_B2_10, software_input_on: Enable, open_drain: Enable, drive_strength: Normal}
   - {pin_num: A6, peripheral: LPI2C3, signal: SDA, pin_signal: GPIO_DISP_B2_11, software_input_on: Enable, open_drain: Enable, drive_strength: Normal}
-  - {pin_num: L1, peripheral: LPUART6, signal: RXD, pin_signal: GPIO_EMC_B1_41}
-  - {pin_num: K1, peripheral: LPUART6, signal: TXD, pin_signal: GPIO_EMC_B1_40}
   - {pin_num: N8, peripheral: LPI2C5, signal: SCL, pin_signal: GPIO_LPSR_05, software_input_on: Enable, pull_up_down_config: Pull_Up, pull_keeper_select: no_init,
     open_drain: Disable, drive_strength: High}
   - {pin_num: N7, peripheral: LPI2C5, signal: SDA, pin_signal: GPIO_LPSR_04, software_input_on: Enable, pull_up_down_config: Pull_Up, pull_keeper_select: no_init,
@@ -81,6 +80,9 @@ BOARD_InitPins:
   - {pin_num: P8, peripheral: LPI2C6, signal: SDA, pin_signal: GPIO_LPSR_06, software_input_on: Enable, pull_keeper_select: Pull, open_drain: Enable, drive_strength: Normal}
   - {pin_num: L4, peripheral: GPIO8, signal: 'gpio_io, 21', pin_signal: GPIO_EMC_B2_11}
   - {pin_num: N14, peripheral: GPIO9, signal: 'gpio_io, 13', pin_signal: GPIO_AD_14, software_input_on: Enable, drive_strength: Normal}
+  - {pin_num: R6, peripheral: LPUART12, signal: RXD, pin_signal: GPIO_LPSR_01}
+  - {pin_num: N6, peripheral: LPUART12, signal: TXD, pin_signal: GPIO_LPSR_00}
+  - {pin_num: K1, peripheral: GPIO8, signal: 'gpio_io, 08', pin_signal: GPIO_EMC_B1_40, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 
@@ -93,6 +95,15 @@ BOARD_InitPins:
 void BOARD_InitPins(void) {
   CLOCK_EnableClock(kCLOCK_Iomuxc);           /* LPCG on: LPCG is ON. */
   CLOCK_EnableClock(kCLOCK_Iomuxc_Lpsr);      /* LPCG on: LPCG is ON. */
+
+  /* GPIO configuration of SEMC_RDY on GPIO_EMC_B1_40 (pin K1) */
+  gpio_pin_config_t SEMC_RDY_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on GPIO_EMC_B1_40 (pin K1) */
+  GPIO_PinInit(GPIO8, 8U, &SEMC_RDY_config);
 
   /* GPIO configuration of USER_GREEN on GPIO_EMC_B2_18 (pin N3) */
   gpio_pin_config_t USER_GREEN_config = {
@@ -163,10 +174,7 @@ void BOARD_InitPins(void) {
       IOMUXC_GPIO_DISP_B2_11_LPI2C3_SDA,      /* GPIO_DISP_B2_11 is configured as LPI2C3_SDA */
       1U);                                    /* Software Input On Field: Force input path of pad GPIO_DISP_B2_11 */
   IOMUXC_SetPinMux(
-      IOMUXC_GPIO_EMC_B1_40_LPUART6_TXD,      /* GPIO_EMC_B1_40 is configured as LPUART6_TXD */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
-  IOMUXC_SetPinMux(
-      IOMUXC_GPIO_EMC_B1_41_LPUART6_RXD,      /* GPIO_EMC_B1_41 is configured as LPUART6_RXD */
+      IOMUXC_GPIO_EMC_B1_40_GPIO8_IO08,       /* GPIO_EMC_B1_40 is configured as GPIO8_IO08 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_EMC_B2_11_GPIO8_IO21,       /* GPIO_EMC_B2_11 is configured as GPIO8_IO21 */
@@ -196,6 +204,12 @@ void BOARD_InitPins(void) {
     (~(IOMUXC_GPR_GPR43_GPIO_MUX3_GPIO_SEL_HIGH_MASK))) /* Mask bits to zero which are setting */
       | IOMUXC_GPR_GPR43_GPIO_MUX3_GPIO_SEL_HIGH(0x8000U) /* GPIO3 and CM7_GPIO3 share same IO MUX function, GPIO_MUX3 selects one GPIO function: 0x8000U */
     );
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_LPSR_00_LPUART12_TXD,       /* GPIO_LPSR_00 is configured as LPUART12_TXD */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinMux(
+      IOMUXC_GPIO_LPSR_01_LPUART12_RXD,       /* GPIO_LPSR_01 is configured as LPUART12_RXD */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_LPSR_04_LPI2C5_SDA,         /* GPIO_LPSR_04 is configured as LPI2C5_SDA */
       1U);                                    /* Software Input On Field: Force input path of pad GPIO_LPSR_04 */
